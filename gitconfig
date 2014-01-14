@@ -1,0 +1,5 @@
+[user]
+	name = David Tomaschik
+	email = david@systemoverlord.com
+[push]
+	default = simple

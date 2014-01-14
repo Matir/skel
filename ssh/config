@@ -1,0 +1,13 @@
+# Universal Settings
+Protocol 2
+
+# Defaults (May be Overridden)
+Host *
+	ControlMaster 	auto
+	ControlPath		~/.ssh/master/%r@%h:%p
+	ControlPersist	yes
+	ForwardAgent	no
+	ForwardX11		no
+	ForwardX11Trusted	no
+	User			david
+	ServerAliveInterval 120
