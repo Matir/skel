@@ -10,9 +10,15 @@ if [ -n "$BASH_VERSION" ]; then
     fi
 fi
 
-PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
-VISUAL=vim
-EDITOR=vim
+# Paths and preferences
+export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
+export PYTHONPATH="$HOME/.python"
+export VISUAL=vim
+export EDITOR=vim
+export TZ='America/Los_Angeles'
+export DEBEMAIL=david@systemoverlord.com
+export DEBFULLNAME="David Tomaschik"
+
 
 # Setup GPG Agent
 GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
@@ -24,13 +30,7 @@ else
 fi
 unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
-
-# Debian Packaging
-export DEBEMAIL=david@systemoverlord.com
-export DEBFULLNAME="David Tomaschik"
-
-# Python setup
-export PYTHONPATH="$HOME/.python"
+# End GPG
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
