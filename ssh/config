@@ -1,4 +1,5 @@
-# Universal Settings
+# Universal Settings (can't override)
+# Never fall back to protocol 1: it's broken
 Protocol 2
 
 # Defaults (May be Overridden)
@@ -9,5 +10,4 @@ Host *
 	ForwardAgent	no
 	ForwardX11		no
 	ForwardX11Trusted	no
-	User			david
 	ServerAliveInterval 120
