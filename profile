@@ -32,11 +32,5 @@ unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
-
-# Cryptsetup alias
-alias luksFormat='sudo cryptsetup luksFormat -s 512 -c aes-xts-plain --use-random -h sha256 -i 5000'
-
-if [ -f $HOME/.localenv ] ; then source $HOME/.localenv ; fi
+if [ -e $HOME/.localenv ] ; then source $HOME/.localenv ; fi
+if [[ $- == *i* ]] && [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
