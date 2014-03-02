@@ -13,6 +13,7 @@ fi
 # Paths and preferences
 export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
 export PYTHONPATH="$HOME/.python"
+export GOPATH="$HOME/.go"
 export VISUAL=vim
 export EDITOR=vim
 export TZ='America/Los_Angeles'
