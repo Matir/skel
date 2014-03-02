@@ -2,7 +2,7 @@
 set verbose off
 set disassembly-flavor intel
 set output-radix 0x10
-set input-radix 0x10
+set input-radix 10.
 
 # helpful shortcuts
 define lsbp
@@ -20,49 +20,6 @@ end
 define reg
   info registers
 end
-
-# taviso's assembly macro
-define assemble
- # dont enter routine again if user hits enter
- dont-repeat
- if ($argc)
-  if (*$arg0 = *$arg0)
-    # check if we have a valid address by dereferencing it,
-    # if we havnt, this will cause the routine to exit.
-  end
-  printf "Instructions will be written to %#x.\n", $arg0
- else
-  printf "Instructions will be written to stdout.\n"
- end
- printf "Type instructions, one per line.\n"
- printf "End with a line saying just \"end\".\n"
- if ($argc)
-  # argument specified, assemble instructions into memory
-  # at address specified.
-  shell nasm -f bin -o /dev/stdout /dev/stdin \
-    <<< "$( echo "BITS 32"; while read -ep '>' r && test "$r" != end; \
-                do echo -E "$r"; done )" | hexdump -ve \
-        '1/1 "set *((unsigned char *) $arg0 + %#2_ax) = %#02x\n"' \
-            > ~/.gdbassemble
-  # load the file containing set instructions
-  source ~/.gdbassemble
-  # all done.
-  shell rm -f ~/.gdbassemble
- else
-  # no argument, assemble instructions to stdout
-  shell nasm -f bin -o /dev/stdout /dev/stdin \
-    <<< "$( echo "BITS 32"; while read -ep '>' r && test "$r" != end; \
-                do echo -E "$r"; done )" | ndisasm -i -b32 /dev/stdin
- end
-end
-document assemble
-Assemble instructions using nasm.
-Type a line containing "end" to indicate the end.
-If an address is specified, insert instructions at that address.
-If no address is specified, assembled instructions are printed to stdout.
-Use the pseudo instruction "org ADDR" to set the base address.
-end
-
 
 # __________________gdb options_________________
 
@@ -97,6 +54,10 @@ set $ARMOPCODES = 1
 set $X86FLAVOR = 0
 # use colorized output or not
 set $USECOLOR = 0
+# 64 bit options
+set $64BITS = 0
+# Remote 64 bit debugging
+set $KDP64BITS = -1
 
 set confirm off
 set verbose off
