@@ -26,3 +26,5 @@ set number
 set shiftround
 " Text width 80
 set textwidth=80
+" Write via sudo
+cnoremap sudow w !sudo tee % >/dev/null
