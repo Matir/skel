@@ -20,6 +20,10 @@ export TZ='America/Los_Angeles'
 export DEBEMAIL=david@systemoverlord.com
 export DEBFULLNAME="David Tomaschik"
 
+# GCE?
+if [ -d $HOME/.gce/google-cloud-sdk/bin ] ; then
+  export PATH="$PATH:$HOME/.gce/google-cloud-sdk/bin"
+fi
 
 # Setup GPG Agent
 GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
