@@ -31,7 +31,9 @@ if test -f $GPG_AGENT_INFO_PATH && kill -0 `cut -d: -f 2 $GPG_AGENT_INFO_PATH` 2
   . $GPG_AGENT_INFO_PATH
   export GPG_AGENT_INFO SSH_AUTH_SOCK SSH_AGENT_PID
 else
-  gpg-agent -q || eval `gpg-agent --daemon --enable-ssh-support --write-env-file $GPG_AGENT_INFO_PATH` 2>/dev/null
+  if which gpg-agent >/dev/null 2>&1 ; then
+    gpg-agent -q || eval `gpg-agent --daemon --enable-ssh-support --write-env-file $GPG_AGENT_INFO_PATH` 2>/dev/null
+  fi
 fi
 unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
