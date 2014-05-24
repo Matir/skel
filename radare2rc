@@ -1,3 +1,6 @@
-e scr.color = 1
+e scr.color = true
 e dbg.bep = main
 e asm.syntax = intel
+e asm.linescall = true
+e asm.linesout = true
+e asm.lineswidth = 12
