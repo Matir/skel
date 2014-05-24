@@ -28,3 +28,7 @@ set shiftround
 set textwidth=80
 " Write via sudo
 cnoremap sudow w !sudo tee % >/dev/null
+" Search options
+set incsearch
+set ignorecase
+set smartcase
