@@ -1,6 +1,7 @@
 # Sourced by zshrc as well as bash.
 
 umask 022
+ulimit -c unlimited
 
 # if running bash
 if [ -n "$BASH_VERSION" ]; then
