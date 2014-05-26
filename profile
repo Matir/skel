@@ -9,6 +9,7 @@ if [ -n "$BASH_VERSION" ]; then
     if [ -f "$HOME/.bashrc" ]; then
     	. "$HOME/.bashrc"
     fi
+    shopt -s expand_aliases
 fi
 
 # Paths and preferences
@@ -41,4 +42,4 @@ export GPG_TTY=`tty`
 # End GPG
 
 if [ -e $HOME/.localenv ] ; then source $HOME/.localenv ; fi
-if [[ $- == *i* ]] && [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
+if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
