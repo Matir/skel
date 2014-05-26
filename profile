@@ -27,6 +27,10 @@ if [ -d $HOME/.gce/google-cloud-sdk/bin ] ; then
   export PATH="$PATH:$HOME/.gce/google-cloud-sdk/bin"
 fi
 
+# Disable stty ctrl-s/ctrl-q behavior
+stty stop undef
+stty start undef
+
 # Setup GPG Agent
 GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
 if test -f $GPG_AGENT_INFO_PATH && kill -0 `cut -d: -f 2 $GPG_AGENT_INFO_PATH` 2>/dev/null ; then
