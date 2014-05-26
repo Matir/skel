@@ -4,3 +4,6 @@ e asm.syntax = intel
 e asm.linescall = true
 e asm.linesout = true
 e asm.lineswidth = 12
+
+# Callgraph: .(cg)
+(cg,aa,ag | $HOME/.radare2/xdot || xdot -,)
