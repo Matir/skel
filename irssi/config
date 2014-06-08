@@ -1,37 +1,4 @@
 servers = (
-  { address = "eu.irc6.net"; chatnet = "IRCnet"; port = "6667"; },
-  { address = "open.ircnet.net"; chatnet = "IRCnet"; port = "6667"; },
-  { address = "irc.efnet.org"; chatnet = "EFNet"; port = "6667"; },
-  { 
-    address = "irc.undernet.org";
-    chatnet = "Undernet";
-    port = "6667";
-  },
-  { address = "irc.dal.net"; chatnet = "DALnet"; port = "6667"; },
-  { 
-    address = "irc.quakenet.org";
-    chatnet = "QuakeNet";
-    port = "6667";
-  },
-  { address = "irc.oftc.net"; chatnet = "OFTC"; port = "6667"; },
-  {
-    address = "irc.gamesurge.net";
-    chatnet = "GameSurge";
-    port = "6667";
-  },
-  { address = "irc.webchat.org"; chatnet = "WebChat"; port = "6667"; },
-  { address = "irc.rizon.net"; chatnet = "Rizon"; port = "6667"; },
-  { address = "irc.link-net.org"; chatnet = "LinkNet"; port = "6667"; },
-  { address = "silc.silcnet.org"; chatnet = "SILC"; port = "706"; },
-  {
-    address = "irc.freenode.net";
-    chatnet = "freenode";
-    port = "7000";
-    use_ssl = "yes";
-    ssl_verify = "yes";
-    ssl_capath = "/etc/ssl/certs";
-    autoconnect = "yes";
-  },
   {
     address = "ircs.overthewire.org";
     chatnet = "overthewire";
@@ -49,7 +16,17 @@ servers = (
     autoconnect = "yes";
   },
   {
-    address = "irc.us.hackint.eu";
+    address = "chat.freenode.net";
+    chatnet = "freenode";
+    port = "7000";
+    use_ssl = "yes";
+    ssl_cert = "~/.irssi/matir.pem";
+    ssl_verify = "yes";
+    ssl_cafile = "~/.irssi/instantssl.crt";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.hackint.eu";
     chatnet = "hackint";
     port = "9999";
     use_ssl = "yes";
@@ -59,72 +36,19 @@ servers = (
 );
 
 chatnets = {
-  IRCnet = {
+  overthewire = { type = "IRC"; nick = "Matir"; };
+  secfo = { type = "IRC"; nick = "Matir"; };
+  hackint = { type = "IRC"; nick = "Matir"; };
+  freenode = {
     type = "IRC";
-    max_kicks = "4";
-    max_msgs = "5";
-    max_whois = "4";
-    max_query_chans = "5";
-  };
-  EFNet = { 
-    type = "IRC";
-    max_kicks = "4";
-    max_msgs = "3";
+    nick = "Matir";
+    username = "matir";
+    realname = "Matir";
+    max_kicks = "1";
+    max_msgs = "4";
+    max_modes = "4";
     max_whois = "1";
   };
-  Undernet = {
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  DALnet = {
-    type = "IRC";
-    max_kicks = "4";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  QuakeNet = {
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  OFTC = { 
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  GameSurge = {
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  WebChat = {
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  Rizon = { 
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  LinkNet = {
-    type = "IRC";
-    max_kicks = "1";
-    max_msgs = "3";
-    max_whois = "30";
-  };
-  SILC = { type = "SILC"; };
-  freenode = { type = "IRC"; };
-  overthewire = { type = "IRC"; nick = "Matir"; };
-  secfo = { type = "IRC"; };
-  hackint = { type = "IRC"; nick = "Matir"; };
 };
 
 channels = (
@@ -132,7 +56,8 @@ channels = (
   { name = "#hak5"; chatnet = "secfo"; autojoin = "yes"; },
   { name = "#wargames"; chatnet = "overthewire"; autojoin = "yes"; },
   { name = "#social"; chatnet = "overthewire"; autojoin = "yes"; },
-  { name = "#openvpn"; chatnet = "freenode"; autojoin = "yes"; }
+  { name = "#openvpn"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#shadowcats"; chatnet = "freenode"; autojoin = "yes"; }
 );
 
 aliases = {
@@ -307,11 +232,5 @@ settings = {
   "fe-common/core" = {
     autolog = "yes";
     autolog_path = "~/irclogs/%Y/%m/$tag/$0.log";
-  };
-};
-logs = {
-  "~/irc.log.Window7" = {
-    level = "ALL";
-    items = ( { type = "window"; name = "7"; } );
   };
 };
