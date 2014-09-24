@@ -36,8 +36,14 @@ servers = (
 );
 
 chatnets = {
+  OFTC = { 
+    type = "IRC";
+    max_kicks = "1";
+    max_msgs = "3";
+    max_whois = "30";
+  };
   overthewire = { type = "IRC"; nick = "Matir"; };
-  secfo = { type = "IRC"; nick = "Matir"; };
+  secfo = { type = "IRC"; };
   hackint = { type = "IRC"; nick = "Matir"; };
   freenode = {
     type = "IRC";
@@ -57,7 +63,11 @@ channels = (
   { name = "#wargames"; chatnet = "overthewire"; autojoin = "yes"; },
   { name = "#social"; chatnet = "overthewire"; autojoin = "yes"; },
   { name = "#openvpn"; chatnet = "freenode"; autojoin = "yes"; },
-  { name = "#shadowcats"; chatnet = "freenode"; autojoin = "yes"; }
+  { name = "#shadowcats"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#amateria"; chatnet = "overthewire"; autojoin = "yes"; },
+  { name = "#io"; chatnet = "overthewire"; autojoin = "yes"; },
+  { name = "#radare"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#vulnhub"; chatnet = "freenode"; autojoin = "yes"; }
 );
 
 aliases = {
@@ -150,7 +160,7 @@ statusbar = {
     # the "default statusbar" to be displayed at the bottom of the window.
     # contains all the normal items.
     window = {
-      disabled = "no";
+      disabled = "yes";
 
       # window, root
       type = "window";
@@ -169,7 +179,6 @@ statusbar = {
         window = { };
         window_empty = { };
         lag = { priority = "-1"; };
-        act = { priority = "10"; };
         more = { priority = "-1"; alignment = "right"; };
         barend = { priority = "100"; alignment = "right"; };
       };
@@ -214,9 +223,28 @@ statusbar = {
       visible = "always";
       items = {
         topicbarstart = { priority = "100"; };
+        time = { priority = "100"; };
         topic = { };
         topic_empty = { };
+        window_empty = { alignment = "right"; };
+        user = { priority = "100"; alignment = "right"; };
         topicbarend = { priority = "100"; alignment = "right"; };
+      };
+    };
+    placement = { items = { }; disabled = "yes"; };
+    remove = { disabled = "yes"; };
+    awl_0 = {
+      items = {
+        barstart = { priority = "100"; };
+        awl_0 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
+    awl_1 = {
+      items = {
+        barstart = { priority = "100"; };
+        awl_1 = { };
+        barend = { priority = "100"; alignment = "right"; };
       };
     };
   };
@@ -232,5 +260,16 @@ settings = {
   "fe-common/core" = {
     autolog = "yes";
     autolog_path = "~/irclogs/%Y/%m/$tag/$0.log";
+    autoclose_query = "1800";
+    autocreate_own_query = "no";
+    show_nickmode_empty = "no";
+    term_charset = "utf-8";
+  };
+  "perl/core/scripts" = {
+    awl_shared_sbar = "OFF";
+    awl_viewer = "no";
+    awl_block = "-15";
+    awl_maxlines = "2";
+    awl_height_adjust = "2";
   };
 };
