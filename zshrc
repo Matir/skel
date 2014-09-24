@@ -35,3 +35,9 @@ if [ -d $HOME/.oh-my-zsh ] ; then
   plugins=(git encode64 gpg-agent pep8 pip python tmux urltools)
   source $ZSH/oh-my-zsh.sh
 fi
+
+# Keybindings
+bindkey '^[[A' history-search-backward
+bindkey '^[[B' history-search-forward
+bindkey '^[[1;5C' forward-word
+bindkey '^[[1;5D' backward-word
