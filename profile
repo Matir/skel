@@ -21,6 +21,7 @@ export EDITOR=vim
 export TZ='America/Los_Angeles'
 export DEBEMAIL=david@systemoverlord.com
 export DEBFULLNAME="David Tomaschik"
+export LESS="-R"
 
 # GCE?
 if [ -d $HOME/.gce/google-cloud-sdk/bin ] ; then

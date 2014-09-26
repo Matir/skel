@@ -22,8 +22,5 @@ alias mdcode="sed 's/^/    /'"
 # Intel format plz
 alias objdump="command objdump -M intel"
 
-# Color support in less
-alias less="command less -R"
-
 # ACK
 alias ack="ack-grep"
