@@ -32,7 +32,7 @@ alias ls='ls --color'
 if [ -d $HOME/.oh-my-zsh ] ; then
   ZSH=$HOME/.oh-my-zsh
   ZSH_THEME="matir"
-  plugins=(git encode64 gpg-agent pep8 pip python tmux urltools)
+  plugins=(git encode64 gpg-agent pep8 pip python tmux urltools extract sudo)
   source $ZSH/oh-my-zsh.sh
 fi
 
