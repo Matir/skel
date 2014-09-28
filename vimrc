@@ -83,3 +83,8 @@ function ToggleHex()
   let &readonly=l:oldreadonly
   let &modifiable=l:oldmodifiable
 endfunction
+
+" Include a .vimrc.local if it exists
+if filereadable(glob("~/.vimrc.local"))
+  source ~/.vimrc.local
+endif
