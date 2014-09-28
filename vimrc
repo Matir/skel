@@ -1,5 +1,15 @@
 " Allow full use of vim options
 set nocompatible
+
+" Enable Vundle if installed
+if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
+  filetype off
+  set rtp+=~/.vim/bundle/Vundle.vim
+  call vundle#begin()
+  Plugin 'gmarik/Vundle.vim'
+  call vundle#end()
+endif
+
 " Autoindentation 
 set autoindent
 " Use same indentation style as above file
