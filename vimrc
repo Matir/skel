@@ -7,6 +7,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   set rtp+=~/.vim/bundle/Vundle.vim
   call vundle#begin()
   Plugin 'gmarik/Vundle.vim'
+  Plugin 'eistaa/vim-flake8'
   call vundle#end()
 endif
 
