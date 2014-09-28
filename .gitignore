@@ -1,2 +1,5 @@
 private_dotfiles
 private_dotfiles/**
+*.swp
+*~
+*.bak
