@@ -6,4 +6,4 @@
   #default = simple
   default = matching
 [core]
-	excludesfiles = ~/.gitignore
+	excludesfile = ~/.gitignore
