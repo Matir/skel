@@ -8,6 +8,10 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   call vundle#begin()
   Plugin 'gmarik/Vundle.vim'
   Plugin 'eistaa/vim-flake8'
+  Plugin 'tpope/vim-fugitive'
+  Plugin 'mileszs/ack.vim'
+  Plugin 'tpope/vim-unimpaired'
+  Plugin 'scrooloose/syntastic'
   call vundle#end()
 endif
 
