@@ -32,7 +32,7 @@ alias ls='ls --color'
 if [ -d $HOME/.oh-my-zsh ] ; then
   ZSH=$HOME/.oh-my-zsh
   ZSH_THEME="matir"
-  ZSH_CUSTOM="$HOME/.dotfiles/zsh_custom"
+  ZSH_CUSTOM="$HOME/.zsh_custom"
   plugins=(git encode64 gpg-agent pep8 pip python tmux urltools extract sudo)
   source $ZSH/oh-my-zsh.sh
   unset ZSH_THEME
@@ -43,3 +43,6 @@ bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
+
+# Load any local settings
+if [ -e $HOME/.zsh_local ] ; then source $HOME/.zsh_local ; fi
