@@ -7,3 +7,5 @@
   default = matching
 [core]
 	excludesfile = ~/.gitignore
+[web]
+  browser = chrome
