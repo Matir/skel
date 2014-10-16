@@ -32,8 +32,17 @@ alias ls='ls --color'
 if [ -d $HOME/.oh-my-zsh ] ; then
   ZSH=$HOME/.oh-my-zsh
   ZSH_THEME="matir"
+  ORIG_PS1="${PS1}"
+  if [[ ! -a $ZSH/themes/$ZSH_THEME ]] ; then
+    ZSH_THEME=""
+  fi
   plugins=(git encode64 gpg-agent pep8 pip python tmux urltools extract sudo)
   source $ZSH/oh-my-zsh.sh
+  unset ZSH_THEME
+  if [[ "$PS1" == "%n@%m:%~%# " ]] ; then
+    PS1="${ORIG_PS1}"
+  fi
+  unset ORIG_PS1
 fi
 
 # Keybindings
