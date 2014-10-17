@@ -1,11 +1,13 @@
 [user]
-	name = David Tomaschik
-	email = david@systemoverlord.com
+  name = David Tomaschik
+  email = david@systemoverlord.com
 [push]
   # Simple is not supported on git < 2.0
   #default = simple
   default = matching
 [core]
-	excludesfile = ~/.gitignore
+  excludesfile = ~/.gitignore
 [web]
   browser = chrome
+[github]
+  user = matir

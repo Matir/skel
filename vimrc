@@ -12,20 +12,29 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'mileszs/ack.vim'
   Plugin 'tpope/vim-unimpaired'
   Plugin 'scrooloose/syntastic'
+  Plugin 'mattn/webapi-vim'
+  Plugin 'mattn/gist-vim'
   call vundle#end()
 endif
 
-" Autoindentation 
+" Whitespace options
 set autoindent
-" Use same indentation style as above file
 set copyindent
-" Proper tabs
 set tabstop=2
 set softtabstop=2
 set shiftwidth=2
 set expandtab
-" Display cursor position
+set shiftround
+set backspace=indent,eol,start
+" Shift-tab to go backwards in insert mode
+imap <S-Tab> <Esc><<A
+
+" Line numbering, ruler
+set number
 set ruler
+
+" File options
+set encoding=utf-8
 " Syntax highlighting and file types
 syntax on
 filetype plugin indent on
@@ -35,21 +44,25 @@ set modeline
 set autoread
 " fsync() after writing files
 set fsync
-" Line numbering
-set number
-" Round indentation to multiple of shiftwidth
-set shiftround
 " Text width 80
 set textwidth=80
 " Write via sudo
 cnoremap sudow w !sudo tee % >/dev/null
+
 " Search options
 set incsearch
 set ignorecase
 set smartcase
+" Optional highlighting
+nmap <leader>hs :set hlsearch! hlsearch?<CR>
+
+" Toggle paste mode
+nmap <silent> <F4> :set invpaste<CR>:set paste?<CR>
+imap <silent> <F4> <ESC>:set invpaste<CR>:set paste?<CR>
 
 " Mediocre Hex editing in vim
 " Source: http://vim.wikia.com/wiki/Improved_hex_editing
+" TODO: move to an include
 nnoremap <C-H> :Hexmode<CR>
 command -bar Hexmode call ToggleHex()
 function ToggleHex()
@@ -88,6 +101,12 @@ function ToggleHex()
   let &readonly=l:oldreadonly
   let &modifiable=l:oldmodifiable
 endfunction
+
+" Options for syntastic
+let g:syntastic_enable_signs = 1
+let g:syntastic_auto_lock_list = 2
+" Have F5 run the tests and display errors
+nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 
 " Include a .vimrc.local if it exists
 if filereadable(glob("~/.vimrc.local"))
