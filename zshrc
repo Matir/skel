@@ -45,4 +45,4 @@ bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
 # Load any local settings
-if [ -e $HOME/.zsh_local ] ; then source $HOME/.zsh_local ; fi
+if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi

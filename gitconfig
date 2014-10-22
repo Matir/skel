@@ -2,9 +2,7 @@
   name = David Tomaschik
   email = david@systemoverlord.com
 [push]
-  # Simple is not supported on git < 2.0
-  #default = simple
-  default = matching
+  default = current
 [core]
   excludesfile = ~/.gitignore
 [web]
