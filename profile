@@ -19,7 +19,7 @@ export GOPATH="$HOME/.go"
 export VISUAL=vim
 export EDITOR=vim
 export TZ='America/Los_Angeles'
-export DEBEMAIL=david@systemoverlord.com
+export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
 
@@ -46,5 +46,5 @@ unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
 
-if [ -e $HOME/.localenv ] ; then source $HOME/.localenv ; fi
+if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
 if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
