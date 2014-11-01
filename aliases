@@ -27,3 +27,6 @@ alias objdump="command objdump -M intel"
 
 # ACK
 alias ack="ack-grep"
+
+# Launch chrome for burp
+alias chrome-for-burp="/usr/bin/google-chrome --ignore-certificate-errors --user-data-dir=~/.chrome-for-burp --proxy-server=127.0.0.1:8080"
