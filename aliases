@@ -14,7 +14,7 @@ alias egrep='egrep --color=auto'
 alias fgrep='fgrep --color=auto'
 
 # Easy upgrade
-alias dist-upgrade="sudo sh -c 'apt-get update && apt-get dist-upgrade'"
+alias dist-upgrade="sudo sh -c 'apt-get update && apt-get -y dist-upgrade'"
 
 # Timestamp in a machine-sortable form
 alias tstamp="date '+%Y%m%d-%H%M%S'"
@@ -29,4 +29,4 @@ alias objdump="command objdump -M intel"
 alias ack="ack-grep"
 
 # Launch chrome for burp
-alias chrome-for-burp="/usr/bin/google-chrome --ignore-certificate-errors --user-data-dir=~/.chrome-for-burp --proxy-server=127.0.0.1:8080"
+alias chrome-for-burp="/usr/bin/google-chrome --ignore-certificate-errors --user-data-dir=${HOME}/.chrome-for-burp --proxy-server=127.0.0.1:8080 >/dev/null 2>&1 &"

@@ -14,6 +14,8 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'scrooloose/syntastic'
   Plugin 'mattn/webapi-vim'
   Plugin 'mattn/gist-vim'
+  Plugin 'fatih/vim-go'
+  Plugin 'Valloric/YouCompleteMe'
   call vundle#end()
 endif
 
