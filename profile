@@ -1,6 +1,6 @@
 # Sourced by zshrc as well as bash.
 
-umask 022
+umask 027
 ulimit -c unlimited
 
 # if running bash
@@ -23,10 +23,14 @@ export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
 
-# GCE?
-if [ -d $HOME/.gce/google-cloud-sdk/bin ] ; then
-  export PATH="$PATH:$HOME/.gce/google-cloud-sdk/bin"
-fi
+EXTRA_PATHS=("$HOME/.gce/google-cloud-sdk/bin" "$HOME/bin/genymotion"
+  "$HOME/bin/genymotion/tools" )
+for p in "${EXTRA_PATHS[@]}" ; do 
+  if [ -d "$p" ] ; then
+    export PATH="$PATH:$p"
+  fi
+done
+unset EXTRA_PATHS
 
 # Disable stty ctrl-s/ctrl-q behavior
 stty stop undef
