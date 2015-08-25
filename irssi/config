@@ -26,9 +26,17 @@ servers = (
     autoconnect = "yes";
   },
   {
-    address = "irc.hackint.eu";
-    chatnet = "hackint";
-    port = "9999";
+    address = "irc.geekshed.net";
+    chatnet = "geekshed";
+    port = "6697";
+    use_ssl = "yes";
+    ssl_verify = "no";
+    autoconnect = "yes";
+  },
+  {
+    address = "irc.rpis.ec";
+    chatnet = "rpisec";
+    port = "6697";
     use_ssl = "yes";
     ssl_verify = "no";
     autoconnect = "yes";
@@ -55,6 +63,13 @@ chatnets = {
     max_modes = "4";
     max_whois = "1";
   };
+  geekshed = {
+    type = "IRC";
+    nick = "KF4MDV";
+    username = "kf4mdv";
+    realname = "David";
+  };
+  rpisec = { type = "IRC"; };
 };
 
 channels = (
@@ -67,7 +82,9 @@ channels = (
   { name = "#amateria"; chatnet = "overthewire"; autojoin = "yes"; },
   { name = "#io"; chatnet = "overthewire"; autojoin = "yes"; },
   { name = "#radare"; chatnet = "freenode"; autojoin = "yes"; },
-  { name = "#vulnhub"; chatnet = "freenode"; autojoin = "yes"; }
+  { name = "#vulnhub"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#redditnet"; chatnet = "geekshed"; autojoin = "yes"; },
+  { name = "#rpisec"; chatnet = "rpisec"; autojoin = "yes"; }
 );
 
 aliases = {
@@ -273,3 +290,107 @@ settings = {
     awl_height_adjust = "2";
   };
 };
+windows = {
+  1 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
+  2 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#kali-linux";
+        tag = "freenode";
+      }
+    );
+  };
+  3 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#radare";
+        tag = "freenode";
+      }
+    );
+  };
+  4 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#vulnhub";
+        tag = "freenode";
+      }
+    );
+  };
+  5 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#openvpn";
+        tag = "freenode";
+      }
+    );
+  };
+  6 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#wargames";
+        tag = "overthewire";
+      }
+    );
+  };
+  7 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#social";
+        tag = "overthewire";
+      }
+    );
+  };
+  8 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#amateria";
+        tag = "overthewire";
+      }
+    );
+  };
+  9 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#io";
+        tag = "overthewire";
+      }
+    );
+  };
+  10 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#RedditNet";
+        tag = "geekshed";
+      }
+    );
+  };
+  11 = {
+    items = (
+      {
+        type = "CHANNEL";
+        chat_type = "IRC";
+        name = "#hak5";
+        tag = "secfo";
+      }
+    );
+  };
+};
+mainwindows = { 1 = { first_line = "1"; lines = "78"; }; };
