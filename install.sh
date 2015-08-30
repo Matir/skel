@@ -11,6 +11,11 @@ if [ ! -d $BASEDIR ] ; then
 fi
 
 function prerequisites {
+  # Prerequisites require git
+  if ! which git > /dev/null ; then
+    echo 'No git, not installing extras.' > /dev/stderr
+    return
+  fi
   if which zsh > /dev/null ; then
     chsh -s `which zsh`
     if [ ! -d $HOME/.oh-my-zsh ] ; then
@@ -18,6 +23,13 @@ function prerequisites {
     fi
   else
     echo "ZSH not found!" > /dev/stderr
+  fi
+  if which vim > /dev/null ; then
+    mkdir -p $HOME/.vim/bundle
+    if [ ! -d $HOME/.vim/bundle/Vundle.vim ] ; then
+      git clone https://github.com/VundleVim/Vundle.vim.git \
+        $HOME/.vim/bundle/Vundle.vim
+    fi
   fi
 }
 
@@ -35,6 +47,14 @@ function install_dir {
     done
 }
 
+function postinstall {
+  # Install Vundle plugins
+  if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
+    vim +VundleInstall +qall
+  fi
+}
+
 prerequisites
 install_dir "${BASEDIR}"
 test -d "${BASEDIR}/private_dotfiles" && install_dir "${BASEDIR}/private_dotfiles"
+postinstall
