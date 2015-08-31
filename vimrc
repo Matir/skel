@@ -16,6 +16,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'mattn/gist-vim'
   Plugin 'fatih/vim-go'
   Plugin 'Valloric/YouCompleteMe'
+  Plugin 'altercation/vim-colors-solarized'
   call vundle#end()
 endif
 
@@ -39,6 +40,11 @@ set ruler
 set encoding=utf-8
 " Syntax highlighting and file types
 syntax on
+set background=dark
+if !has('gui_running')
+  let g:solarized_termcolors=256
+endif
+colorscheme solarized
 filetype plugin indent on
 " Allow file modelines
 set modeline
