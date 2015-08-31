@@ -35,8 +35,8 @@ function prerequisites {
 
 function install_dir {
   SRCDIR="${1}"
-  find ${SRCDIR} \( -name .git -o \
-                    -path ${SRCDIR}/private_dotfiles -o \
+  find "${SRCDIR}" \( -name .git -o \
+                    -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
                     -name .gitignore \) \
       -prune -o -type f -print | \
