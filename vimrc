@@ -20,7 +20,19 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   call vundle#end()
 endif
 
-" Whitespace options
+" Setup paths
+set backupdir=~/.cache/vim/backup//
+set directory=~/.cache/vim/swap//
+set undodir=~/.cache/vim/undo//
+if !isdirectory($HOME . '/.cache/vim/swap')
+  silent !mkdir -p ~/.cache/vim/{backup,swap,undo}
+endif
+
+" Make sure files get completely written, but don't write backups
+set nobackup
+set writebackup
+
+" Whitespace/indent options
 set autoindent
 set copyindent
 set tabstop=2
@@ -35,16 +47,20 @@ imap <S-Tab> <Esc><<A
 " Line numbering, ruler
 set number
 set ruler
+set cursorline
 
 " File options
 set encoding=utf-8
-" Syntax highlighting and file types
+" Syntax highlighting, look and feel
 syntax on
 set background=dark
-if !has('gui_running')
+if has('gui_running')
+  set guifont=Inconsolata\ 11
+else
   let g:solarized_termcolors=256
 endif
 colorscheme solarized
+" Enable filetype support
 filetype plugin indent on
 " Allow file modelines
 set modeline
