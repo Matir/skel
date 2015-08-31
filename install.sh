@@ -6,18 +6,21 @@ set errexit
 BASEDIR=${BASEDIR:-$HOME/.dotfiles}
 
 if [ ! -d $BASEDIR ] ; then
-  echo "Please install to $BASEDIR!" &>2
+  echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
 
 function prerequisites {
   # Prerequisites require git
   if ! which git > /dev/null ; then
-    echo 'No git, not installing extras.' > /dev/stderr
+    echo 'No git, not installing extras.' 1>&2
     return
   fi
   if which zsh > /dev/null ; then
-    chsh -s `which zsh`
+    if [ `getent passwd $USER | cut -d: -f7` != `which zsh` ] ; then
+      echo 'Enter password to change shell.' 1>&2
+      chsh -s `which zsh`
+    fi
     if [ ! -d $HOME/.oh-my-zsh ] ; then
       git clone https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
     fi
