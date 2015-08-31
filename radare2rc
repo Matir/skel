@@ -1,4 +1,5 @@
 e scr.color = true
+e scr.utf8 = true
 e dbg.bep = main
 e asm.syntax = intel
 e asm.linescall = true
