@@ -1,1 +1,41 @@
+# Update environment on reconnect
+set -g update-environment "DISPLAY WINDOWID SSH_ASKPASS SSH_AGENT_PID SSH_CONNECTION"
+
+# Custom binds
+bind K confirm kill-server
+bind X confirm kill-window
+bind ^[ copy-mode
+
+# Scrollback
+set -g history-limit 10000
+
+# Start indexing from 1
+set -g base-index 1
+set -g pane-base-index 1
+
+# Let us use utf-8 drawing characters to make tab-like window formats
+setw -g utf8 on
+set -g status-utf8 on
+
+# Terminal emulator window title
+set -g set-titles on
+set -g set-titles-string '#h:#S:#I.#P #W'
+
+# Set a 256color $TERM variable so programs inside tmux know they can use 256
+# colors
+set -g default-terminal screen-256color
+
+# Mouse
+set -g mode-mouse on
+setw -g mouse-select-window on
+setw -g mouse-select-pane on
+
+# Activity
+setw -g monitor-activity on
+set -g visual-activity on
+
+# Autorename new tabs automatically
+setw -g automatic-rename on
+
+# Color scheme
 source-file ~/.tmux/tmux-solarized-256.conf
