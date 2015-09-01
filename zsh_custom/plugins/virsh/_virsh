@@ -1,0 +1,161 @@
+#compdef virsh
+
+# Copyright (c) 2015, Jan-Philipp Litza <janphilipp@litza.de>
+# All rights reserved.
+# 
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * Neither the name of the <organization> nor the
+#       names of its contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+# 
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+local -a args reply
+
+function _virsh_domains() {
+  local -a out
+  local description="${(P)#}"
+  shift -p
+  local domaintype="${description/running/}"
+  out=( ${(f)"$(_call_program commands virsh list --name ${domaintype:+--$domaintype} 2>&1)"} )
+  if (( $#out == 0 )); then
+    _message "No $description domains"
+  else
+    _describe "$description domains" out "$@"
+  fi
+  return $?
+}
+
+_virsh() {
+  _arguments \
+    {-c,--connect}':hypervisor connection URI:_files' \
+    {-d,--debug}':debug level:( 0 1 2 3 4 )' \
+    {-e,--escape}':escape character for console:' \
+    {-h,--help}'[show help]' \
+    {-k,--keepalive-interval}':keepalive interval in seconds, 0 for disable:' \
+    {-K,--keepalive-count}':number of possible missed keepalive messages:' \
+    {-l,--log}'[output logging to file]:logfile:_files' \
+    {-q,--quiet}'[quiet mode]' \
+    {-r,--readonly}'[connect readonly]' \
+    {-t,--timing}'[print timing information]' \
+    '-v:show version' \
+    '-V:long version' \
+    '--version[show version]:type:( short long )' \
+    '::virsh command:_virsh_subcommand' \
+    '*::virsh command arguments:_virsh_subcommand_args'
+}
+
+_virsh_domain_or_file() {
+  _alternative \
+    "domains:domains:_virsh_domains ${1:-all}" \
+    "files:files:_files"
+}
+
+_virsh_fallback_command() {
+  domains() {
+    echo "$1 domains:_virsh_domains $1"
+  }
+  local files="file:_files"
+  local -A cmd_args
+  cmd_args=(
+    attach-device "$files"
+    autostart "$(domains all)"
+    cd "dirs:_dirs"
+    console "$(domains running)"
+    cpu-baseline "$files"
+    cpu-compare "$files"
+    create "$files"
+    start "$(domains inactive)"
+    destroy "$(domains running)"
+    detach-device "$(domains all)"
+    define "$files"
+    domid "$(domains all)"
+    domuuid "$(domains all)"
+    dominfo "$(domains all)"
+    domjobinfo "$(domains all)"
+    domjobabort "$(domains all)"
+    domname "$(domains all)"
+    domstate "$(domains all)"
+    dommemstat "$(domains all)"
+    dumpxml "$(domains all)"
+    edit "$(domains all)"
+    list "$(domains all)"
+    net-create "$files"
+    net-define "$files"
+    managedsave "$(domains running)"
+    managedsave-remove "$(domains all)"
+    nwfilter-define "$files"
+    pool-create "$files"
+    pool-define "$files"
+    secret-define "$files"
+    reboot "$(domains running)"
+    reset "$(domains running)"
+    restore "$files"
+    resume "$(domains running)"
+    send-key "$(domains running)"
+    setmem "$(domains all)"
+    setmaxmem "$(domains all)"
+    setvcpus "$(domains all)"
+    shutdown "$(domains running)"
+    suspend "$(domains running)"
+    ttyconsole "$(domains running)"
+    undefine "$(domains inactive)"
+    vcpuinfo "$(domains running)"
+    vncdisplay "$(domains running)"
+    snapshot-current "$(domains all)"
+    snapshot-list "$(domains all)"
+  )
+
+  local cmd="$1"
+  local -a options
+  options=(
+    ${${(M)${(f)"$(_call_program commands virsh help $cmd 2>&1)"}:#    -*}/#(#b)    ([a-z-]##) ##([^[:space:]]*)/$match[1]:$match[2]}
+  )
+  if (( $+cmd_args[$cmd] )); then
+    options+=( ":$cmd_args[$cmd]" )
+  else
+    options+=( ":$(domains all)" ":$files" )
+  fi
+  _arguments "$options[@]"
+}
+
+_virsh_build_cmds() {
+  (( $+_virsh_cmds )) || _virsh_cmds=(
+     ${${(M)${(f)"$(_call_program commands virsh help 2>&1)"}:#    *}/#(#b)    ([a-z-]##) ##([^[:space:]])/$match[1]:$match[2]}
+  )
+}
+
+_virsh_subcommand() {
+  _virsh_build_cmds
+  _describe 'virsh command' _virsh_cmds
+}
+
+_virsh_subcommand_args() {
+  _virsh_build_cmds
+  local curcontext="$curcontext"
+
+  cmd="${${_virsh_cmds[(r)$words[1]:*]%%:*}:-${(k)_virsh_syns[(r)(*:|)$words[1](:*|)]}}"
+  if (( $#cmd )); then
+    curcontext="${curcontext%:*:*}:virsh-${cmd}:"
+    _virsh_fallback_command "$cmd"
+  else
+    _message "unknown virsh command; $words[1]"
+  fi
+}
+
+_virsh "$@"
