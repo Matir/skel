@@ -56,9 +56,9 @@ function install_basic_dir {
   DESTDIR="${2}"
   find "${SRCDIR}" -type f -print | \
     while read file ; do
-    TARGET="${2}/.${file#${SRCDIR}/}"
+    TARGET="${2}/${file#${SRCDIR}/}"
     mkdir -p `dirname "${TARGET}"`
-    ln -s -f "${file}" "${TARGET}"
+    echo ln -s -f "${file}" "${TARGET}"
   done
 }
 
