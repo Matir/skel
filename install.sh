@@ -70,7 +70,7 @@ function postinstall {
 }
 
 prerequisites
-install_dotfile_dir "${BASEDIR}/.dotfiles"
+install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
