@@ -3,7 +3,7 @@
 set nounset
 set errexit
 
-BASEDIR=${BASEDIR:-$HOME/.dotfiles}
+BASEDIR=${BASEDIR:-$HOME/.skel}
 
 if [ ! -d $BASEDIR ] ; then
   echo "Please install to $BASEDIR!" 1>&2
@@ -36,7 +36,7 @@ function prerequisites {
   fi
 }
 
-function install_dir {
+function install_dotfile_dir {
   SRCDIR="${1}"
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
@@ -51,6 +51,17 @@ function install_dir {
     done
 }
 
+function install_basic_dir {
+  SRCDIR="${1}"
+  DESTDIR="${2}"
+  find "${SRCDIR}" -type f -print | \
+    while read file ; do
+    TARGET="${2}/.${file#${SRCDIR}/}"
+    mkdir -p `dirname "${TARGET}"`
+    ln -s -f "${file}" "${TARGET}"
+  done
+}
+
 function postinstall {
   # Install Vundle plugins
   if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
@@ -59,6 +70,8 @@ function postinstall {
 }
 
 prerequisites
-install_dir "${BASEDIR}"
-test -d "${BASEDIR}/private_dotfiles" && install_dir "${BASEDIR}/private_dotfiles"
+install_dotfile_dir "${BASEDIR}/.dotfiles"
+test -d "${BASEDIR}/private_dotfiles" && \
+  install_dotfile_dir "${BASEDIR}/private_dotfiles"
+install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 postinstall
