@@ -41,6 +41,7 @@ function install_dir {
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
+                    -name README.md -o \
                     -name .gitignore \) \
       -prune -o -type f -print | \
     while read dotfile ; do
