@@ -1,5 +1,5 @@
 burp() {
-  setopt localoptions nullglob
+  setopt localoptions nullglob numeric_glob_sort
   local NO_DOWNLOAD
   local JAR
   if (( ${+argv[(r)*no-download]} )) ; then
