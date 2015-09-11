@@ -58,14 +58,14 @@ function install_basic_dir {
     while read file ; do
     TARGET="${2}/${file#${SRCDIR}/}"
     mkdir -p `dirname "${TARGET}"`
-    echo ln -s -f "${file}" "${TARGET}"
+    ln -s -f "${file}" "${TARGET}"
   done
 }
 
 function postinstall {
   # Install Vundle plugins
   if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
-    vim +VundleInstall +qall
+    vim -s +VundleInstall +qall
   fi
 }
 
