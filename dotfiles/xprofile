@@ -1,1 +1,2 @@
 setxkbmap -option ctrl:nocaps
+test -f "$HOME/.profile" && . "$HOME/.profile"
