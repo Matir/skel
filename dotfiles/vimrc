@@ -54,7 +54,7 @@ set encoding=utf-8
 syntax on
 set background=dark
 if has('gui_running')
-  set guifont=Inconsolata\ 11
+  set guifont=Inconsolata\ Medium\ 12
 else
   let g:solarized_termcolors=256
 endif
