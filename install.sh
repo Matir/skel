@@ -65,7 +65,7 @@ function install_basic_dir {
 function postinstall {
   # Install Vundle plugins
   if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
-    vim -s +VundleInstall +qall
+    vim +VundleInstall +qall
   fi
 }
 

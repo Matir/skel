@@ -58,7 +58,7 @@ if has('gui_running')
 else
   let g:solarized_termcolors=256
 endif
-colorscheme solarized
+silent! colorscheme solarized
 " Enable filetype support
 filetype plugin indent on
 " Allow file modelines
