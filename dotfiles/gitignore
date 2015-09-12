@@ -1,3 +1,4 @@
+# Common trash (metadata, backup files, etc.)
 .DS_Store
 .DS_Store?
 ._*
@@ -8,3 +9,8 @@ Thumbs.db
 *.swp
 *~
 *.bak
+
+# Object files
+*.py[co]
+*.[oa]
+
