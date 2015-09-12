@@ -4,6 +4,7 @@ set nounset
 set errexit
 
 BASEDIR=${BASEDIR:-$HOME/.skel}
+MINIMAL=${MINIMAL:-0}
 
 if [ ! -d $BASEDIR ] ; then
   echo "Please install to $BASEDIR!" 1>&2
@@ -69,9 +70,9 @@ function postinstall {
   fi
 }
 
-prerequisites
+(( $MINIMAL )) || prerequisites
 install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-postinstall
+(( $MINIMAL )) || postinstall
