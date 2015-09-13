@@ -14,3 +14,6 @@ Thumbs.db
 *.py[co]
 *.[oa]
 
+# Try to avoid accidentally checking in private keys
+id_rsa
+id_ecdsa
