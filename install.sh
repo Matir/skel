@@ -92,7 +92,7 @@ function ssh_key_already_installed {
   return 1
 }
 
-function install_keys {
+function install_ssh_keys {
   # Install SSH keys
   echo 'Installing SSH keys...' >&2
   local AK="${HOME}/.ssh/authorized_keys"
@@ -105,6 +105,18 @@ function install_keys {
     echo "# `basename ${key}` added from skel on `date +%Y-%m-%d`" >> ${AK}
     cat ${key} >> ${AK}
   done
+}
+
+function install_gpg_keys {
+  local key
+  for key in ${BASEDIR}/keys/gpg/* ; do
+    gpg --import < ${key}
+  done
+}
+
+function install_keys {
+  install_ssh_keys
+  install_gpg_keys
 }
 
 
