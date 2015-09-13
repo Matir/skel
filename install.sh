@@ -5,6 +5,7 @@ set errexit
 
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
+INSTALL_KEYS=${INSTALL_KEYS:-1}
 
 if [ ! -d $BASEDIR ] ; then
   echo "Please install to $BASEDIR!" 1>&2
@@ -38,7 +39,7 @@ function prerequisites {
 }
 
 function install_dotfile_dir {
-  SRCDIR="${1}"
+  local SRCDIR="${1}"
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
@@ -46,18 +47,18 @@ function install_dotfile_dir {
                     -name .gitignore \) \
       -prune -o -type f -print | \
     while read dotfile ; do
-      TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
+      local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
       mkdir -p `dirname "${TARGET}"`
       ln -s -f "${dotfile}" "${TARGET}"
     done
 }
 
 function install_basic_dir {
-  SRCDIR="${1}"
-  DESTDIR="${2}"
+  local SRCDIR="${1}"
+  local DESTDIR="${2}"
   find "${SRCDIR}" -type f -print | \
     while read file ; do
-    TARGET="${2}/${file#${SRCDIR}/}"
+    local TARGET="${2}/${file#${SRCDIR}/}"
     mkdir -p `dirname "${TARGET}"`
     ln -s -f "${file}" "${TARGET}"
   done
@@ -70,9 +71,47 @@ function postinstall {
   fi
 }
 
+function ssh_key_already_installed {
+  # Return 1 if the key isn't already installed, 0 if it is
+  local AK="${HOME}/.ssh/authorized_keys"
+  if [ ! -f $AK ] ; then
+    return 1
+  fi
+  local KEYFP=`ssh-keygen -l -f $1 2>/dev/null | awk '{print $2}'`
+  local TMPF=`mktemp`
+  local key
+  while read key ; do
+    echo "$key" > $TMPF
+    local EFP=`ssh-keygen -l -f ${TMPF} 2>/dev/null | awk '{print $2}'`
+    if [ "$EFP" == "$KEYFP" ] ; then
+      rm $TMPF 2>/dev/null
+      return 0
+    fi
+  done < <(grep -v '^#' ${AK})
+  rm $TMPF 2>/dev/null
+  return 1
+}
+
+function install_keys {
+  # Install SSH keys
+  echo 'Installing SSH keys...' >&2
+  local AK="${HOME}/.ssh/authorized_keys"
+  local key
+  for key in ${BASEDIR}/keys/ssh/* ; do
+    if ssh_key_already_installed "${key}" ; then
+      echo "Key `basename ${key}` already installed..." >&2
+      continue
+    fi
+    echo "# `basename ${key}` added from skel on `date +%Y-%m-%d`" >> ${AK}
+    cat ${key} >> ${AK}
+  done
+}
+
+
 (( $MINIMAL )) || prerequisites
 install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
+(( $INSTALL_KEYS )) && install_keys
