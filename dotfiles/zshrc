@@ -44,8 +44,10 @@ bindkey '^[[B' history-search-forward
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
-# Source extras
-for file in $HOME/.zshrc.d/* ; do source "$file" ; done
+# Source extras if interactive
+if [[ $- == *i* ]] ; then
+  for file in $HOME/.zshrc.d/* ; do source "$file" ; done
+fi
 
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
