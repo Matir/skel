@@ -114,9 +114,25 @@ function install_gpg_keys {
   done
 }
 
+function install_known_hosts {
+  echo 'Installing known hosts...' >&2
+  if [ ! -f ${BASEDIR}/keys/known_hosts ] ; then
+    return 0
+  fi
+  mkdir -p ${HOME}/.ssh
+  if [ -f ${HOME}/.ssh/known_hosts ] ; then
+    local tmpf=`mktemp`
+    cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort | uniq > $tmpf
+    mv $tmpf ${HOME}/.ssh/known_hosts
+  else
+    cp ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts
+  fi
+}
+
 function install_keys {
   install_ssh_keys
   install_gpg_keys
+  install_known_hosts
 }
 
 
