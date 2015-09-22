@@ -6,6 +6,7 @@ set errexit
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
+INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
 
 if [ ! -d $BASEDIR ] ; then
   echo "Please install to $BASEDIR!" 1>&2
@@ -135,8 +136,33 @@ function install_keys {
   install_known_hosts
 }
 
+function is_deb_system {
+  test -f /usr/bin/apt-get
+}
+
+function run_as_root {
+  # Attempt to run as root
+  if [ ${USER} == "root" ] ; then
+    "$@"
+    return $?
+  elif groups | grep -q '\bsudo\b' ; then
+    echo "Using sudo to run ${1}..." >&2
+    sudo "$@"
+    return $?
+  fi
+  return 1
+}
+
+function install_apt_pkgs {
+  run_as_root apt-get update || \
+    echo "Can't run apt-get commands" >&2 && \
+    return 1
+  run_as_root apt-get -y install `cat ${BASEDIR}/packages`
+}
+
 
 (( $MINIMAL )) || prerequisites
+(( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
 install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
