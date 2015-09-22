@@ -13,5 +13,6 @@ if [ -f "`command which nasm`" -a -f "`command which objdump`" ] ; then
       done
     done
     echo
+    rm $TMPF
   }
 fi
