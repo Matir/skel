@@ -2,7 +2,7 @@ git
 vim
 nmap
 whois
-dig
+dnsutils
 ack-grep
 tmux
 gnupg2

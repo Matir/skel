@@ -155,8 +155,8 @@ function run_as_root {
 
 function install_apt_pkgs {
   run_as_root apt-get update || \
-    echo "Can't run apt-get commands" >&2 && \
-    return 1
+    ( echo "Can't run apt-get commands" >&2 && \
+      return 1 )
   run_as_root apt-get -y install `cat ${BASEDIR}/packages`
 }
 
