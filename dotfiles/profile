@@ -32,10 +32,6 @@ for p in "${EXTRA_PATHS[@]}" ; do
 done
 unset EXTRA_PATHS
 
-# Disable stty ctrl-s/ctrl-q behavior
-stty stop undef
-stty start undef
-
 # Setup GPG Agent
 GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
 if test -f $GPG_AGENT_INFO_PATH && kill -0 `cut -d: -f 2 $GPG_AGENT_INFO_PATH` 2>/dev/null ; then
