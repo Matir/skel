@@ -7,3 +7,7 @@ ack-grep
 tmux
 gnupg2
 gnupg-agent
+curl
+strace
+ltrace
+traceroute
