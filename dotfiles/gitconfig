@@ -36,3 +36,10 @@
 
 [url "ssh://git@github.com/"]
   pushInsteadOf = github://
+
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
+
+[url "git@gist.github.com:"]
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
