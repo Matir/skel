@@ -26,4 +26,5 @@ function verify_dest {
 
 verify_dest "$DEST"
 
-rsync -Hax --delete-before --exclude-from="$HOME/.rsync_ignore" "${HOME}/" "$DEST"
+rsync -Hax --delete-before --exclude-from="$HOME/.rsync_ignore" \
+  --delete-excluded "${HOME}/" "$DEST"
