@@ -11,3 +11,7 @@ curl
 strace
 ltrace
 traceroute
+tshark
+tcpdump
+gnupg-curl
+gdb

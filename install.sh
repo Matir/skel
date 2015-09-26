@@ -13,6 +13,8 @@ if [ ! -d $BASEDIR ] ; then
   exit 1
 fi
 
+HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
+
 function prerequisites {
   # Prerequisites require git
   if ! which git > /dev/null ; then
@@ -158,6 +160,7 @@ function install_apt_pkgs {
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
   run_as_root apt-get -y install `cat ${BASEDIR}/packages`
+  (( $HAVE_X )) && run_as_root apt-get -y install `cat ${BASEDIR}/packages.X`
 }
 
 
