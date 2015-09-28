@@ -15,3 +15,5 @@ tshark
 tcpdump
 gnupg-curl
 gdb
+sqlite3
+radare2
