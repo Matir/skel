@@ -18,7 +18,6 @@ export PYTHONPATH="$HOME/.python"
 export GOPATH="$HOME/.go"
 export VISUAL=vim
 export EDITOR=vim
-export TZ='America/Los_Angeles'
 export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
