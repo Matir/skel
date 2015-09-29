@@ -1,15 +1,45 @@
 [user]
   name = David Tomaschik
   email = david@systemoverlord.com
-[push]
-  default = current
+  signingKey = 0x5DEA789B
+
 [core]
   excludesfile = ~/.gitignore
+  editor = vim
+  whitespace = trailing-space,space-before-tab
+
+[color]
+  diff = auto
+  status = auto
+
+[diff]
+  tool = vimdiff
+
+[difftool]
+  prompt = false
+
+[alias]
+  st = status
+
+[push]
+  default = current
+
 [web]
   browser = chrome
+
 [github]
   user = matir
+
+# Site specific config
 [url "https://github.com/"]
   insteadOf = github://
+
 [url "ssh://git@github.com/"]
   pushInsteadOf = github://
+
+[url "git://gist.github.com/"]
+	insteadOf = "gist:"
+
+[url "git@gist.github.com:"]
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"

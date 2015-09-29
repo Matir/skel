@@ -7,3 +7,13 @@ ack-grep
 tmux
 gnupg2
 gnupg-agent
+curl
+strace
+ltrace
+traceroute
+tshark
+tcpdump
+gnupg-curl
+gdb
+sqlite3
+radare2

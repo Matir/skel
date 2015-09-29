@@ -23,17 +23,13 @@ export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
 
 EXTRA_PATHS=("$HOME/.gce/google-cloud-sdk/bin" "$HOME/bin/genymotion"
-  "$HOME/bin/genymotion/tools" )
+  "$HOME/bin/genymotion/tools" "$HOME/bin/go_appengine" )
 for p in "${EXTRA_PATHS[@]}" ; do 
   if [ -d "$p" ] ; then
     export PATH="$PATH:$p"
   fi
 done
 unset EXTRA_PATHS
-
-# Disable stty ctrl-s/ctrl-q behavior
-stty stop undef
-stty start undef
 
 # Setup GPG Agent
 GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
