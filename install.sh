@@ -13,7 +13,11 @@ if [ ! -d $BASEDIR ] ; then
   exit 1
 fi
 
-HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
+if which dpkg-query > /dev/null ; then
+  HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
+else
+  HAVE_X=0
+fi
 
 function prerequisites {
   # Prerequisites require git
