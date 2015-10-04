@@ -35,7 +35,6 @@ if [ -d $HOME/.oh-my-zsh ] ; then
   source $ZSH/oh-my-zsh.sh
   unset ZSH_THEME
   unset ZSH_CUSTOM
-  unset ZSH
 fi
 
 # Keybindings
