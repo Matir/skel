@@ -19,6 +19,10 @@ else
   HAVE_X=0
 fi
 
+IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
+ARCH=`uname -m`
+
+
 function prerequisites {
   # Prerequisites require git
   if ! which git > /dev/null ; then
@@ -159,12 +163,30 @@ function run_as_root {
   return 1
 }
 
+function install_pkg_set {
+  if [[ ! -f ${1} ]] ; then return 0 ; fi
+  run_as_root apt-get install -y `cat ${BASEDIR}/${1}`
+}
+
 function install_apt_pkgs {
   run_as_root apt-get update || \
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
-  run_as_root apt-get -y install `cat ${BASEDIR}/packages`
-  (( $HAVE_X )) && run_as_root apt-get -y install `cat ${BASEDIR}/packages.X`
+  install_pkg_set packages
+  (( $HAVE_X )) && install_pkg_set packages.X
+  (( $IS_KALI )) && install_pkg_set packages.kali
+  install_pkg_set packages.${ARCH}
+  (( $HAVE_X )) && install_chrome
+}
+
+function install_chrome {
+  local TMPD=`mktemp -d`
+  local CHROME_ARCH=`echo ${ARCH} | sed 's/x86_64/amd64/'`
+  /usr/bin/wget --quiet -O ${TMPD}/google-chrome.deb \
+    https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb
+  run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
+    run_as_root /usr/bin/apt-get install -f -y || \
+    ( echo "Could not install chrome." >&2 && return 1 )
 }
 
 

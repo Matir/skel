@@ -4,6 +4,7 @@ cryptsetup
 curl
 dnsutils
 dsniff
+ecryptfs-utils
 gdb
 git
 gnupg2
@@ -11,15 +12,22 @@ gnupg-agent
 gnupg-curl
 iftop
 iptraf
+kpartx
+ldap-utils
 ltrace
 lvm2
 ngrep
 nmap
 opensc
+openvpn
 p7zip-full
 python-crypto
 python-dev
+python-hachoir-urwid
+python-imaging
 python-pip
+python-pypdf
+python-yara
 radare2
 scapy
 scdaemon
@@ -32,3 +40,4 @@ tshark
 ufw
 vim
 whois
+zsh

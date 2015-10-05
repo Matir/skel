@@ -1,4 +1,8 @@
+audacity
+cinnamon
 fonts-inconsolata
-wireshark
+gimp
 keepassx
+network-manager-openvpn-gnome
 vim-gtk
+wireshark
