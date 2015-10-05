@@ -182,6 +182,7 @@ function install_apt_pkgs {
 function install_chrome {
   local TMPD=`mktemp -d`
   local CHROME_ARCH=`echo ${ARCH} | sed 's/x86_64/amd64/'`
+  dpkg-query -l 'google-chrome*' && return 0
   /usr/bin/wget --quiet -O ${TMPD}/google-chrome.deb \
     https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb
   run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
