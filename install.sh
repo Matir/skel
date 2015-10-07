@@ -51,6 +51,7 @@ function prerequisites {
 
 function install_dotfile_dir {
   local SRCDIR="${1}"
+  local dotfile
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
@@ -67,6 +68,7 @@ function install_dotfile_dir {
 function install_basic_dir {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
+  local file
   find "${SRCDIR}" -type f -print | \
     while read file ; do
     local TARGET="${2}/${file#${SRCDIR}/}"
