@@ -30,7 +30,7 @@ function prerequisites {
     return
   fi
   if which zsh > /dev/null ; then
-    if [[ `getent passwd $USER | cut -d: -f7` != `which zsh` ]] ; then
+    if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
       echo 'Enter password to change shell.' 1>&2
       chsh -s `which zsh`
     fi
