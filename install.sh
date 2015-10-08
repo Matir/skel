@@ -6,6 +6,7 @@ set errexit
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
+TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
 INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
 
 if [[ ! -d $BASEDIR ]] ; then
@@ -110,7 +111,16 @@ function install_ssh_keys {
   echo 'Installing SSH keys...' >&2
   local AK="${HOME}/.ssh/authorized_keys"
   local key
-  for key in ${BASEDIR}/keys/ssh/* ; do
+  local keydir
+  if (( ${TRUST_ALL_KEYS} )) ; then
+    keydir=${BASEDIR}/keys/ssh
+  else
+    keydir=${BASEDIR}/keys/ssh/trusted
+  fi
+  for key in ${keydir}/* ; do
+    if [[ ! -f ${key} ]] ; then
+      continue
+    fi
     if ssh_key_already_installed "${key}" ; then
       echo "Key `basename ${key}` already installed..." >&2
       continue
