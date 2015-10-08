@@ -8,7 +8,7 @@ MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
 INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
 
-if [ ! -d $BASEDIR ] ; then
+if [[ ! -d $BASEDIR ]] ; then
   echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
@@ -30,11 +30,11 @@ function prerequisites {
     return
   fi
   if which zsh > /dev/null ; then
-    if [ `getent passwd $USER | cut -d: -f7` != `which zsh` ] ; then
+    if [[ `getent passwd $USER | cut -d: -f7` != `which zsh` ]] ; then
       echo 'Enter password to change shell.' 1>&2
       chsh -s `which zsh`
     fi
-    if [ ! -d $HOME/.oh-my-zsh ] ; then
+    if [[ ! -d $HOME/.oh-my-zsh ]] ; then
       git clone https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
     fi
   else
@@ -42,7 +42,7 @@ function prerequisites {
   fi
   if which vim > /dev/null ; then
     mkdir -p $HOME/.vim/bundle
-    if [ ! -d $HOME/.vim/bundle/Vundle.vim ] ; then
+    if [[ ! -d $HOME/.vim/bundle/Vundle.vim ]] ; then
       git clone https://github.com/VundleVim/Vundle.vim.git \
         $HOME/.vim/bundle/Vundle.vim
     fi
@@ -79,7 +79,7 @@ function install_basic_dir {
 
 function postinstall {
   # Install Vundle plugins
-  if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
+  if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
     vim +VundleInstall +qall
   fi
 }
@@ -87,7 +87,7 @@ function postinstall {
 function ssh_key_already_installed {
   # Return 1 if the key isn't already installed, 0 if it is
   local AK="${HOME}/.ssh/authorized_keys"
-  if [ ! -f $AK ] ; then
+  if [[ ! -f $AK ]] ; then
     return 1
   fi
   local KEYFP=`ssh-keygen -l -f $1 2>/dev/null | awk '{print $2}'`
@@ -96,7 +96,7 @@ function ssh_key_already_installed {
   while read key ; do
     echo "$key" > $TMPF
     local EFP=`ssh-keygen -l -f ${TMPF} 2>/dev/null | awk '{print $2}'`
-    if [ "$EFP" == "$KEYFP" ] ; then
+    if [[ "$EFP" == "$KEYFP" ]] ; then
       rm $TMPF 2>/dev/null
       return 0
     fi
@@ -129,11 +129,11 @@ function install_gpg_keys {
 
 function install_known_hosts {
   echo 'Installing known hosts...' >&2
-  if [ ! -f ${BASEDIR}/keys/known_hosts ] ; then
+  if [[ ! -f ${BASEDIR}/keys/known_hosts ]] ; then
     return 0
   fi
   mkdir -p ${HOME}/.ssh
-  if [ -f ${HOME}/.ssh/known_hosts ] ; then
+  if [[ -f ${HOME}/.ssh/known_hosts ]] ; then
     local tmpf=`mktemp`
     cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort | uniq > $tmpf
     mv $tmpf ${HOME}/.ssh/known_hosts
@@ -154,7 +154,7 @@ function is_deb_system {
 
 function run_as_root {
   # Attempt to run as root
-  if [ ${USER} == "root" ] ; then
+  if [[ ${USER} == "root" ]] ; then
     "$@"
     return $?
   elif groups | grep -q '\bsudo\b' ; then
