@@ -3,27 +3,6 @@
 set nounset
 set errexit
 
-BASEDIR=${BASEDIR:-$HOME/.skel}
-MINIMAL=${MINIMAL:-0}
-INSTALL_KEYS=${INSTALL_KEYS:-1}
-TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
-INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
-
-if [[ ! -d $BASEDIR ]] ; then
-  echo "Please install to $BASEDIR!" 1>&2
-  exit 1
-fi
-
-if which dpkg-query > /dev/null ; then
-  HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
-else
-  HAVE_X=0
-fi
-
-IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
-ARCH=`uname -m`
-
-
 function prerequisites {
   # Prerequisites require git
   if ! which git > /dev/null ; then
@@ -202,6 +181,56 @@ function install_chrome {
     ( echo "Could not install chrome." >&2 && return 1 )
 }
 
+function read_saved_prefs {
+  # Can't use basedir here as we don't have it yet
+  local pref_file=`dirname $0`/installed-prefs
+  if [ -f ${pref_file} ] ; then
+    echo "Loading saved skel preferences from ${pref_file}" >&2
+    source ${pref_file}
+  fi
+}
+
+function save_prefs {
+  local pref_file=${BASEDIR}/installed-prefs
+  (echo_pref BASEDIR 
+   echo_pref MINIMAL
+   echo_pref INSTALL_KEYS
+   echo_pref TRUST_ALL_KEYS
+   echo_pref INSTALL_PKGS) > $pref_file
+}
+
+function echo_pref {
+  echo "$1=\${$1:-${!1}}"
+}
+
+
+# Setup variables
+read_saved_prefs
+
+# Defaults if not passed in or saved
+BASEDIR=${BASEDIR:-$HOME/.skel}
+MINIMAL=${MINIMAL:-0}
+INSTALL_KEYS=${INSTALL_KEYS:-1}
+TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
+echo $INSTALL_PKGS
+INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
+echo $INSTALL_PKGS
+
+# Check prerequisites
+if [[ ! -d $BASEDIR ]] ; then
+  echo "Please install to $BASEDIR!" 1>&2
+  exit 1
+fi
+
+if which dpkg-query > /dev/null ; then
+  HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
+else
+  HAVE_X=0
+fi
+
+IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
+ARCH=`uname -m`
+
 
 (( $MINIMAL )) || prerequisites
 (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
@@ -211,3 +240,4 @@ test -d "${BASEDIR}/private_dotfiles" && \
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
 (( $INSTALL_KEYS )) && install_keys
+save_prefs

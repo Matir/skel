@@ -1,5 +1,6 @@
 private_dotfiles
 private_dotfiles/**
+installed-prefs
 *.swp
 *~
 *.bak
