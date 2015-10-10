@@ -12,6 +12,8 @@ gnupg-agent
 gnupg-curl
 iftop
 iptraf
+ipython
+ipython3
 kpartx
 ldap-utils
 ltrace
