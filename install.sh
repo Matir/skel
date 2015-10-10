@@ -155,8 +155,9 @@ function run_as_root {
 }
 
 function install_pkg_set {
-  if [[ ! -f ${1} ]] ; then return 0 ; fi
-  run_as_root apt-get install -y `cat ${BASEDIR}/${1}`
+  local pkg_file=${BASEDIR}/${1}
+  if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
+  run_as_root apt-get install -y `cat ${pkg_file}`
 }
 
 function install_apt_pkgs {
