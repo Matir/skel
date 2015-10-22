@@ -23,7 +23,8 @@ export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
 
 EXTRA_PATHS=("$HOME/.gce/google-cloud-sdk/bin" "$HOME/bin/genymotion"
-  "$HOME/bin/genymotion/tools" "$HOME/bin/go_appengine" )
+  "$HOME/bin/genymotion/tools" "$HOME/bin/google_appengine"
+  "$HOME/bin/go_appengine" )
 for p in "${EXTRA_PATHS[@]}" ; do 
   if [ -d "$p" ] ; then
     export PATH="$PATH:$p"
