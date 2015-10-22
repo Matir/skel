@@ -18,6 +18,7 @@ kpartx
 ldap-utils
 ltrace
 lvm2
+mosh
 ngrep
 nmap
 opensc
