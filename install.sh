@@ -155,8 +155,9 @@ function run_as_root {
 }
 
 function install_pkg_set {
-  if [[ ! -f ${1} ]] ; then return 0 ; fi
-  run_as_root apt-get install -y `cat ${BASEDIR}/${1}`
+  local pkg_file=${BASEDIR}/${1}
+  if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
+  run_as_root apt-get install -y `cat ${pkg_file}`
 }
 
 function install_apt_pkgs {
@@ -212,9 +213,7 @@ BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
 TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
-echo $INSTALL_PKGS
 INSTALL_PKGS=${INSTALL_PKGS:-$((1 - ${MINIMAL}))}
-echo $INSTALL_PKGS
 
 # Check prerequisites
 if [[ ! -d $BASEDIR ]] ; then
@@ -223,7 +222,7 @@ if [[ ! -d $BASEDIR ]] ; then
 fi
 
 if which dpkg-query > /dev/null ; then
-  HAVE_X=`dpkg-query -s xserver-xorg | grep -c 'Status.*installed'`
+  HAVE_X=`dpkg-query -s xserver-xorg 2>/dev/null | grep -c 'Status.*installed'`
 else
   HAVE_X=0
 fi
