@@ -14,7 +14,7 @@ fi
 
 # Paths and preferences
 export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
-export PYTHONPATH="$HOME/.python"
+export PYTHONPATH="$HOME/.python:$PYTHONPATH"
 export GOPATH="$HOME/.go"
 export VISUAL=vim
 export EDITOR=vim
