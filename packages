@@ -12,10 +12,13 @@ gnupg-agent
 gnupg-curl
 iftop
 iptraf
+ipython
+ipython3
 kpartx
 ldap-utils
 ltrace
 lvm2
+mosh
 ngrep
 nmap
 opensc
