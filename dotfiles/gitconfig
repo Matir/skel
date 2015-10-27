@@ -51,3 +51,5 @@
 [url "git@gist.github.com:"]
 	pushInsteadOf = "gist:"
 	pushInsteadOf = "git://gist.github.com/"
+[credential]
+	helper = cache --timeout=36000
