@@ -204,6 +204,12 @@ function echo_pref {
   echo "$1=\${$1:-${!1}}"
 }
 
+function cleanup {
+  source ${BASEDIR}/dotfiles/zshrc.d/prune-broken-symlinks.zsh
+  prune-broken-symlinks ${HOME}/.zshrc.d
+  prune-broken-symlinks ${HOME}/bin
+}
+
 
 # Setup variables
 read_saved_prefs
@@ -240,3 +246,4 @@ install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
 (( $INSTALL_KEYS )) && install_keys
 save_prefs
+cleanup
