@@ -1,4 +1,4 @@
-burp() {
+_start_burp() {
   setopt localoptions nullglob numeric_glob_sort
   local NO_DOWNLOAD
   local JAR
@@ -27,3 +27,4 @@ burp() {
     java -jar ${JAR} "$@"
   fi
 }
+_start_burp
