@@ -1,3 +1,5 @@
+#!/bin/zsh
+
 _start_burp() {
   setopt localoptions nullglob numeric_glob_sort
   local NO_DOWNLOAD
