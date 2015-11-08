@@ -205,9 +205,12 @@ function echo_pref {
 }
 
 function cleanup {
+  # Needs zsh
+  /usr/bin/zsh 2>/dev/null <<EOF
   source ${BASEDIR}/dotfiles/zshrc.d/prune-broken-symlinks.zsh
   prune-broken-symlinks ${HOME}/.zshrc.d
   prune-broken-symlinks ${HOME}/bin
+EOF
 }
 
 
