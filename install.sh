@@ -27,6 +27,9 @@ function prerequisites {
         $HOME/.vim/bundle/Vundle.vim
     fi
   fi
+  if which gdb > /dev/null ; then
+    git clone https://github.com/longld/peda.git $HOME/.peda
+  fi
 }
 
 function install_dotfile_dir {
