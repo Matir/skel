@@ -14,7 +14,12 @@ prune-broken-symlinks() {
   DIR=${1:-.}
   FINDCMD=(find ${DIR} -type l -xtype l)
   if (($ASK)) ; then
-    ${FINDCMD} -print
+    local FILES
+    FILES=`${FINDCMD} -print`
+    if [[ "${FILES}" == "" ]] ; then
+      return 0
+    fi
+    echo ${FILES}
     echo -n 'Delete these links? [y/n] '
     if read -q ; then
       ${FINDCMD} -delete
