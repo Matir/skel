@@ -39,5 +39,8 @@ unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
 
+# dircolors
+eval `dircolors $HOME/.dircolors`
+
 if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
 if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
