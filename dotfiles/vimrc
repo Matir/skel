@@ -16,6 +16,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'mattn/gist-vim'
   Plugin 'fatih/vim-go'
   Plugin 'altercation/vim-colors-solarized'
+  Plugin 'vimoutliner/vimoutliner'
   call vundle#end()
 endif
 
@@ -135,3 +136,6 @@ nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 if filereadable(glob("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
+
+" Options for vimoutliner
+autocmd Filetype votl setlocal sts=4
