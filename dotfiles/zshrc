@@ -24,7 +24,9 @@ PS1="%{%(!.$fg[red].$fg[green])%}%n%{$fg[white]%}@%{$fg[cyan]%}%m%{$fg[white]%}:
 # Deduplicate the path
 typeset -U path
 
+# LS Colors
 alias ls='ls --color'
+zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 
 # Load oh-my-zsh
 if [ -d $HOME/.oh-my-zsh ] ; then

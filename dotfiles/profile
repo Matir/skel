@@ -39,5 +39,13 @@ unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
 
+# Fix gnome-terminal
+if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then
+  export TERM="xterm-256color"
+fi
+
+# dircolors
+eval `dircolors $HOME/.dircolors`
+
 if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
 if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
