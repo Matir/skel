@@ -14,21 +14,17 @@ function prerequisites {
       echo 'Enter password to change shell.' 1>&2
       chsh -s `which zsh`
     fi
-    if [[ ! -d $HOME/.oh-my-zsh ]] ; then
-      git clone https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
-    fi
+    git_install https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
   else
     echo "ZSH not found!" > /dev/stderr
   fi
   if which vim > /dev/null ; then
     mkdir -p $HOME/.vim/bundle
-    if [[ ! -d $HOME/.vim/bundle/Vundle.vim ]] ; then
-      git clone https://github.com/VundleVim/Vundle.vim.git \
-        $HOME/.vim/bundle/Vundle.vim
-    fi
+    git_install https://github.com/VundleVim/Vundle.vim.git \
+      $HOME/.vim/bundle/Vundle.vim
   fi
   if which gdb > /dev/null ; then
-    git clone https://github.com/longld/peda.git $HOME/.peda
+    git_install https://github.com/longld/peda.git $HOME/.peda
   fi
 }
 
@@ -58,6 +54,17 @@ function install_basic_dir {
     mkdir -p `dirname "${TARGET}"`
     ln -s -f "${file}" "${TARGET}"
   done
+}
+
+function install_git {
+  # Install or update a git repository
+  local REPO="${1}"
+  local DESTDIR="${2}"
+  if [[ -d ${DESTDIR}/.git ]] ; then
+    ( cd ${DESTDIR} ; git pull -q )
+  else
+    git clone ${REPO} ${DESTDIR}
+  fi
 }
 
 function postinstall {
