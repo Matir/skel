@@ -66,8 +66,12 @@ function install_git {
 }
 
 function add_bin_symlink {
-  local LINKNAME=${2:-`basename $1`}
-  ln -s ${1} ${HOME}/bin/${LINKNAME}
+  local LINKNAME=${HOME}/bin/${2:-`basename $1`}
+  if [[ -e ${LINKNAME} && ! -h ${LINKNAME} ]] ; then
+    echo "Refusing to overwrite ${LINKNAME}" >&2
+    return 1
+  fi
+  ln -sf ${1} ${LINKNAME}
 }
 
 function postinstall {
