@@ -169,7 +169,7 @@ function install_pkg_set {
 }
 
 function install_apt_pkgs {
-  run_as_root apt-get update || \
+  run_as_root apt-get update -qq || \
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
   install_pkg_set packages
