@@ -4,27 +4,22 @@ set nounset
 set errexit
 
 function prerequisites {
-  # Prerequisites require git
-  if ! which git > /dev/null ; then
-    echo 'No git, not installing extras.' 1>&2
-    return
-  fi
   if which zsh > /dev/null ; then
     if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
       echo 'Enter password to change shell.' 1>&2
       chsh -s `which zsh`
     fi
-    git_install https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
+    install_git https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
   else
     echo "ZSH not found!" > /dev/stderr
   fi
   if which vim > /dev/null ; then
     mkdir -p $HOME/.vim/bundle
-    git_install https://github.com/VundleVim/Vundle.vim.git \
+    install_git https://github.com/VundleVim/Vundle.vim.git \
       $HOME/.vim/bundle/Vundle.vim
   fi
   if which gdb > /dev/null ; then
-    git_install https://github.com/longld/peda.git $HOME/.peda
+    install_git https://github.com/longld/peda.git $HOME/.peda
   fi
 }
 
@@ -58,6 +53,9 @@ function install_basic_dir {
 
 function install_git {
   # Install or update a git repository
+  if ! which git > /dev/null ; then
+    return 1
+  fi
   local REPO="${1}"
   local DESTDIR="${2}"
   if [[ -d ${DESTDIR}/.git ]] ; then
