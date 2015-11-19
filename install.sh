@@ -6,12 +6,12 @@ set errexit
 function prerequisites {
   if which zsh > /dev/null ; then
     if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
-      echo 'Enter password to change shell.' 1>&2
+      echo 'Enter password to change shell.' >&2
       chsh -s `which zsh`
     fi
     install_git https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
   else
-    echo "ZSH not found!" > /dev/stderr
+    echo "ZSH not found!" >&2
   fi
   if which vim > /dev/null ; then
     mkdir -p $HOME/.vim/bundle
@@ -107,7 +107,7 @@ function ssh_key_already_installed {
 
 function install_ssh_keys {
   # Install SSH keys
-  echo 'Installing SSH keys...' >&2
+  verbose 'Installing SSH keys...'
   local AK="${HOME}/.ssh/authorized_keys"
   local key
   local keydir
@@ -121,7 +121,7 @@ function install_ssh_keys {
       continue
     fi
     if ssh_key_already_installed "${key}" ; then
-      echo "Key `basename ${key}` already installed..." >&2
+      verbose "Key `basename ${key}` already installed..."
       continue
     fi
     echo "# `basename ${key}` added from skel on `date +%Y-%m-%d`" >> ${AK}
@@ -132,12 +132,12 @@ function install_ssh_keys {
 function install_gpg_keys {
   local key
   for key in ${BASEDIR}/keys/gpg/* ; do
-    gpg --import < ${key}
+    gpg --import < ${key} >/dev/null
   done
 }
 
 function install_known_hosts {
-  echo 'Installing known hosts...' >&2
+  verbose 'Installing known hosts...' >&2
   if [[ ! -f ${BASEDIR}/keys/known_hosts ]] ; then
     return 0
   fi
@@ -167,7 +167,7 @@ function run_as_root {
     "$@"
     return $?
   elif groups | grep -q '\bsudo\b' ; then
-    echo "Using sudo to run ${1}..." >&2
+    verbose "Using sudo to run ${1}..."
     sudo "$@"
     return $?
   fi
@@ -177,7 +177,7 @@ function run_as_root {
 function install_pkg_set {
   local pkg_file=${BASEDIR}/${1}
   if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
-  run_as_root apt-get install -y `cat ${pkg_file}`
+  run_as_root apt-get install -qqy `cat ${pkg_file}`
 }
 
 function install_apt_pkgs {
@@ -198,7 +198,7 @@ function install_chrome {
   /usr/bin/wget --quiet -O ${TMPD}/google-chrome.deb \
     https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb
   run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
-    run_as_root /usr/bin/apt-get install -f -y || \
+    run_as_root /usr/bin/apt-get install -qq -f -y || \
     ( echo "Could not install chrome." >&2 && return 1 )
 }
 
@@ -206,18 +206,20 @@ function read_saved_prefs {
   # Can't use basedir here as we don't have it yet
   local pref_file=`dirname $0`/installed-prefs
   if [ -f ${pref_file} ] ; then
-    echo "Loading saved skel preferences from ${pref_file}" >&2
+    verbose "Loading saved skel preferences from ${pref_file}"
     source ${pref_file}
   fi
 }
 
 function save_prefs {
+  (( $SAVE )) || return 0
   local pref_file=${BASEDIR}/installed-prefs
   (echo_pref BASEDIR 
    echo_pref MINIMAL
    echo_pref INSTALL_KEYS
    echo_pref TRUST_ALL_KEYS
-   echo_pref INSTALL_PKGS) > $pref_file
+   echo_pref INSTALL_PKGS
+   echo_pref VERBOSE) > $pref_file
 }
 
 function echo_pref {
@@ -233,6 +235,9 @@ function cleanup {
 EOF
 }
 
+function verbose {
+  (( ${VERBOSE:-0} )) && echo "$@" >&2
+}
 
 # Setup variables
 read_saved_prefs
@@ -243,6 +248,8 @@ MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
 TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
 INSTALL_PKGS=${INSTALL_PKGS:-0}
+VERBOSE=${VERBOSE:-0}
+SAVE=${SAVE:-1}
 
 # Check prerequisites
 if [[ ! -d $BASEDIR ]] ; then
