@@ -31,7 +31,7 @@ function install_dotfile_dir {
                     -name install.sh -o \
                     -name README.md -o \
                     -name .gitignore \) \
-      -prune -o -type f -print | \
+      -prune -o -xtype f -print | \
     while read dotfile ; do
       local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
       mkdir -p `dirname "${TARGET}"`
@@ -43,7 +43,7 @@ function install_basic_dir {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
   local file
-  find "${SRCDIR}" -type f -print | \
+  find "${SRCDIR}" -xtype f -print | \
     while read file ; do
     local TARGET="${2}/${file#${SRCDIR}/}"
     mkdir -p `dirname "${TARGET}"`
