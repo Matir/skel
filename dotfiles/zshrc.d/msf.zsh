@@ -15,3 +15,4 @@ if [ -d ${MSF_PATH}/apps/pro/msf3/ ] ; then
 fi
 alias pattern_create="${MSF_PATH}/apps/pro/msf3/tools/exploit/pattern_create.rb"
 alias pattern_offset="${MSF_PATH}/apps/pro/msf3/tools/exploit/pattern_offset.rb"
+alias nasm_shell="${MSF_PATH}/apps/pro/msf3/tools/exploit/nasm_shell.rb"
