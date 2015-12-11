@@ -1,3 +1,4 @@
+# For interactive shells
 HISTFILE=~/.histfile
 HISTSIZE=1000
 SAVEHIST=1000
@@ -45,8 +46,9 @@ bindkey '^[[B' history-search-forward
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
 
-# Source extras if interactive
+# Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
+  if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
   for file in $HOME/.zshrc.d/* ; do source "$file" ; done
 fi
 

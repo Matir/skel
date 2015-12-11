@@ -1,2 +1,4 @@
+if [[ -f $HOME/.env ]] ; then source $HOME/.env ; fi
+
 # ZSH specific environment
 DEBIAN_PREVENT_KEYBOARD_CHANGES=yes

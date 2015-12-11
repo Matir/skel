@@ -1,0 +1,24 @@
+# Sourced by zshrc as well as bash.
+
+umask 027
+ulimit -c unlimited
+
+# Paths and preferences
+export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
+export PYTHONPATH="$HOME/.python:$PYTHONPATH"
+export GOPATH="$HOME/.go"
+export VISUAL=vim
+export EDITOR=vim
+export DEBEMAIL="david@systemoverlord.com"
+export DEBFULLNAME="David Tomaschik"
+export LESS="-MR"
+
+# Unconditional because /bin/sh sucks
+export PATH="$PATH:$HOME/.gce/google-cloud-sdk/bin:$HOME/bin/genymotion:$HOME/bin/genymotion/tools:$HOME/bin/google_appengine:$HOME/bin/go_appengine"
+
+# Fix gnome-terminal
+if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then
+  export TERM="xterm-256color"
+fi
+
+if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
