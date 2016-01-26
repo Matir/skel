@@ -1,0 +1,10 @@
+#!/bin/bash
+
+CHROME=`which google-chrome`
+
+if [ `id -u` != "0" ] ; then
+  exec $CHROME "$@"
+fi
+
+CMD="${CHROME} --user-data-dir=${HOME}/.chrome-data-dir \"$@\""
+su -c "${CMD}" chromeuser
