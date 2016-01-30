@@ -92,7 +92,9 @@ channels = (
   { name = "#radare"; chatnet = "freenode"; autojoin = "yes"; },
   { name = "#vulnhub"; chatnet = "freenode"; autojoin = "yes"; },
   { name = "#redditnet"; chatnet = "geekshed"; autojoin = "yes"; },
-  { name = "#rpisec"; chatnet = "rpisec"; autojoin = "yes"; }
+  { name = "#rpisec"; chatnet = "rpisec"; autojoin = "yes"; },
+  { name = "#offsec"; chatnet = "freenode"; autojoin = "yes"; },
+  { name = "#offtopicsec"; chatnet = "freenode"; autojoin = "yes"; }
 );
 
 aliases = {
@@ -272,6 +274,13 @@ statusbar = {
         barend = { priority = "100"; alignment = "right"; };
       };
     };
+    awl_2 = {
+      items = {
+        barstart = { priority = "100"; };
+        awl_2 = { };
+        barend = { priority = "100"; alignment = "right"; };
+      };
+    };
   };
 };
 settings = {
@@ -294,8 +303,9 @@ settings = {
     awl_shared_sbar = "OFF";
     awl_viewer = "no";
     awl_block = "-15";
-    awl_maxlines = "2";
+    awl_maxlines = "3";
     awl_height_adjust = "2";
+    awl_hide_empty = "0";
   };
 };
 windows = {
