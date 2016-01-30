@@ -16,16 +16,6 @@ servers = (
     autoconnect = "yes";
   },
   {
-    address = "chat.freenode.net";
-    chatnet = "freenode";
-    port = "7000";
-    use_ssl = "yes";
-    ssl_cert = "~/.irssi/matir.pem";
-    ssl_verify = "yes";
-    ssl_cafile = "~/.irssi/instantssl.crt";
-    autoconnect = "yes";
-  },
-  {
     address = "irc.hackint.eu";
     chatnet = "hackint";
     port = "9999";
@@ -47,6 +37,17 @@ servers = (
     port = "6697";
     use_ssl = "yes";
     ssl_verify = "no";
+    autoconnect = "yes";
+  },
+  {
+    address = "chat.freenode.net";
+    chatnet = "freenode";
+    port = "7000";
+    use_ssl = "yes";
+    ssl_cert = "~/.irssi/matir.pem";
+    ssl_verify = "yes";
+    ssl_capath = "/etc/ssl/certs";
+    family = "inet";
     autoconnect = "yes";
   }
 );
@@ -297,12 +298,6 @@ settings = {
     awl_height_adjust = "2";
   };
 };
-logs = {
-  "~/irc.log.Window7" = {
-    level = "ALL";
-    items = ( { type = "window"; name = "7"; } );
-  };
-};
 windows = {
   1 = { immortal = "yes"; name = "(status)"; level = "ALL"; };
   2 = {
@@ -407,3 +402,4 @@ windows = {
   };
 };
 mainwindows = { 1 = { first_line = "1"; lines = "78"; }; };
+logs = { };
