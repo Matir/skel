@@ -200,6 +200,7 @@ function install_chrome {
   run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
     run_as_root /usr/bin/apt-get install -qq -f -y || \
     ( echo "Could not install chrome." >&2 && return 1 )
+  rm -rf ${TMPD}
 }
 
 function read_saved_prefs {
