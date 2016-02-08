@@ -274,6 +274,7 @@ ARCH=`uname -m`
 (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
 install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
+  test -d "${BASEDIR}/.git/git-crypt" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
