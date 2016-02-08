@@ -11,3 +11,4 @@ Host *
 	ForwardX11		no
 	ForwardX11Trusted	no
 	ServerAliveInterval 120
+	CheckHostIP no

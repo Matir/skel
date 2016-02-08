@@ -5,9 +5,11 @@ set errexit
 
 function prerequisites {
   if which zsh > /dev/null ; then
-    if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
-      echo 'Enter password to change shell.' >&2
-      chsh -s `which zsh`
+    if [[ $- == *i* ]] ; then
+      if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
+        echo 'Enter password to change shell.' >&2
+        chsh -s `which zsh`
+      fi
     fi
     install_git https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
   else
@@ -200,6 +202,7 @@ function install_chrome {
   run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
     run_as_root /usr/bin/apt-get install -qq -f -y || \
     ( echo "Could not install chrome." >&2 && return 1 )
+  rm -rf ${TMPD}
 }
 
 function read_saved_prefs {
@@ -271,6 +274,7 @@ ARCH=`uname -m`
 (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
 install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
+  test -d "${BASEDIR}/.git/git-crypt" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
