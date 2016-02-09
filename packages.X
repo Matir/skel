@@ -6,3 +6,4 @@ keepassx
 network-manager-openvpn-gnome
 vim-gtk
 wireshark
+wkhtmltopdf
