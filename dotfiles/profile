@@ -11,3 +11,7 @@ fi
 unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
+
+export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
+
+[[ -s "$HOME/.rvm/scripts/rvm" ]] && source "$HOME/.rvm/scripts/rvm" # Load RVM into a shell session *as a function*
