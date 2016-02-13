@@ -20,11 +20,6 @@ esac
 autoload -U colors && colors
 PS1="%{%(!.$fg[red].$fg[green])%}%n%{$fg[white]%}@%{$fg[cyan]%}%m%{$fg[white]%}:%{$fg[green]%}%32<...<%~%<<%{$fg[white]%}%#%{$reset_color%} "
 
-# .profile is universal
-. ~/.profile
-# Deduplicate the path
-typeset -U path
-
 # LS Colors
 alias ls='ls --color'
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
@@ -39,6 +34,13 @@ if [ -d $HOME/.oh-my-zsh ] ; then
   unset ZSH_THEME
   unset ZSH_CUSTOM
 fi
+
+# .profile is universal
+# but after oh-my-zsh to use anything setup there
+. ~/.profile
+# Deduplicate the path
+typeset -U path
+
 
 # Keybindings
 bindkey '^[[A' history-search-backward
