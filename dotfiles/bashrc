@@ -40,5 +40,3 @@ if [ -f /etc/bash_completion ] && ! shopt -oq posix; then
 fi
 
 if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
-
-export PATH="$PATH:$HOME/.rvm/bin" # Add RVM to PATH for scripting
