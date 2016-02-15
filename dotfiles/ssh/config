@@ -2,6 +2,9 @@
 # Never fall back to protocol 1: it's broken
 Protocol 2
 
+Host scoreboard
+  Hostname 104.131.136.220
+
 # Defaults (May be Overridden)
 Host *
 	ControlMaster 	auto
