@@ -84,6 +84,12 @@ function postinstall {
   # Install other useful tools
   install_git https://github.com/trustedsec/ptf.git ${HOME}/bin/ptframework && \
     add_bin_symlink ${HOME}/bin/ptframework/ptf
+  # Refresh all gpg keys
+  if test -x "`which gpg2`" ; then
+    gpg2 --refresh-keys
+  else
+    gpg --refresh-keys
+  fi
 }
 
 function ssh_key_already_installed {
