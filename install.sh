@@ -282,6 +282,8 @@ install_dotfile_dir "${BASEDIR}/dotfiles"
 test -d "${BASEDIR}/private_dotfiles" && \
   test -d "${BASEDIR}/.git/git-crypt" && \
   install_dotfile_dir "${BASEDIR}/private_dotfiles"
+test -d "${BASEDIR}/local_dotfiles" && \
+  install_dotfile_dir "${BASEDIR}/local_dotfiles"
 install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
 (( $MINIMAL )) || postinstall
 (( $INSTALL_KEYS )) && install_keys

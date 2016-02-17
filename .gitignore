@@ -2,3 +2,4 @@ installed-prefs
 *.swp
 *~
 *.bak
+local_dotfiles
