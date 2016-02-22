@@ -11,3 +11,5 @@ fi
 unset GPG_AGENT_INFO_PATH
 export GPG_TTY=`tty`
 # End GPG
+
+test -f "${HOME}/.profile.local" && . "${HOME}/.profile.local"
