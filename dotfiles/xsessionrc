@@ -1,2 +1,3 @@
 setxkbmap -option ctrl:nocaps
+test -f "$HOME/.env" && "$HOME/.env"
 test -f "$HOME/.profile" && . "$HOME/.profile"
