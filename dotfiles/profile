@@ -13,3 +13,5 @@ if ! gpg-connect-agent --quiet /bye > /dev/null 2> /dev/null; then
   export GPG_TTY=`tty`
 fi
 # End GPG
+
+test -f "${HOME}/.profile.local" && . "${HOME}/.profile.local"
