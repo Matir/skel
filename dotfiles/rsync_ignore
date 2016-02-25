@@ -5,3 +5,6 @@ Downloads
 .wine
 .thumbnails
 .histfile
+.zcompdump
+.zcompdump*
+.sqlite_history
