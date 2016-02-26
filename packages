@@ -28,9 +28,11 @@ p7zip-full
 python-crypto
 python-dev
 python-hachoir-urwid
+python-html5lib
 python-imaging
 python-pip
 python-pypdf
+python-scapy
 python-yara
 radare2
 scapy
