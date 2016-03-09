@@ -4,4 +4,4 @@ ZSH_THEME_GIT_PROMPT_SUFFIX=")"
 ZSH_THEME_VIRTUALENV_PREFIX=" (py:"
 ZSH_THEME_VIRTUALENV_SUFFIX=")"
 
-# vim: set textwidth=0 wrapmargin=0
+# vim: set textwidth=0 wrapmargin=0:
