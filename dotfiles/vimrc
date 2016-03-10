@@ -62,6 +62,8 @@ endif
 silent! colorscheme solarized
 " Enable filetype support
 filetype plugin indent on
+" Default ASM syntax for ft support
+let asmsyntax="nasm"
 " Allow file modelines
 set modeline
 " Automatically re-read changed files
