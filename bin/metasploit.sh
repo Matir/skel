@@ -25,4 +25,5 @@ if [ -f "${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb" ]; then
   exec ${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb "$@"
 fi
 
-exec ${NAME} "$@"
+# Can cause recursive loop
+# exec ${NAME} "$@"
