@@ -4,7 +4,9 @@ export NAME=$(basename "$0")
 export BASE="/opt/metasploit" # TODO: search this path
 
 # Autogen'd
-. ${BASE}/scripts/setenv.sh
+if [ -f "${BASE}/scripts/setenv.sh" ] ; then
+  . ${BASE}/scripts/setenv.sh
+fi
 
 # Use Pro's bundled gems instead of the gemcache
 export MSF_BUNDLE_GEMS=0
