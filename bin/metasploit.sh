@@ -25,5 +25,11 @@ if [ -f "${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb" ]; then
   exec ${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb "$@"
 fi
 
-# Can cause recursive loop
-# exec ${NAME} "$@"
+export BASE="/opt/metasploit-framework"
+if [ -f "${BASE}/embedded/framework/tools/exploit/${NAME}.rb" ]; then
+  exec ${BASE}/embedded/bin/ruby \
+    "${BASE}/embedded/framework/tools/exploit/${NAME}.rb" "$@"
+fi
+
+echo "Couldn't find script." >&2
+exit 1
