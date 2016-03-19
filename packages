@@ -33,7 +33,10 @@ python-imaging
 python-pip
 python-pypdf
 python-scapy
+python-virtualenv
 python-yara
+python3
+python3-virtualenv
 radare2
 scapy
 scdaemon
@@ -46,5 +49,6 @@ tshark
 ufw
 unzip
 vim
+virtualenvwrapper
 whois
 zsh

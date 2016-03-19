@@ -21,4 +21,7 @@ if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then
   export TERM="xterm-256color"
 fi
 
+# For virtualenvwrapper
+export WORKON_HOME=$HOME/.virtualenvs
+
 if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi

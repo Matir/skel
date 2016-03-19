@@ -30,6 +30,7 @@ if [ -d $HOME/.oh-my-zsh ] ; then
   ZSH_THEME="matir"
   ZSH_CUSTOM="$HOME/.zsh_custom"
   plugins=(git encode64 gpg-agent pep8 pip python tmux urltools extract sudo virsh virtualenv command-not-found)
+  test -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh && plugins+=(virtualenvwrapper)
   source $ZSH/oh-my-zsh.sh
   unset ZSH_THEME
   unset ZSH_CUSTOM
