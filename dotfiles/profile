@@ -1,3 +1,6 @@
+# Always load ENV
+test -f "$HOME/.env" && . "$HOME/.env"
+
 # Setup GPG Agent
 if ! gpg-connect-agent --quiet /bye > /dev/null 2> /dev/null; then
   GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
