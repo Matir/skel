@@ -48,7 +48,7 @@ function jekyll {
 
   JTEMPLATE="---\n"
   JTEMPLATE+="layout: post\n"
-  JTEMPLATE+="title: %s\n"
+  JTEMPLATE+="title: \"%s\"\n"
   JTEMPLATE+="category: Blog\n"
   JTEMPLATE+="---\n"
   TITLE=${@[2,-1]}
