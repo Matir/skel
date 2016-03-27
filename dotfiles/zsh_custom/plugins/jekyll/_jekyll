@@ -1,0 +1,52 @@
+#compdef jekyll
+
+_jekyll() {
+  local curcontext="${curcontext}" state line file
+  typeset -A opt_args
+
+  local -a _subcommands
+  _subcommands=('docs:list documentation'
+      'import:import posts'
+      'serve:run server'
+      'help:get help'
+      'doctor:deprecation warnings'
+      'build:compile site'
+      'new:create new site'
+      'clean:clean output'
+      'draft:create new draft'
+      'post:create new post'
+      'publish:publish draft'
+      'edit:edit post')
+
+  _arguments -C \
+    "(source)"{-s,--source}"[source]:source dir:_files -/" \
+    "(dest)"{-d,--destination}"[dest]:dest dir:_files -/" \
+    "--safe[safe mode]" \
+    "(plugins)"{-p,--plugins}"[plugins]:plugins dir:_files -/" \
+    "--layouts[layouts]:layouts dir:_files -/" \
+    "--profile[generate liquid profile]" \
+    "(help)"{-h,--help}"[help]" \
+    "(version)"{-v,--version}"[version]" \
+    "(trace)"{-t,--trace}"[trace]" \
+    "1:command:->command" \
+    "*: :->args"
+
+  case $state in
+    command)
+      _describe -t commands "jekyll subcommand" _subcommands
+      ;;
+    args)
+      case "$line[1]" in
+        edit)
+          # TODO: Fix to get --source argument
+          local -a postpaths
+          postpaths=("${JEKYLL_DIR}/_posts" "${JEKYLL_DIR}/_drafts")
+          _files -W postpaths
+          ;;
+        publish)
+          # TODO: Fix to get --source argument
+          _files -W ${JEKYLL_DIR}/_drafts
+      esac
+      ;;
+  esac
+}

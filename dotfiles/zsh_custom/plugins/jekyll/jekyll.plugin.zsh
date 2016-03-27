@@ -15,6 +15,14 @@ function _jekyll_find_post {
     printf "${1}"
     return 0
   fi
+  if [ -f "${JEKYLL_DIR}/_posts/${1}" ] ; then
+    printf "${JEKYLL_DIR}/_posts/${1}"
+    return 0
+  fi
+  if [ -f "${JEKYLL_DIR}/_drafts/${1}" ] ; then
+    printf "${JEKYLL_DIR}/_drafts/${1}"
+    return 0
+  fi
   fname=${2:-${1}}
   files=(${JEKYLL_DIR}/_posts/*${fname}* ${JEKYLL_DIR}/_drafts/*${fname}*)
   if [ ${#files} -eq "0" ] ; then
