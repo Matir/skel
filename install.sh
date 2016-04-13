@@ -4,7 +4,7 @@ set nounset
 set errexit
 
 function prerequisites {
-  if which zsh > /dev/null ; then
+  if which zsh > /dev/null 2>&1 ; then
     if [[ $- == *i* ]] ; then
       if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
         echo 'Enter password to change shell.' >&2
@@ -15,12 +15,12 @@ function prerequisites {
   else
     echo "ZSH not found!" >&2
   fi
-  if which vim > /dev/null ; then
+  if which vim > /dev/null 2>&1 ; then
     mkdir -p $HOME/.vim/bundle
     install_git https://github.com/VundleVim/Vundle.vim.git \
       $HOME/.vim/bundle/Vundle.vim
   fi
-  if which gdb > /dev/null ; then
+  if which gdb > /dev/null 2>&1 ; then
     install_git https://github.com/longld/peda.git $HOME/.peda
   fi
 }
