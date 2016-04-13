@@ -269,7 +269,7 @@ if [[ ! -d $BASEDIR ]] ; then
   exit 1
 fi
 
-if which dpkg-query > /dev/null ; then
+if which dpkg-query > /dev/null 2>&1 ; then
   HAVE_X=`dpkg-query -s xserver-xorg 2>/dev/null | grep -c 'Status.*installed'`
 else
   HAVE_X=0
