@@ -1,4 +1,4 @@
-if [ -f "`command which nasm`" -a -f "`command which objdump`" ] ; then
+if [ -f "`command which nasm 2>/dev/null`" -a -f "`command which objdump 2>/dev/null`" ] ; then
   assemble_shellcode() {
     if [ -z "$1" ] ; then echo "Usage: $0 <assembly file>" >&2 ; return 1 ; fi
     local NASM=`command which nasm`
