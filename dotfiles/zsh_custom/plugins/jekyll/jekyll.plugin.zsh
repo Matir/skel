@@ -65,18 +65,30 @@ function jekyll {
       echo "  edit                  Edit a post."
       ;;
     draft)
+      if [ -z "${SLUG}" ] ; then
+        echo "slug is required."
+        return 1
+      fi
       mkdir -p "${JEKYLL_DIR}/_drafts"
       FILENAME="${JEKYLL_DIR}/_drafts/${SLUG}.md"
       printf "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       vim "${FILENAME}" '+$'
       ;;
     post)
+      if [ -z "${SLUG}" ] ; then
+        echo "slug is required."
+        return 1
+      fi
       FILENAME="${JEKYLL_DIR}/_posts/${DATE}-${SLUG}.md"
       printf "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       _jekyll_set_date "${FILENAME}" "${DATE}"
       vim "${FILENAME}" '+$'
       ;;
     publish)
+      if [ -z "${SLUG}" ] ; then
+        echo "slug is required."
+        return 1
+      fi
       FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}")
       if [ $? -ne 0 ] ; then
         return
@@ -90,6 +102,10 @@ function jekyll {
       _jekyll_set_date "${NEWNAME}" "${DATE}"
       ;;
     edit)
+      if [ -z "${SLUG}" ] ; then
+        echo "slug is required."
+        return 1
+      fi
       FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}")
       if [ $? -ne 0 ] ; then
         return
