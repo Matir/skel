@@ -3,7 +3,7 @@ test -f "$HOME/.env" && . "$HOME/.env"
 
 # Setup GPG Agent
 if ! gpg-connect-agent --quiet /bye > /dev/null 2> /dev/null; then
-  GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent-info-`hostname`
+  GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent.env
   if test -f $GPG_AGENT_INFO_PATH && kill -0 `cut -d: -f 2 $GPG_AGENT_INFO_PATH` 2>/dev/null ; then
     . $GPG_AGENT_INFO_PATH
     export GPG_AGENT_INFO SSH_AUTH_SOCK SSH_AGENT_PID
