@@ -6,7 +6,7 @@ ulimit -c unlimited
 # Paths and preferences
 export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
 export PYTHONPATH="$HOME/.python:$PYTHONPATH"
-export GOPATH="$HOME/.go"
+export GOPATH="$HOME/Projects/Go"
 export VISUAL=vim
 export EDITOR=vim
 export DEBEMAIL="david@systemoverlord.com"
