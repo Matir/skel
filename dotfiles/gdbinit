@@ -22,5 +22,19 @@ define reg
   info registers
 end
 
-source ~/.peda/peda.py
-source ~/.gdbinit.local
+# Fancy sourcing of modules
+python
+import sys
+import os.path
+pwndbg = os.path.expanduser('~/.pwndbg/gdbinit.py')
+peda = os.path.expanduser('~/.peda/peda.py')
+if os.path.isfile(pwndbg):
+  sys.path.insert(0, os.path.expanduser('~/.pwndbg/vendor'))
+  gdb.execute('source {}'.format(pwndbg))
+elif os.path.isfile(peda):
+  gdb.execute('source {}'.format(peda))
+
+local_init = os.path.expanduser('~/.gdbinit.local')
+if os.path.isfile(local_init):
+  gdb.execute('source {}'.format(local_init))
+end

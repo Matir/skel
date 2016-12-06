@@ -20,9 +20,6 @@ function prerequisites {
     install_git https://github.com/VundleVim/Vundle.vim.git \
       $HOME/.vim/bundle/Vundle.vim
   fi
-  if which gdb > /dev/null 2>&1 ; then
-    install_git https://github.com/longld/peda.git $HOME/.peda
-  fi
 }
 
 function install_dotfile_dir {
@@ -76,7 +73,26 @@ function add_bin_symlink {
   ln -sf ${1} ${LINKNAME}
 }
 
+# Custom version of pwndbg's installer
+function install_pwndbg {
+  if \! which gdb > /dev/null 2>&1 ; then
+    return 1
+  fi
+  install_git https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
+  mkdir -p $HOME/.pwndbg/vendor
+  local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
+  local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
+  PYTHON="${PYTHON}${PYVER}"
+  local PY_PACKAGES=$HOME/.pwndbg/vendor
+  ${PYTHON} -m pip install --target ${PY_PACKAGES} -Ur $HOME/.pwndbg/requirements.txt
+  ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone
+  # capstone package is broken
+  cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
+}
+
 function postinstall {
+  install_pwndbg
+
   # Install Vundle plugins
   if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
     vim +VundleInstall +qall
