@@ -75,7 +75,7 @@ function add_bin_symlink {
 
 # Custom version of pwndbg's installer
 function install_pwndbg {
-  if \! which gdb > /dev/null 2>&1 ; then
+  if ! which gdb > /dev/null 2>&1 ; then
     return 1
   fi
   install_git https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
