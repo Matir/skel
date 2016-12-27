@@ -55,5 +55,10 @@ if [[ $- == *i* ]] ; then
   for file in $HOME/.zshrc.d/* ; do source "$file" ; done
 fi
 
+# In case ack is named ack-grep
+if [ -x /usr/bin/ack-grep ] ; then
+  alias ack='/usr/bin/ack-grep'
+fi
+
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
