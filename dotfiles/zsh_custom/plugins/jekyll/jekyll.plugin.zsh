@@ -50,7 +50,7 @@ function jekyll {
   JTEMPLATE+="layout: post\n"
   JTEMPLATE+="title: \"%s\"\n"
   JTEMPLATE+="category: Blog\n"
-  JTEMPLATE+="---\n"
+  JTEMPLATE+="---\n\n"
   TITLE=${@[2,-1]}
   SLUG=$(echo -n ${TITLE}|tr A-Z a-z|tr -c -s -- a-z0-9 -)
   DATE=`date +%Y-%m-%d`
@@ -72,7 +72,7 @@ function jekyll {
       mkdir -p "${JEKYLL_DIR}/_drafts"
       FILENAME="${JEKYLL_DIR}/_drafts/${SLUG}.md"
       printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
-      vim "${FILENAME}" '+$'
+      vim "${FILENAME}" '+$' '+startinsert'
       ;;
     post)
       if [ -z "${SLUG}" ] ; then
@@ -82,7 +82,7 @@ function jekyll {
       FILENAME="${JEKYLL_DIR}/_posts/${DATE}-${SLUG}.md"
       printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       _jekyll_set_date "${FILENAME}" "${DATE}"
-      vim "${FILENAME}" '+$'
+      vim "${FILENAME}" '+$' '+startinsert'
       ;;
     publish)
       if [ -z "${SLUG}" ] ; then
@@ -110,7 +110,7 @@ function jekyll {
       if [ $? -ne 0 ] ; then
         return
       fi
-      vim "${FILENAME}" '+$'
+      vim "${FILENAME}"
       ;;
     *)
       command jekyll "$@"
