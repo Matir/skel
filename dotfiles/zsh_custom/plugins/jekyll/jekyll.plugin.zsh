@@ -12,15 +12,15 @@ function _jekyll_find_post {
   local files
   local fname
   if [ -f "${1}" ] ; then
-    printf "${1}"
+    printf -- "${1}"
     return 0
   fi
   if [ -f "${JEKYLL_DIR}/_posts/${1}" ] ; then
-    printf "${JEKYLL_DIR}/_posts/${1}"
+    printf -- "${JEKYLL_DIR}/_posts/${1}"
     return 0
   fi
   if [ -f "${JEKYLL_DIR}/_drafts/${1}" ] ; then
-    printf "${JEKYLL_DIR}/_drafts/${1}"
+    printf -- "${JEKYLL_DIR}/_drafts/${1}"
     return 0
   fi
   fname=${2:-${1}}
@@ -33,7 +33,7 @@ function _jekyll_find_post {
     echo "Ambiguous results: ${files}" >&2
     return 1
   fi
-  printf ${files}
+  printf -- ${files}
   return 0
 }
 
@@ -71,7 +71,7 @@ function jekyll {
       fi
       mkdir -p "${JEKYLL_DIR}/_drafts"
       FILENAME="${JEKYLL_DIR}/_drafts/${SLUG}.md"
-      printf "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
+      printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       vim "${FILENAME}" '+$'
       ;;
     post)
@@ -80,7 +80,7 @@ function jekyll {
         return 1
       fi
       FILENAME="${JEKYLL_DIR}/_posts/${DATE}-${SLUG}.md"
-      printf "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
+      printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       _jekyll_set_date "${FILENAME}" "${DATE}"
       vim "${FILENAME}" '+$'
       ;;
