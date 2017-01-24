@@ -145,3 +145,7 @@ autocmd Filetype votl setlocal sts=4
 " Highlight whitespace at end of file
 highlight ExtraWhitespace ctermbg=red guibg=red
 autocmd Syntax * syn match ExtraWhitespace /\s\+$\| \+\ze\t/ containedin=ALL
+
+" Color column at end of lines
+set colorcolumn=+1
+highlight ColorColumn ctermbg=lightgrey guibg=lightgrey
