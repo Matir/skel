@@ -58,6 +58,9 @@ case ${TOOL} in
     ./configure && make -sj2
     cp -r ${jtemp}/john/run/* ${DESTDIR}
     rm -rf ${jtemp}
+    # Persistent files
+    mkdir -p ${HOME}/.john
+    ln -sf ${HOME}/.john/* ${DESTDIR}
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
