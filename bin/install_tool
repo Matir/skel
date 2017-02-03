@@ -19,6 +19,9 @@ while getopts -- "-:" a ; do
   esac
 done
 
+shift $(($OPTIND-1))
+echo $*
+
 if [ $# -ne 1 ] ; then
   echo "Usage: ${0} <tool>" >/dev/stderr
   exit 1
@@ -27,8 +30,10 @@ TOOL=${1}
 
 function install_pkgs {
   if [ `id -u` -ne "0" ] ; then
-    echo "Unable to install packages, please ensure these are installed." >/dev/stderr
-    echo $*
+    sudo apt-get -y install $* || (
+      echo "Unable to install packages, please ensure these are installed." >/dev/stderr
+      echo $*
+      false )
     return 0
   fi
   apt-get -y install $*
@@ -45,26 +50,25 @@ if [ -d ${DESTDIR} ] ; then
   fi
 fi
 
-mkdir -p ${DESTDIR}
-
 case ${TOOL} in
   john)
     install_pkgs libssl-dev git build-essential yasm libgmp-dev libpcap-dev \
-      pkg-config libbz2-dev libopenmpi-dev openmpi-bin libnss-dev \
+      pkg-config libbz2-dev libopenmpi-dev openmpi-bin libnss3-dev \
       libkrb5-dev libgmp-dev
     jtemp=`mktemp -d`
     git clone https://github.com/magnumripper/JohnTheRipper.git ${jtemp}/john
     cd ${jtemp}/john/src
     ./configure && make -sj2
+    mkdir -p ${DESTDIR}
     cp -r ${jtemp}/john/run/* ${DESTDIR}
     rm -rf ${jtemp}
     # Persistent files
     mkdir -p ${HOME}/.john
+    touch ${HOME}/.john/john.pot
     ln -sf ${HOME}/.john/* ${DESTDIR}
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
-    rmdir ${DESTDIR}
     exit 1
     ;;
 esac
