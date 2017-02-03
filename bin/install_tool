@@ -1,0 +1,67 @@
+#!/bin/bash
+
+set -ue
+
+REINSTALL=0
+
+while getopts -- "-:" a ; do
+  case "${a}" in
+    -)
+    case "${OPTARG}" in
+      reinstall)
+        REINSTALL=1
+        ;;
+      *)
+        echo "Unknown long option ${OPTARG}" >/dev/stderr
+        exit 1
+        ;;
+    esac
+  esac
+done
+
+if [ $# -ne 1 ] ; then
+  echo "Usage: ${0} <tool>" >/dev/stderr
+  exit 1
+fi
+TOOL=${1}
+
+function install_pkgs {
+  if [ `id -u` -ne "0" ] ; then
+    echo "Unable to install packages, please ensure these are installed." >/dev/stderr
+    echo $*
+    return 0
+  fi
+  apt-get -y install $*
+}
+
+DESTDIR="${HOME}/tools/${TOOL}"
+
+if [ -d ${DESTDIR} ] ; then
+  if [ ${REINSTALL} -eq 1 ] ; then
+    rm -ri ${DESTDIR}
+  else
+    echo "${DESTDIR} exists but not reinstalling." >/dev/stderr
+    exit 1
+  fi
+fi
+
+mkdir -p ${DESTDIR}
+
+case ${TOOL} in
+  john)
+    install_pkgs libssl-dev git build-essential yasm libgmp-dev libpcap-dev \
+      pkg-config libbz2-dev libopenmpi-dev openmpi-bin libnss-dev \
+      libkrb5-dev libgmp-dev
+    jtemp=`mktemp -d`
+    git clone https://github.com/magnumripper/JohnTheRipper.git ${jtemp}/john
+    cd ${jtemp}/john/src
+    ./configure && make -sj2
+    cp -r ${jtemp}/john/run/* ${DESTDIR}
+    rm -rf ${jtemp}
+    ;;
+  *)
+    echo "Unknown tool: ${TOOL}" >/dev/stderr
+    rmdir ${DESTDIR}
+    exit 1
+    ;;
+esac
