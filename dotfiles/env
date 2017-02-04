@@ -4,17 +4,14 @@ umask 027
 ulimit -c unlimited
 
 # Paths and preferences
-export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH"
 export PYTHONPATH="$HOME/.python:$PYTHONPATH"
 export GOPATH="$HOME/Projects/Go"
+export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH:$GOPATH/bin"
 export VISUAL=vim
 export EDITOR=vim
 export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
-
-# Unconditional because /bin/sh sucks
-export PATH="$PATH:$HOME/.gce/google-cloud-sdk/bin:$HOME/bin/genymotion:$HOME/bin/genymotion/tools:$HOME/bin/google_appengine:$HOME/bin/go_appengine:$HOME/bin/google-cloud-sdk/bin:$GOPATH/bin"
 
 # Fix gnome-terminal
 if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then

@@ -86,6 +86,14 @@ case ${TOOL} in
       http://downloads.skullsecurity.org/passwords/hak5.txt.bz2
     bunzip2 ${DESTDIR}/hak5.txt.bz2
     ;;
+  gcloud)
+    gtemp=`mktemp -d`
+    gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
+    gsdk="google-cloud-sdk-142.0.0-linux-x86_64.tar.gz"
+    wget -q -O /tmp/gcloud.tar.gz \
+      "${gbase}${gsdk}"
+    tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C ${DESTDIR}
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
