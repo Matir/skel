@@ -67,6 +67,18 @@ case ${TOOL} in
     touch ${HOME}/.john/john.pot
     ln -sf ${HOME}/.john/* ${DESTDIR}
     ;;
+  wordlists)
+    mkdir -p ${DESTDIR}
+    wget -q -O ${DESTDIR}/rockyou.txt.bz2 \
+      http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2
+    bunzip2 ${DESTDIR}/rockyou.txt.bz2
+    wget -q -O ${DESTDIR}/phpbb.txt.bz2 \
+      http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2
+    bunzip2 ${DESTDIR}/phpbb.txt.bz2
+    wget -q -O ${DESTDIR}/hak5.txt.bz2 \
+      http://downloads.skullsecurity.org/passwords/hak5.txt.bz2
+    bunzip2 ${DESTDIR}/hak5.txt.bz2
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
