@@ -11,3 +11,7 @@ export PATH="${PATH}:${GCL}/bin"
 
 # Load completion
 source ${GCL}/completion.zsh.inc
+
+which kubectl 2>/dev/null >&2 && \
+  source <(kubectl completion zsh) || \
+  true
