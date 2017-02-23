@@ -20,6 +20,8 @@ function start_agent_withssh {
 if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /dev/null; then
     # source settings of old agent, if applicable
     if [ -f "${GPG_ENV}" ]; then
+        # This can be clobbered by the file
+        local OLD_SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
         . ${GPG_ENV} > /dev/null
         export GPG_AGENT_INFO
         export SSH_AUTH_SOCK
@@ -29,6 +31,9 @@ if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /de
     # check again if another agent is running using the newly sourced settings
     if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /dev/null; then
         # check for existing ssh-agent
+        if [ -n "${OLD_SSH_AUTH_SOCK}" ] ; then
+          SSH_AUTH_SOCK=${OLD_SSH_AUTH_SOCK};export SSH_AUTH_SOCK
+        fi
         if ssh-add -l > /dev/null 2> /dev/null; then
             # ssh-agent running, start gpg-agent without ssh support
             start_agent_nossh;

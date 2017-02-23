@@ -1,20 +1,4 @@
 # Always load ENV
 test -f "$HOME/.env" && . "$HOME/.env"
 
-# Setup GPG Agent
-if ! gpg-connect-agent --quiet /bye > /dev/null 2> /dev/null; then
-  GPG_AGENT_INFO_PATH=$HOME/.gnupg/gpg-agent.env
-  if test -f $GPG_AGENT_INFO_PATH && kill -0 `cut -d: -f 2 $GPG_AGENT_INFO_PATH` 2>/dev/null ; then
-    . $GPG_AGENT_INFO_PATH
-    export GPG_AGENT_INFO SSH_AUTH_SOCK SSH_AGENT_PID
-  else
-    if which gpg-agent >/dev/null 2>&1 ; then
-      gpg-agent -q 2>/dev/null || eval `gpg-agent --daemon --enable-ssh-support --write-env-file $GPG_AGENT_INFO_PATH` 2>/dev/null
-    fi
-  fi
-  unset GPG_AGENT_INFO_PATH
-  export GPG_TTY=`tty`
-fi
-# End GPG
-
 test -f "${HOME}/.profile.local" && . "${HOME}/.profile.local"
