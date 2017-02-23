@@ -12,3 +12,8 @@ Host *
 	ForwardX11Trusted	no
 	ServerAliveInterval 120
 	CheckHostIP no
+
+Host warzone
+  Hostname warzone.shadowcats.club
+  Port 22
+  User matir
