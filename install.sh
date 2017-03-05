@@ -85,7 +85,7 @@ function install_pwndbg {
   PYTHON="${PYTHON}${PYVER}"
   local PY_PACKAGES=$HOME/.pwndbg/vendor
   ${PYTHON} -m pip install --target ${PY_PACKAGES} -Ur $HOME/.pwndbg/requirements.txt
-  ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone
+  ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone unicorn
   # capstone package is broken
   cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
 }
