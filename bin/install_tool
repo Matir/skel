@@ -89,10 +89,21 @@ case ${TOOL} in
   gcloud)
     gtemp=`mktemp -d`
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
+    # TODO: find a way to make this version independent
     gsdk="google-cloud-sdk-142.0.0-linux-x86_64.tar.gz"
     wget -q -O /tmp/gcloud.tar.gz \
       "${gbase}${gsdk}"
     tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C ${DESTDIR}
+    rm /tmp/gcloud.tar.gz
+    ;;
+  android-sdk)
+    # TODO: find a way to make this version independent
+    asdk="https://dl.google.com/android/repository/tools_r25.2.3-linux.zip"
+    wget -q -O /tmp/android-tools.zip "${asdk}"
+    unzip -d ${DESTDIR} /tmp/android-tools.zip
+    rm /tmp/android-tools.zip
+    # Install components
+    ${DESTDIR}/tools/bin/sdkmanager "emulator" "platform-tools"
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
