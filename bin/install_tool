@@ -105,6 +105,21 @@ case ${TOOL} in
     # Install components
     ${DESTDIR}/tools/bin/sdkmanager "emulator" "platform-tools"
     ;;
+  burp)
+    # Install latest burp free
+    mkdir -p ${DESTDIR}
+    wget -q --content-disposition --no-server-response -P ${DESTDIR} \
+      https://portswigger.net/DownloadUpdate.ashx\?Product\=Free
+    if [ $? -ne 0 ] ; then
+      echo "Download failed." >&2
+      exit 1
+    fi
+    if [ -x /usr/bin/jarwrapper ] ; then
+      # We have binfmt support for jar, so add to bin
+      chmod +x ${DESTDIR}/*.jar
+      ln -sf ${DESTDIR}/*.jar ${HOME}/bin/burp
+    fi
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
