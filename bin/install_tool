@@ -46,6 +46,14 @@ function install_pkgs {
   apt-get -y install $*
 }
 
+function download {
+  SRC=${1}
+  DST=${2}
+  echo -n "Downloading ${SRC} to ${DST}..." >&2
+  wget --no-server-response -q -O ${DST} --content-disposition ${SRC}
+  echo " done." >&2
+}
+
 DESTDIR="${HOME}/tools/${TOOL}"
 
 if [ -d ${DESTDIR} ] ; then
@@ -76,14 +84,17 @@ case ${TOOL} in
     ;;
   wordlists)
     mkdir -p ${DESTDIR}
-    wget -q -O ${DESTDIR}/rockyou.txt.bz2 \
-      http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2
+    download \
+      http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2 \
+      ${DESTDIR}/rockyou.txt.bz2
     bunzip2 ${DESTDIR}/rockyou.txt.bz2
-    wget -q -O ${DESTDIR}/phpbb.txt.bz2 \
-      http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2
+    download \
+      http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2 \
+      ${DESTDIR}/phpbb.txt.bz2
     bunzip2 ${DESTDIR}/phpbb.txt.bz2
-    wget -q -O ${DESTDIR}/hak5.txt.bz2 \
-      http://downloads.skullsecurity.org/passwords/hak5.txt.bz2
+    download \
+      http://downloads.skullsecurity.org/passwords/hak5.txt.bz2 \
+      ${DESTDIR}/hak5.txt.bz2
     bunzip2 ${DESTDIR}/hak5.txt.bz2
     ;;
   gcloud)
@@ -91,15 +102,14 @@ case ${TOOL} in
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
     # TODO: find a way to make this version independent
     gsdk="google-cloud-sdk-142.0.0-linux-x86_64.tar.gz"
-    wget -q -O /tmp/gcloud.tar.gz \
-      "${gbase}${gsdk}"
+    download "${gbase}${gsdk}" /tmp/gcloud.tar.gz
     tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C ${DESTDIR}
     rm /tmp/gcloud.tar.gz
     ;;
   android-sdk)
     # TODO: find a way to make this version independent
     asdk="https://dl.google.com/android/repository/tools_r25.2.3-linux.zip"
-    wget -q -O /tmp/android-tools.zip "${asdk}"
+    download ${asdk} /tmp/android-tools.zip
     unzip -d ${DESTDIR} /tmp/android-tools.zip
     rm /tmp/android-tools.zip
     # Install components
@@ -108,8 +118,9 @@ case ${TOOL} in
   burp)
     # Install latest burp free
     mkdir -p ${DESTDIR}
-    wget -q --content-disposition --no-server-response -P ${DESTDIR} \
-      https://portswigger.net/DownloadUpdate.ashx\?Product\=Free
+    download \
+      https://portswigger.net/DownloadUpdate.ashx\?Product\=Free \
+      ${DESTDIR}/burp-free.jar
     if [ $? -ne 0 ] ; then
       echo "Download failed." >&2
       exit 1
@@ -119,6 +130,14 @@ case ${TOOL} in
       chmod +x ${DESTDIR}/*.jar
       ln -sf ${DESTDIR}/*.jar ${HOME}/bin/burp
     fi
+    ;;
+  mitmproxy)
+    # Find a better way to get the latest
+    src="https://github.com/mitmproxy/mitmproxy/releases/download/v2.0.1/mitmproxy-2.0.1-linux.tar.gz"
+    download ${src} /tmp/mitmproxy.tar.gz
+    mkdir -p ${DESTDIR}
+    tar zx -C ${DESTDIR} -f /tmp/mitmproxy.tar.gz
+    rm /tmp/mitmproxy.tar.gz
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
