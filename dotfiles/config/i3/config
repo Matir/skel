@@ -3,6 +3,7 @@
 # Please see http://i3wm.org/docs/userguide.html for a complete reference!
 
 set $mod Mod4
+set $alt Mod1
 
 # Font for window titles. Will also be used by the bar unless a different font
 # is used in the bar {} block below.
@@ -102,7 +103,11 @@ bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
 bindsym $mod+Shift+r restart
 # exit i3 (logs you out of your X session)
-bindsym $mod+Shift+e exec "i3-nagbar -t warning -m 'You pressed the exit shortcut. Do you really want to exit i3? This will end your X session.' -b 'Yes, exit i3' 'i3-msg exit'"
+bindsym $mod+Shift+e exec \
+  "i3-nagbar -t warning -m \
+    'You pressed the exit shortcut. Do you really want to exit i3? \
+     This will end your X session.' \
+    -b 'Yes, exit i3' 'i3-msg exit'"
 
 # resize window (you can also use the mouse for that)
 mode "resize" {
@@ -125,9 +130,21 @@ bar {
         status_command i3status
 }
 
+# Cycle through workspaces like cinnamon
+bindsym $alt+Control+Right workspace next
+bindsym $alt+Control+Left workspace prev
+
 # i3 lock
 exec --no-startup-id ~/bin/i3lock.sh &
 bindsym $mod+l exec i3lock -c 000000 -d && xset dpms force off
+
+# things to start quickly
+bindsym $mod+g exec /usr/bin/google-chrome-beta
+
+# kill a window with middle click + mod
+bindsym --whole-window $mod+button2 kill
+# float a window with right click + mod
+bindsym --whole-window $mod+button3 floating toggle
 
 # useful utilities
 exec --no-startup-id /usr/bin/cinnamon-settings-daemon &
