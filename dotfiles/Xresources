@@ -17,7 +17,7 @@ URxvt.geometry:             90x30
 URxvt.transparent:          false
 URxvt.fading:               0
 URxvt.urgentOnBell:         true
-URxvt.visualBell:           true
+URxvt.visualBell:           false
 URxvt.loginShell:           true
 URxvt.saveLines:            50000
 URxvt.internalBorder:       2
@@ -35,9 +35,11 @@ URxvt.scrollStyle:          rxvt
 URxvt.scrollBar:            false
 
 ! Perl extensions
-URxvt.perl-ext-common:      default,matcher
+URxvt.perl-ext-common:      default,matcher,resize-font
 URxvt.matcher.button:       1
-URxvt.urlLauncher:          firefox
+URxvt.urlLauncher:          /usr/bin/xdg-open
+URxvt.resize-font.smaller:  C-Down
+URxvt.resize-font.bigger:   C-Up
 
 ! Cursor
 URxvt.cursorBlink:          true
@@ -46,6 +48,7 @@ URxvt.cursorUnderline:      false
 ! Pointer
 URxvt.pointerBlank:         true
 
+! Solarized colors begin
 URxvt.background: #002b36
 URxvt.foreground: #657b83
 URxvt.fadeColor: #002b36
