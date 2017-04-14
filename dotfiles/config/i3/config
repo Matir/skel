@@ -117,7 +117,7 @@ bindsym $mod+r mode "resize"
 # Start i3bar to display a workspace bar (plus the system information i3status
 # finds out, if available)
 bar {
-        status_command i3status
+        status_command bash -c "i3status -c <(~/.config/i3status/build_config.sh)"
 }
 
 # Cycle through workspaces like cinnamon
@@ -170,6 +170,13 @@ exec --no-startup-id xset r rate 200 20
 exec --no-startup-id ~/bin/autostart.py
 
 # customize windows
+for_window [window_role="pop-up"] floating enable
+for_window [window_role="bubble"] floating enable
+for_window [window_role="task_dialog"] floating enable
+for_window [window_role="Preferences"] floating enable
+for_window [window_type="dialog"] floating enable
+for_window [window_type="menu"] floating enable
+
 for_window [class="^google-chrome$"] border pixel
 for_window [class="^Google-chrome-beta$"] border pixel
 for_window [class="^burp-StartBurp$" title="^(?!Burp Suite)"] floating enable
