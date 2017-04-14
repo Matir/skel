@@ -156,6 +156,7 @@ exec --no-startup-id ~/bin/autostart.py
 # customize windows
 for_window [class="^google-chrome$"] border pixel
 for_window [class="^Google-chrome-beta$"] border pixel
+for_window [class="^burp-StartBurp$" title="^(?!Burp Suite)"] floating enable
 
 # no need for borders on the edge of the screen
 hide_edge_borders both
