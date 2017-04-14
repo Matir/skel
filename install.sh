@@ -239,7 +239,7 @@ function read_saved_prefs {
 function save_prefs {
   (( $SAVE )) || return 0
   local pref_file=${BASEDIR}/installed-prefs
-  (echo_pref BASEDIR 
+  (echo_pref BASEDIR
    echo_pref MINIMAL
    echo_pref INSTALL_KEYS
    echo_pref TRUST_ALL_KEYS

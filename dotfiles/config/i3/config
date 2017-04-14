@@ -143,8 +143,24 @@ bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume 0 +5%
 bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume 0 -5%
 bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute 0 toggle
 # Screen brightness controls
-bindsym XF86MonBrightnessUp exec xbacklight -inc 10
-bindsym XF86MonBrightnessDown exec xbacklight -dec 10
+bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight -inc 10
+bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
+
+# screenshots
+set $scrotformat %F-%T.png
+set $screendir ~/Pictures/Screenshots
+# whole screen
+bindsym Print exec --no-startup-id \
+  mkdir -p $screendir && \
+  /usr/bin/scrot $screendir/$scrotformat
+# current window
+bindsym Shift+Print exec --no-startup-id \
+  mkdir -p $screendir && \
+  /usr/bin/scrot -u $screendir/$scrotformat
+# selection
+bindsym --release $alt+Print exec --no-startup-id \
+  mkdir -p $screendir && \
+  /usr/bin/scrot -s $screendir/$scrotformat
 
 # useful utilities
 exec --no-startup-id /usr/bin/cinnamon-settings-daemon &
@@ -160,3 +176,5 @@ for_window [class="^burp-StartBurp$" title="^(?!Burp Suite)"] floating enable
 
 # no need for borders on the edge of the screen
 hide_edge_borders both
+
+# vim:filetype=i3

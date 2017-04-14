@@ -17,6 +17,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'fatih/vim-go'
   Plugin 'altercation/vim-colors-solarized'
   Plugin 'vimoutliner/vimoutliner'
+  Plugin 'PotatoesMaster/i3-vim-syntax'
   call vundle#end()
 endif
 
