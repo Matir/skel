@@ -145,3 +145,6 @@ exec --no-startup-id (sleep 2; nm-applet) &
 # customize windows
 for_window [class="^google-chrome$"] border pixel
 for_window [class="^Google-chrome-beta$"] border pixel
+
+# no need for borders on the edge of the screen
+hide_edge_borders both
