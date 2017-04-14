@@ -59,6 +59,7 @@ if has('gui_running')
   set guifont=Inconsolata\ Medium\ 12
 else
   let g:solarized_termcolors=256
+  let g:solarized_termtrans=1
 endif
 silent! colorscheme solarized
 " Enable filetype support
