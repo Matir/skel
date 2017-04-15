@@ -89,8 +89,9 @@ function battery {
 				status_bat = "↓ BAT"
 				status_unk = "? UNK"
 				status_full = "FULL"
-				format = "%status %remaining (%emptytime %consumption)"
-				path = "/sys/class/power_supply/BAT%{bid}/uevent"
+				format = "%status %percentage (%remaining %consumption)"
+				path = "/sys/class/power_supply/BAT${bid}/uevent"
+				hide_seconds = true
 			}
 			order += "battery ${bid}"
 		EOF
