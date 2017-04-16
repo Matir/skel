@@ -89,13 +89,27 @@ function battery {
 				status_bat = "↓ BAT"
 				status_unk = "? UNK"
 				status_full = "FULL"
-				format = "%status %percentage (%remaining %consumption)"
+				format = "%status %percentage"
 				path = "/sys/class/power_supply/BAT${bid}/uevent"
 				hide_seconds = true
+				last_full_capacity = true
 			}
 			order += "battery ${bid}"
 		EOF
 	done
+}
+
+function audio {
+  cat <<-EOF
+		volume master {
+			format = "♪: %volume"
+			format_muted = "♪: MUTE"
+			device = "default"
+			mixer = "Master"
+			mixer_idx = 0
+		}
+		order += "volume master"
+	EOF
 }
 
 general
@@ -105,6 +119,7 @@ wired
 ipv6
 load
 battery
+audio
 now
 
-# vim:set noexpandtab
+# vim: noexpandtab

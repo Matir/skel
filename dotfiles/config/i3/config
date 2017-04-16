@@ -163,7 +163,8 @@ bindsym --release $alt+Print exec --no-startup-id \
   /usr/bin/scrot -s $screendir/$scrotformat
 
 # useful utilities
-exec --no-startup-id /usr/bin/cinnamon-settings-daemon &
+exec --no-startup-id \
+  (which xss-lock >/dev/null || /usr/bin/cinnamon-settings-daemon) &
 exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets
 exec --no-startup-id (sleep 2; nm-applet) &
 exec --no-startup-id xset r rate 200 20

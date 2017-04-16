@@ -25,7 +25,7 @@ URxvt.lineSpace:            0
 URxvt.iso14755:             false
 
 ! Fonts
-URxvt*font: xft:inconsolata:pixelsize=14
+URxvt*font: xft:inconsolata:pixelsize=16
 
 ! Fix font space
 URxvt*letterSpace: -1
