@@ -15,7 +15,7 @@ function disks {
 	local used
 	for d in ${DISKS[@]} ; do
 		local dev=`df $d | tail -1 | awk '{print $1}'`
-		if [[ *$dev* == $used ]] ; then
+		if [[ $used == *$dev* ]] ; then
 			continue
 		fi
 		local size=`df $d | tail -1 | awk '{print $2}'`
