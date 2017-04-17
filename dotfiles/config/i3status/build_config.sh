@@ -87,7 +87,14 @@ function battery {
 				threshold_type = time
 				status_chr = "↑ CHR"
 				status_bat = "↓ BAT"
+		EOF
+		if [ $(bc <<< "$(i3status --version | awk '{print $2}') < 2.11") -eq 0 ] ;
+		then
+			cat <<-EOF
 				status_unk = "? UNK"
+			EOF
+		fi
+		cat <<-EOF
 				status_full = "FULL"
 				format = "%status %percentage"
 				path = "/sys/class/power_supply/BAT${bid}/uevent"
