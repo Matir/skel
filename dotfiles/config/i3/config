@@ -126,8 +126,9 @@ bindsym $alt+Control+Left workspace prev
 
 # i3 lock
 exec --no-startup-id ~/bin/i3lock.sh &
-bindsym $mod+l exec i3lock -c 000000 -d && xset dpms force off
-bindsym $alt+Control+l exec i3lock -c 000000 -d && xset dpms force off
+bindsym $mod+l exec i3lock -c 000000 -d && (sleep 2; xset dpms force off) &
+bindsym $alt+Control+l exec \
+  i3lock -c 000000 -d && (sleep 2; xset dpms force off) &
 
 # things to start quickly
 bindsym $mod+g exec /usr/bin/google-chrome-beta --password-store=gnome
