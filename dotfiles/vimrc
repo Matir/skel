@@ -151,3 +151,6 @@ autocmd Syntax * syn match ExtraWhitespace /\s\+$\| \+\ze\t/ containedin=ALL
 " Color column at end of lines
 set colorcolumn=+1
 highlight ColorColumn ctermbg=black guibg=lightgrey
+
+" Remove smart quotes
+command Unsmartquote %s/“\|”/"/g 
