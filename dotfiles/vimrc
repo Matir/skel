@@ -156,4 +156,4 @@ highlight ColorColumn ctermbg=black guibg=lightgrey
 command Unsmartquote %s/“\|”/"/g
 
 " Markdown options
-autocmd Filetype markdown set expandtab tw=4
+autocmd Filetype markdown set expandtab shiftwidth=4
