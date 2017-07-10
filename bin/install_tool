@@ -98,6 +98,7 @@ case ${TOOL} in
     bunzip2 ${DESTDIR}/hak5.txt.bz2
     ;;
   gcloud)
+    mkdir -p ${DESTDIR}
     gtemp=`mktemp -d`
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
     # TODO: find a way to make this version independent
