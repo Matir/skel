@@ -140,6 +140,14 @@ case ${TOOL} in
     tar zx -C ${DESTDIR} -f /tmp/mitmproxy.tar.gz
     rm /tmp/mitmproxy.tar.gz
     ;;
+  esp)
+    src="https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz"
+    download ${src} /tmp/esp32.tar.gz
+    mkdir -p ${DESTDIR}
+    tar zx -C ${DESTDIR} -f /tmp/esp32.tar.gz
+    rm /tmp/esp32.tar.gz
+    git clone --recursive https://github.com/espressif/esp-idf.git ${DESTDIR}/esp-idf
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
