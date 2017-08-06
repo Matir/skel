@@ -148,6 +148,17 @@ case ${TOOL} in
     rm /tmp/esp32.tar.gz
     git clone --recursive https://github.com/espressif/esp-idf.git ${DESTDIR}/esp-idf
     ;;
+  dex2jar)
+    src="https://github.com/pxb1988/dex2jar/releases/download/2.0/dex-tools-2.0.zip"
+    download ${src} /tmp/dex2jar.zip
+    tmpd=`mktemp -d`
+    unzip -d ${tmpd} /tmp/dex2jar.zip
+    mv ${tmpd}/* ${DESTDIR}
+    rm /tmp/dex2jar.zip
+    rm -rf ${tmpd}
+    rm ${DESTDIR}/*.bat
+    chmod +x ${DESTDIR}/*.sh
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
