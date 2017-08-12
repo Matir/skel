@@ -3,7 +3,7 @@ function _jekyll_locate_dir {
     echo ${JEKYLL_DIR}
   elif test -f `pwd`/_config.yml ; then
     pwd
-  elif test -f ${HOME}/Projects/blog ; then
+  elif test -f ${HOME}/Projects/blog/_config.yml ; then
     echo ${HOME}/Projects/blog
   else
     echo "Jekyll instance not found!" >&2
