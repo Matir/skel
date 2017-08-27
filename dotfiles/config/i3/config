@@ -156,15 +156,15 @@ bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
 set $scrotformat %F-%T.png
 set $screendir ~/Pictures/Screenshots
 # whole screen
-bindsym Print exec --no-startup-id \
+bindsym --release Print exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot $screendir/$scrotformat
 # current window
-bindsym Shift+Print exec --no-startup-id \
+bindsym --release Shift+Print exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot -u $screendir/$scrotformat
 # selection
-bindsym --release $alt+Print exec --no-startup-id \
+bindsym --release $alt+Sys_Req exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot -s $screendir/$scrotformat
 
