@@ -8,6 +8,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   call vundle#begin()
   Plugin 'gmarik/Vundle.vim'
   Plugin 'nvie/vim-flake8'
+  Plugin 'tell-k/vim-autopep8'
   Plugin 'tpope/vim-fugitive'
   Plugin 'mileszs/ack.vim'
   Plugin 'tpope/vim-unimpaired'
@@ -18,6 +19,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'altercation/vim-colors-solarized'
   Plugin 'vimoutliner/vimoutliner'
   Plugin 'PotatoesMaster/i3-vim-syntax'
+  Plugin 'Matt-Deacalion/vim-systemd-syntax'
   call vundle#end()
 endif
 

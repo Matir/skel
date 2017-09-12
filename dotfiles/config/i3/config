@@ -87,6 +87,10 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
+# Move workspaces between monitors
+bindsym $mod+Shift+greater move workspace to output right
+bindsym $mod+Shift+less move workspace to output left
+
 # reload the configuration file
 bindsym $mod+Shift+c reload
 # restart i3 inplace (preserves your layout/session, can be used to upgrade i3)
@@ -126,9 +130,10 @@ bindsym $alt+Control+Left workspace prev
 
 # i3 lock
 exec --no-startup-id ~/bin/i3lock.sh &
-bindsym $mod+l exec "i3lock -c 000000 -d && (sleep 2; xset dpms force off) &"
+bindsym $mod+l exec \
+  bash -c "i3lock -c 000000 -d && (sleep 2 && xset dpms force off) &"
 bindsym $alt+Control+l exec \
-  "i3lock -c 000000 -d && (sleep 2; xset dpms force off) &"
+  bash -c "i3lock -c 000000 -d && (sleep 2 && xset dpms force off) &"
 
 # things to start quickly
 bindsym $mod+g exec /usr/bin/google-chrome-beta --password-store=gnome
@@ -151,15 +156,15 @@ bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -dec 10
 set $scrotformat %F-%T.png
 set $screendir ~/Pictures/Screenshots
 # whole screen
-bindsym Print exec --no-startup-id \
+bindsym --release Print exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot $screendir/$scrotformat
 # current window
-bindsym Shift+Print exec --no-startup-id \
+bindsym --release Shift+Print exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot -u $screendir/$scrotformat
 # selection
-bindsym --release $alt+Print exec --no-startup-id \
+bindsym --release $alt+Sys_Req exec --no-startup-id \
   mkdir -p $screendir && \
   /usr/bin/scrot -s $screendir/$scrotformat
 

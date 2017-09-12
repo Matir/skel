@@ -1,4 +1,14 @@
-JEKYLL_DIR=${JEKYLL_DIR:-${HOME}/Projects/blog}
+function _jekyll_locate_dir {
+  if [[ -n "${JEKYLL_DIR}" && -f "${JEKYLL_DIR}" ]] ; then
+    echo ${JEKYLL_DIR}
+  elif test -f `pwd`/_config.yml ; then
+    pwd
+  elif test -f ${HOME}/Projects/blog/_config.yml ; then
+    echo ${HOME}/Projects/blog
+  else
+    echo "Jekyll instance not found!" >&2
+  fi
+}
 
 function _jekyll_set_date {
   local FILENAME
@@ -11,20 +21,24 @@ function _jekyll_set_date {
 function _jekyll_find_post {
   local files
   local fname
+  local jekyll_dir
+
+  jekyll_dir="${3}"
+
   if [ -f "${1}" ] ; then
     printf -- "${1}"
     return 0
   fi
-  if [ -f "${JEKYLL_DIR}/_posts/${1}" ] ; then
-    printf -- "${JEKYLL_DIR}/_posts/${1}"
+  if [ -f "${jekyll_dir}/_posts/${1}" ] ; then
+    printf -- "${jekyll_dir}/_posts/${1}"
     return 0
   fi
-  if [ -f "${JEKYLL_DIR}/_drafts/${1}" ] ; then
-    printf -- "${JEKYLL_DIR}/_drafts/${1}"
+  if [ -f "${jekyll_dir}/_drafts/${1}" ] ; then
+    printf -- "${jekyll_dir}/_drafts/${1}"
     return 0
   fi
   fname=${2:-${1}}
-  files=(${JEKYLL_DIR}/_posts/*${fname}* ${JEKYLL_DIR}/_drafts/*${fname}*)
+  files=(${jekyll_dir}/_posts/*${fname}* ${jekyll_dir}/_drafts/*${fname}*)
   if [ ${#files} -eq "0" ] ; then
     echo "No post found for ${fname}" >&2
     return 1
@@ -45,6 +59,13 @@ function jekyll {
   local FILENAME
   local DATE
   local NEWNAME
+  local JEKYLL_DIR
+
+  JEKYLL_DIR=`_jekyll_locate_dir`
+
+  if [ -z "${JEKYLL_DIR}" ] ; then
+    return 1
+  fi
 
   JTEMPLATE="---\n"
   JTEMPLATE+="layout: post\n"
@@ -106,7 +127,7 @@ function jekyll {
         echo "slug is required."
         return 1
       fi
-      FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}")
+      FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}" "${JEKYLL_DIR}")
       if [ $? -ne 0 ] ; then
         return
       fi
