@@ -54,6 +54,10 @@ function download {
   echo " done." >&2
 }
 
+function check_sudo {
+  sudo -l >/dev/null
+}
+
 DESTDIR="${HOME}/tools/${TOOL}"
 
 if [ -d ${DESTDIR} ] ; then
@@ -158,6 +162,19 @@ case ${TOOL} in
     rm -rf ${tmpd}
     rm ${DESTDIR}/*.bat
     chmod +x ${DESTDIR}/*.sh
+    ;;
+  proxmark3)
+    install_pkgs p7zip git build-essential libreadline5 libreadline-dev \
+      libusb-0.1-4 libusb-dev libqt4-dev perl pkg-config wget libncurses5-dev \
+      gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib
+    src="https://github.com/Proxmark/proxmark3.git"
+    git clone ${src} ${DESTDIR}
+    cd ${DESTDIR}
+    make -sj2
+    check_sudo && sudo /bin/sh -c \
+      "cp -rf driver/78-mm-usb-device-blacklist.rules \
+         /etc/udev/rules.d/77-mm-usb-device-blacklist.rules &&
+         udevadm control --reload-rules"
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
