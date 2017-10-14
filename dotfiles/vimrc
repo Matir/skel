@@ -15,7 +15,6 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'scrooloose/syntastic'
   Plugin 'mattn/webapi-vim'
   Plugin 'mattn/gist-vim'
-  Plugin 'fatih/vim-go'
   Plugin 'altercation/vim-colors-solarized'
   Plugin 'vimoutliner/vimoutliner'
   Plugin 'PotatoesMaster/i3-vim-syntax'
@@ -135,6 +134,8 @@ endfunction
 " Options for syntastic
 let g:syntastic_enable_signs = 1
 let g:syntastic_auto_loc_list = 2
+let g:syntastic_go_checkers = ['govet', 'errcheck', 'go']
+
 " Have F5 run the tests and display errors
 nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 
