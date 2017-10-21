@@ -12,6 +12,7 @@ export EDITOR=vim
 export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
+export QUOTING_STYLE="literal"  # Coreutils quotes
 
 # Fix gnome-terminal
 if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then
