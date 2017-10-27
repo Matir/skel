@@ -19,6 +19,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'vimoutliner/vimoutliner'
   Plugin 'PotatoesMaster/i3-vim-syntax'
   Plugin 'Matt-Deacalion/vim-systemd-syntax'
+  Plugin 'fatih/vim-go'
   call vundle#end()
 endif
 
