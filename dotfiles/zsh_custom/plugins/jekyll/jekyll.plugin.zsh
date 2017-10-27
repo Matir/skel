@@ -110,7 +110,7 @@ function jekyll {
         echo "slug is required."
         return 1
       fi
-      FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}")
+      FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}" "${JEKYLL_DIR}")
       if [ $? -ne 0 ] ; then
         return
       fi
