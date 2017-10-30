@@ -16,16 +16,20 @@ function start_agent_withssh {
     export SSH_AGENT_PID
 }
 
+if [ -z "${GPG_AGENT_INFO}" ] ; then
+  if which gpgconf >/dev/null 2>&1 ; then
+    # This might clobber SSH_AUTH_SOCK anyway...
+    GPG_AGENT_INFO=$(gpgconf --list-dirs agent-socket)
+    SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+    export GPG_AGENT_INFO
+    export SSH_AUTH_SOCK
+  fi
+fi
+
 # check if another agent is running
 if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /dev/null; then
-    if which gpgconf ; then
-        # This might clobber SSH_AUTH_SOCK anyway...
-        GPG_AGENT_INFO=$(gpgconf --list-dirs agent-socket)
-        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-        export GPG_AGENT_INFO
-        export SSH_AUTH_SOCK
     # source settings of old agent, if applicable
-    elif [ -f "${GPG_ENV}" ]; then
+    if [ -f "${GPG_ENV}" ]; then
         # This can be clobbered by the file
         local OLD_SSH_AUTH_SOCK=${SSH_AUTH_SOCK}
         . ${GPG_ENV} > /dev/null
