@@ -18,9 +18,10 @@ function start_agent_withssh {
 
 # check if another agent is running
 if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /dev/null; then
-    if [ -d "${XDG_RUNTIME_DIR}/gnupg" ] ; then
-        GPG_AGENT_INFO=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent
-        SSH_AUTH_SOCK=${XDG_RUNTIME_DIR}/gnupg/S.gpg-agent.ssh
+    if which gpgconf ; then
+        # This might clobber SSH_AUTH_SOCK anyway...
+        GPG_AGENT_INFO=$(gpgconf --list-dirs agent-socket)
+        SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
         export GPG_AGENT_INFO
         export SSH_AUTH_SOCK
     # source settings of old agent, if applicable
