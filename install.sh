@@ -60,7 +60,11 @@ function install_git {
   if [[ -d ${DESTDIR}/.git ]] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
-    git clone ${REPO} ${DESTDIR}
+    if [[ ${MINIMAL} -eq 1 ]] ; then
+      git clone --depth 1 ${REPO} ${DESTDIR}
+    else
+      git clone ${REPO} ${DESTDIR}
+    fi
   fi
 }
 
