@@ -30,3 +30,6 @@ alias chrome-for-burp="/usr/bin/google-chrome --ignore-certificate-errors --user
 
 # Useful directory utilities
 alias dircount="for d in * ; do find \$d -type d | wc -l | tr -d '\n' ; echo ' ' \$d ; done | sort -n"
+
+# Drop caches for swap issues
+alias drop_caches="echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
