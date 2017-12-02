@@ -208,7 +208,10 @@ function install_apt_pkgs {
   run_as_root apt-get update -qq || \
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
-  install_pkg_set packages
+  install_pkg_set packages.minimal
+  if (( $MINIMAL )) ; then
+    return 0
+  fi
   (( $HAVE_X )) && install_pkg_set packages.X
   (( $IS_KALI )) && install_pkg_set packages.kali
   install_pkg_set packages.${ARCH}
