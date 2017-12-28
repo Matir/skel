@@ -36,3 +36,4 @@ SAVE: Save the install options to ${BASEDIR}/installed-prefs
 [ ] Re-do the installation of packages.
   [ ] Make manual installation of sets easy/possible.
   [ ] Make missing packages not cause a full set failure.
+  [X] Allow comments and blank lines.

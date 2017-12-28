@@ -204,8 +204,22 @@ function run_as_root {
 
 function install_pkg_set {
   local pkg_file=${BASEDIR}/${1}
+  local pkg_list
   if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
-  run_as_root apt-get install -qqy `cat ${pkg_file}`
+  cat ${pkg_file} | while read line ; do
+    if [[ ${line:0:1} == '#' ]] ; then
+      continue
+    fi
+    if [[ -z ${line} ]] ; then
+      continue
+    fi
+    if apt-cache show ${line} >/dev/null 2>&1 ; then
+      pkg_list="${pkg_list} ${line}"
+    else
+      echo "Warning: package ${line} not found." >&2
+    fi
+  done
+  run_as_root apt-get install -qqy ${pkg_list}
 }
 
 function install_apt_pkgs {
