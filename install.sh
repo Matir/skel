@@ -55,15 +55,16 @@ function install_git {
   if ! which git > /dev/null ; then
     return 1
   fi
-  local REPO="${1}"
-  local DESTDIR="${2}"
+  local REPO="${*: -2:1}"
+  local DESTDIR="${*: -1:1}"
+  set ${*:1:-2}
   if [[ -d ${DESTDIR}/.git ]] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
     if [[ ${MINIMAL} -eq 1 ]] ; then
-      git clone --depth 1 ${REPO} ${DESTDIR}
+      git clone --depth 1 $* ${REPO} ${DESTDIR}
     else
-      git clone ${REPO} ${DESTDIR}
+      git clone $* ${REPO} ${DESTDIR}
     fi
   fi
 }
@@ -82,7 +83,7 @@ function install_pwndbg {
   if ! which gdb > /dev/null 2>&1 ; then
     return 1
   fi
-  install_git https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
+  install_git -b stable https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
   mkdir -p $HOME/.pwndbg/vendor
   local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
   local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
