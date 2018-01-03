@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set nounset
-set errexit
+set -o nounset
+set -o errexit
 
 function prerequisites {
   if which zsh > /dev/null 2>&1 ; then
@@ -282,13 +282,32 @@ EOF
 }
 
 function verbose {
-  (( ${VERBOSE:-0} )) && echo "$@" >&2
+  (( ${VERBOSE:-0} )) && echo "$@" >&2 || return 0
+}
+
+# Operations
+
+function install_main {
+  (( $MINIMAL )) || prerequisites
+  (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
+  install_dotfile_dir "${BASEDIR}/dotfiles"
+  test -d "${BASEDIR}/private_dotfiles" && \
+    test -d "${BASEDIR}/.git/git-crypt" && \
+    install_dotfile_dir "${BASEDIR}/private_dotfiles"
+  test -d "${BASEDIR}/local_dotfiles" && \
+    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+  install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
+  (( $MINIMAL )) || postinstall
+  (( $INSTALL_KEYS )) && install_keys
+  save_prefs
+  cleanup
 }
 
 # Setup variables
 read_saved_prefs
 
-# Defaults if not passed in or saved
+# Defaults if not passed in or saved.
+# TODO: use flags instead of environment variables.
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
@@ -309,20 +328,20 @@ else
   HAVE_X=0
 fi
 
-IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
+IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null || true`
 ARCH=`uname -m`
 
+OPERATION=${1:-install}
 
-(( $MINIMAL )) || prerequisites
-(( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
-install_dotfile_dir "${BASEDIR}/dotfiles"
-test -d "${BASEDIR}/private_dotfiles" && \
-  test -d "${BASEDIR}/.git/git-crypt" && \
-  install_dotfile_dir "${BASEDIR}/private_dotfiles"
-test -d "${BASEDIR}/local_dotfiles" && \
-  install_dotfile_dir "${BASEDIR}/local_dotfiles"
-install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-(( $MINIMAL )) || postinstall
-(( $INSTALL_KEYS )) && install_keys
-save_prefs
-cleanup
+case $OPERATION in
+  install)
+    install_main
+    ;;
+  package*)
+    install_pkg_set packages.${2}
+    ;;
+  *)
+    echo "Unknown operation $OPERATION." >/dev/stderr
+    exit 1
+    ;;
+esac
