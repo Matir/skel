@@ -96,8 +96,6 @@ function install_pwndbg {
 }
 
 function postinstall {
-  install_pwndbg
-
   # Install Vundle plugins
   if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
     vim +VundleInstall +qall
@@ -340,6 +338,9 @@ case $OPERATION in
     ;;
   package*)
     install_pkg_set packages.${2}
+    ;;
+  pwndbg)
+    install_pwndbg
     ;;
   *)
     echo "Unknown operation $OPERATION." >/dev/stderr
