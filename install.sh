@@ -203,7 +203,7 @@ function run_as_root {
 
 function install_pkg_set {
   local pkg_file=${BASEDIR}/${1}
-  local pkg_list
+  local pkg_list=""
   if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
   cat ${pkg_file} | while read line ; do
     if [[ ${line:0:1} == '#' ]] ; then
