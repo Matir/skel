@@ -329,8 +329,8 @@ else
   HAVE_X=0
 fi
 
-IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null || true`
-ARCH=`uname -m`
+IS_KALI=$(grep -ci kali /etc/os-release 2>/dev/null || true)
+ARCH=$(uname -m)
 
 OPERATION=${1:-install}
 
