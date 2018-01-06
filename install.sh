@@ -57,7 +57,7 @@ function install_git {
   fi
   local REPO="${*: -2:1}"
   local DESTDIR="${*: -1:1}"
-  set ${@:1:$(($#-2))}
+  set -- ${@:1:$(($#-2))}
   if [[ -d ${DESTDIR}/.git ]] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
