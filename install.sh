@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set nounset
-set errexit
+set -o nounset
+set -o errexit
 
 function prerequisites {
   if which zsh > /dev/null 2>&1 ; then
@@ -55,15 +55,16 @@ function install_git {
   if ! which git > /dev/null ; then
     return 1
   fi
-  local REPO="${1}"
-  local DESTDIR="${2}"
+  local REPO="${*: -2:1}"
+  local DESTDIR="${*: -1:1}"
+  set ${*:1:-2}
   if [[ -d ${DESTDIR}/.git ]] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
     if [[ ${MINIMAL} -eq 1 ]] ; then
-      git clone --depth 1 ${REPO} ${DESTDIR}
+      git clone --depth 1 $* ${REPO} ${DESTDIR}
     else
-      git clone ${REPO} ${DESTDIR}
+      git clone $* ${REPO} ${DESTDIR}
     fi
   fi
 }
@@ -82,7 +83,7 @@ function install_pwndbg {
   if ! which gdb > /dev/null 2>&1 ; then
     return 1
   fi
-  install_git https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
+  install_git -b stable https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
   mkdir -p $HOME/.pwndbg/vendor
   local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
   local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
@@ -95,8 +96,6 @@ function install_pwndbg {
 }
 
 function postinstall {
-  install_pwndbg
-
   # Install Vundle plugins
   if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
     vim +VundleInstall +qall
@@ -282,13 +281,32 @@ EOF
 }
 
 function verbose {
-  (( ${VERBOSE:-0} )) && echo "$@" >&2
+  (( ${VERBOSE:-0} )) && echo "$@" >&2 || return 0
+}
+
+# Operations
+
+function install_main {
+  (( $MINIMAL )) || prerequisites
+  (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
+  install_dotfile_dir "${BASEDIR}/dotfiles"
+  test -d "${BASEDIR}/private_dotfiles" && \
+    test -d "${BASEDIR}/.git/git-crypt" && \
+    install_dotfile_dir "${BASEDIR}/private_dotfiles"
+  test -d "${BASEDIR}/local_dotfiles" && \
+    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+  install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
+  (( $MINIMAL )) || postinstall
+  (( $INSTALL_KEYS )) && install_keys
+  save_prefs
+  cleanup
 }
 
 # Setup variables
 read_saved_prefs
 
-# Defaults if not passed in or saved
+# Defaults if not passed in or saved.
+# TODO: use flags instead of environment variables.
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
@@ -311,20 +329,23 @@ else
   HAVE_X=0
 fi
 
-IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
+IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null || true`
 ARCH=`uname -m`
 
+OPERATION=${1:-install}
 
-(( $MINIMAL )) || prerequisites
-(( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
-install_dotfile_dir "${BASEDIR}/dotfiles"
-test -d "${BASEDIR}/private_dotfiles" && \
-  test -d "${BASEDIR}/.git/git-crypt" && \
-  install_dotfile_dir "${BASEDIR}/private_dotfiles"
-test -d "${BASEDIR}/local_dotfiles" && \
-  install_dotfile_dir "${BASEDIR}/local_dotfiles"
-install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-(( $MINIMAL )) || postinstall
-(( $INSTALL_KEYS )) && install_keys
-save_prefs
-cleanup
+case $OPERATION in
+  install)
+    install_main
+    ;;
+  package*)
+    install_pkg_set packages.${2}
+    ;;
+  pwndbg)
+    install_pwndbg
+    ;;
+  *)
+    echo "Unknown operation $OPERATION." >/dev/stderr
+    exit 1
+    ;;
+esac
