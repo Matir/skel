@@ -205,7 +205,7 @@ function install_pkg_set {
   local pkg_file=${BASEDIR}/${1}
   local pkg_list=""
   if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
-  cat ${pkg_file} | while read line ; do
+  while read line ; do
     if [[ ${line:0:1} == '#' ]] ; then
       continue
     fi
@@ -217,8 +217,11 @@ function install_pkg_set {
     else
       echo "Warning: package ${line} not found." >&2
     fi
-  done
-  run_as_root apt-get install -qqy ${pkg_list}
+  done < ${pkg_file}
+  if [ -n "${pkg_list}" ] ; then
+    verbose "Installing ${pkg_list}"
+    run_as_root apt-get install -qqy ${pkg_list}
+  fi
 }
 
 function install_apt_pkgs {
@@ -339,7 +342,11 @@ case $OPERATION in
     install_main
     ;;
   package*)
-    install_pkg_set packages.${2}
+    if [ ${2:-default} != default ] ; then
+      install_pkg_set packages.${2}
+    else
+      install_pkg_set packages
+    fi
     ;;
   pwndbg)
     install_pwndbg
