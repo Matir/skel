@@ -32,7 +32,6 @@ python-hachoir-urwid
 python-html5lib
 python-imaging
 python-pip
-python-pypdf
 python-scapy
 python-virtualenv
 python-yara
