@@ -3,6 +3,13 @@
 set -o nounset
 set -o errexit
 
+FINDTYPE="-xtype"
+
+if [ `uname` == 'Darwin' ] ; then
+  # MacOS specifics
+  FINDTYPE="-type"
+fi
+
 function prerequisites {
   if which zsh > /dev/null 2>&1 ; then
     if [[ $- == *i* ]] ; then
@@ -30,7 +37,7 @@ function install_dotfile_dir {
                     -name install.sh -o \
                     -name README.md -o \
                     -name .gitignore \) \
-      -prune -o -xtype f -print | \
+      -prune -o ${FINDTYPE} f -print | \
     while read dotfile ; do
       local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
       mkdir -p `dirname "${TARGET}"`
@@ -42,7 +49,7 @@ function install_basic_dir {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
   local file
-  find "${SRCDIR}" -xtype f -print | \
+  find "${SRCDIR}" ${FINDTYPE} f -print | \
     while read file ; do
     local TARGET="${2}/${file#${SRCDIR}/}"
     mkdir -p `dirname "${TARGET}"`
