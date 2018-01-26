@@ -1,4 +1,4 @@
-# Custom agent to handle gpg-agent 2.1
+# Custom plugin to handle gpg-agent 2.1
 
 local GPG_ENV=$HOME/.gnupg/gpg-agent.env
 
@@ -15,6 +15,17 @@ function start_agent_withssh {
     export SSH_AUTH_SOCK
     export SSH_AGENT_PID
 }
+
+if [ -z "${GPG_AGENT_INFO}" ] ; then
+  if which gpgconf >/dev/null 2>&1 ; then
+    GPG_AGENT_INFO=$(gpgconf --list-dirs agent-socket)
+    export GPG_AGENT_INFO
+    if [ -z "${SSH_AUTH_SOCK}" ] ; then
+      SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
+      export SSH_AUTH_SOCK
+    fi
+  fi
+fi
 
 # check if another agent is running
 if ! gpg-connect-agent --agent-program /dev/null --quiet /bye > /dev/null 2> /dev/null; then

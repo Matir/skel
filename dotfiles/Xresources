@@ -5,9 +5,11 @@ Xcursor.size: 16
 !!!
 Xft.dpi:                    96
 Xft.antialias:              false
+Xft.lcdfilter:              lcddefault
 Xft.rgba:                   rgb
 Xft.hinting:                true
 Xft.hintstyle:              hintslight
+Xft.autohint:               0
 
 !!!
 ! Solarized urxvt

@@ -22,4 +22,7 @@ fi
 # For virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
 
+# GPG full key id
+export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
+
 if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi

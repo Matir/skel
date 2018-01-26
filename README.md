@@ -31,3 +31,9 @@ INSTALL_PKGS: Install common packages, if on a Debian-like system.
   (Defaults to opposite of $MINIMAL.)
 SAVE: Save the install options to ${BASEDIR}/installed-prefs
 ```
+### TODO ###
+
+[ ] Re-do the installation of packages.
+  [ ] Make manual installation of sets easy/possible.
+  [ ] Make missing packages not cause a full set failure.
+  [X] Allow comments and blank lines.

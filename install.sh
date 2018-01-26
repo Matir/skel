@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set nounset
-set errexit
+set -o nounset
+set -o errexit
 
 function prerequisites {
   if which zsh > /dev/null 2>&1 ; then
@@ -55,12 +55,17 @@ function install_git {
   if ! which git > /dev/null ; then
     return 1
   fi
-  local REPO="${1}"
-  local DESTDIR="${2}"
+  local REPO="${*: -2:1}"
+  local DESTDIR="${*: -1:1}"
+  set -- ${@:1:$(($#-2))}
   if [[ -d ${DESTDIR}/.git ]] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
-    git clone ${REPO} ${DESTDIR}
+    if [[ ${MINIMAL} -eq 1 ]] ; then
+      git clone --depth 1 $* ${REPO} ${DESTDIR}
+    else
+      git clone $* ${REPO} ${DESTDIR}
+    fi
   fi
 }
 
@@ -78,7 +83,7 @@ function install_pwndbg {
   if ! which gdb > /dev/null 2>&1 ; then
     return 1
   fi
-  install_git https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
+  install_git -b stable https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
   mkdir -p $HOME/.pwndbg/vendor
   local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
   local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
@@ -91,8 +96,6 @@ function install_pwndbg {
 }
 
 function postinstall {
-  install_pwndbg
-
   # Install Vundle plugins
   if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
     vim +VundleInstall +qall
@@ -200,8 +203,25 @@ function run_as_root {
 
 function install_pkg_set {
   local pkg_file=${BASEDIR}/${1}
+  local pkg_list=""
   if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
-  run_as_root apt-get install -qqy `cat ${pkg_file}`
+  while read line ; do
+    if [[ ${line:0:1} == '#' ]] ; then
+      continue
+    fi
+    if [[ -z ${line} ]] ; then
+      continue
+    fi
+    if apt-cache show ${line} >/dev/null 2>&1 ; then
+      pkg_list="${pkg_list} ${line}"
+    else
+      echo "Warning: package ${line} not found." >&2
+    fi
+  done < ${pkg_file}
+  if [ -n "${pkg_list}" ] ; then
+    verbose "Installing ${pkg_list}"
+    run_as_root apt-get install -qqy ${pkg_list}
+  fi
 }
 
 function install_apt_pkgs {
@@ -267,13 +287,32 @@ EOF
 }
 
 function verbose {
-  (( ${VERBOSE:-0} )) && echo "$@" >&2
+  (( ${VERBOSE:-0} )) && echo "$@" >&2 || return 0
+}
+
+# Operations
+
+function install_main {
+  (( $MINIMAL )) || prerequisites
+  (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
+  install_dotfile_dir "${BASEDIR}/dotfiles"
+  test -d "${BASEDIR}/private_dotfiles" && \
+    test -d "${BASEDIR}/.git/git-crypt" && \
+    install_dotfile_dir "${BASEDIR}/private_dotfiles"
+  test -d "${BASEDIR}/local_dotfiles" && \
+    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+  install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
+  (( $MINIMAL )) || postinstall
+  (( $INSTALL_KEYS )) && install_keys
+  save_prefs
+  cleanup
 }
 
 # Setup variables
 read_saved_prefs
 
-# Defaults if not passed in or saved
+# Defaults if not passed in or saved.
+# TODO: use flags instead of environment variables.
 BASEDIR=${BASEDIR:-$HOME/.skel}
 MINIMAL=${MINIMAL:-0}
 INSTALL_KEYS=${INSTALL_KEYS:-1}
@@ -289,25 +328,34 @@ if [[ ! -d $BASEDIR ]] ; then
 fi
 
 if which dpkg-query > /dev/null 2>&1 ; then
-  HAVE_X=`dpkg-query -s xserver-xorg 2>/dev/null | grep -c 'Status.*installed'`
+  HAVE_X=$(dpkg-query -s xserver-xorg 2>/dev/null | \
+    grep -c 'Status.*installed' \
+    || true)
 else
   HAVE_X=0
 fi
 
-IS_KALI=`grep -ci kali /etc/os-release 2>/dev/null`
-ARCH=`uname -m`
+IS_KALI=$(grep -ci kali /etc/os-release 2>/dev/null || true)
+ARCH=$(uname -m)
 
+OPERATION=${1:-install}
 
-(( $MINIMAL )) || prerequisites
-(( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
-install_dotfile_dir "${BASEDIR}/dotfiles"
-test -d "${BASEDIR}/private_dotfiles" && \
-  test -d "${BASEDIR}/.git/git-crypt" && \
-  install_dotfile_dir "${BASEDIR}/private_dotfiles"
-test -d "${BASEDIR}/local_dotfiles" && \
-  install_dotfile_dir "${BASEDIR}/local_dotfiles"
-install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-(( $MINIMAL )) || postinstall
-(( $INSTALL_KEYS )) && install_keys
-save_prefs
-cleanup
+case $OPERATION in
+  install)
+    install_main
+    ;;
+  package*)
+    if [ ${2:-default} != default ] ; then
+      install_pkg_set packages.${2}
+    else
+      install_pkg_set packages
+    fi
+    ;;
+  pwndbg)
+    install_pwndbg
+    ;;
+  *)
+    echo "Unknown operation $OPERATION." >/dev/stderr
+    exit 1
+    ;;
+esac
