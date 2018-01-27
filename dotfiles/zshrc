@@ -20,9 +20,13 @@ esac
 autoload -U colors && colors
 PS1="%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] %{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:%{$fg[green]%}%32<...<%~%<<%{$fg[white]%}%#%{$reset_color%} "
 
-# LS Colors
-alias ls='ls --color'
-zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+if [ `uname` != 'Darwin' ] ; then
+  # ls Colors
+  alias ls='ls --color'
+  zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+else
+  alias ls='ls -G'
+fi
 
 # Load oh-my-zsh
 if [ -d $HOME/.oh-my-zsh ] ; then
