@@ -29,5 +29,6 @@ python-yara
 radare2
 scapy
 scdaemon
+socat
 sqlite3
 ufw
