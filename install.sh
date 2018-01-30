@@ -17,9 +17,9 @@ case $(uname) in
 esac
 
 
-function prerequisites {
+prerequisites() {
   if which zsh > /dev/null 2>&1 ; then
-    if [[ $- == *i* ]] ; then
+    if [[ $- = *i* ]] ; then
       if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
         echo 'Enter password to change shell.' >&2
         chsh -s `which zsh`
@@ -36,7 +36,7 @@ function prerequisites {
   fi
 }
 
-function install_dotfile_dir {
+install_dotfile_dir() {
   local SRCDIR="${1}"
   local dotfile
   find "${SRCDIR}" \( -name .git -o \
@@ -52,7 +52,7 @@ function install_dotfile_dir {
     done
 }
 
-function install_basic_dir {
+install_basic_dir() {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
   local file
@@ -64,7 +64,7 @@ function install_basic_dir {
   done
 }
 
-function install_git {
+install_git() {
   # Install or update a git repository
   if ! which git > /dev/null ; then
     return 1
@@ -72,10 +72,10 @@ function install_git {
   local REPO="${*: -2:1}"
   local DESTDIR="${*: -1:1}"
   set -- ${@:1:$(($#-2))}
-  if [[ -d ${DESTDIR}/.git ]] ; then
+  if [ -d ${DESTDIR}/.git ] ; then
     ( cd ${DESTDIR} ; git pull -q )
   else
-    if [[ ${MINIMAL} -eq 1 ]] ; then
+    if [ ${MINIMAL} -eq 1 ] ; then
       git clone --depth 1 $* ${REPO} ${DESTDIR}
     else
       git clone $* ${REPO} ${DESTDIR}
@@ -83,9 +83,9 @@ function install_git {
   fi
 }
 
-function add_bin_symlink {
+add_bin_symlink() {
   local LINKNAME=${HOME}/bin/${2:-`basename $1`}
-  if [[ -e ${LINKNAME} && ! -h ${LINKNAME} ]] ; then
+  if [ -e ${LINKNAME} && ! -h ${LINKNAME} ] ; then
     echo "Refusing to overwrite ${LINKNAME}" >&2
     return 1
   fi
@@ -93,7 +93,7 @@ function add_bin_symlink {
 }
 
 # Custom version of pwndbg's installer
-function install_pwndbg {
+install_pwndbg() {
   if ! which gdb > /dev/null 2>&1 ; then
     return 1
   fi
@@ -109,9 +109,9 @@ function install_pwndbg {
   cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
 }
 
-function postinstall {
+postinstall() {
   # Install Vundle plugins
-  if [[ -d $HOME/.vim/bundle/Vundle.vim ]] ; then
+  if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
     vim +VundleInstall +qall
   fi
   # Install other useful tools
@@ -125,10 +125,10 @@ function postinstall {
   fi
 }
 
-function ssh_key_already_installed {
+ssh_key_already_installed() {
   # Return 1 if the key isn't already installed, 0 if it is
   local AK="${HOME}/.ssh/authorized_keys"
-  if [[ ! -f $AK ]] ; then
+  if [ ! -f $AK ] ; then
     return 1
   fi
   local KEYFP=`ssh-keygen -l -f $1 2>/dev/null | awk '{print $2}'`
@@ -137,7 +137,7 @@ function ssh_key_already_installed {
   while read key ; do
     echo "$key" > $TMPF
     local EFP=`ssh-keygen -l -f ${TMPF} 2>/dev/null | awk '{print $2}'`
-    if [[ "$EFP" == "$KEYFP" ]] ; then
+    if [ "$EFP" = "$KEYFP" ] ; then
       rm $TMPF 2>/dev/null
       return 0
     fi
@@ -146,19 +146,19 @@ function ssh_key_already_installed {
   return 1
 }
 
-function install_ssh_keys {
+install_ssh_keys() {
   # Install SSH keys
   verbose 'Installing SSH keys...'
   local AK="${HOME}/.ssh/authorized_keys"
   local key
   local keydir
-  if (( ${TRUST_ALL_KEYS} )) ; then
+  if test ${TRUST_ALL_KEYS} = 1 ; then
     keydir=${BASEDIR}/keys/ssh
   else
     keydir=${BASEDIR}/keys/ssh/trusted
   fi
   for key in ${keydir}/* ; do
-    if [[ ! -f ${key} ]] ; then
+    if [ ! -f "${key}" ] ; then
       continue
     fi
     if ssh_key_already_installed "${key}" ; then
@@ -170,20 +170,20 @@ function install_ssh_keys {
   done
 }
 
-function install_gpg_keys {
+install_gpg_keys() {
   local key
   for key in ${BASEDIR}/keys/gpg/* ; do
     gpg --import < ${key} >/dev/null
   done
 }
 
-function install_known_hosts {
+install_known_hosts() {
   verbose 'Installing known hosts...' >&2
-  if [[ ! -f ${BASEDIR}/keys/known_hosts ]] ; then
+  if [ ! -f "${BASEDIR}/keys/known_hosts" ] ; then
     return 0
   fi
   mkdir -p ${HOME}/.ssh
-  if [[ -f ${HOME}/.ssh/known_hosts ]] ; then
+  if [ -f "${HOME}/.ssh/known_hosts" ] ; then
     local tmpf=`mktemp`
     cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort | uniq > $tmpf
     mv $tmpf ${HOME}/.ssh/known_hosts
@@ -192,19 +192,19 @@ function install_known_hosts {
   fi
 }
 
-function install_keys {
+install_keys() {
   install_ssh_keys
   install_gpg_keys
   install_known_hosts
 }
 
-function is_deb_system {
+is_deb_system() {
   test -f /usr/bin/apt-get
 }
 
-function run_as_root {
+run_as_root() {
   # Attempt to run as root
-  if [[ ${USER} == "root" ]] ; then
+  if [ ${USER} = "root" ] ; then
     "$@"
     return $?
   elif groups | grep -q '\bsudo\b' ; then
@@ -215,15 +215,15 @@ function run_as_root {
   return 1
 }
 
-function install_pkg_set {
+install_pkg_set() {
   local pkg_file=${BASEDIR}/${1}
   local pkg_list=""
-  if [[ ! -f ${pkg_file} ]] ; then return 0 ; fi
+  if [ ! -f "${pkg_file}" ] ; then return 0 ; fi
   while read line ; do
-    if [[ ${line:0:1} == '#' ]] ; then
+    if [ $(echo "${line}" | cut -c1-1) = '#' ] ; then
       continue
     fi
-    if [[ -z ${line} ]] ; then
+    if [ -z "${line}" ] ; then
       continue
     fi
     if apt-cache show ${line} >/dev/null 2>&1 ; then
@@ -238,21 +238,21 @@ function install_pkg_set {
   fi
 }
 
-function install_apt_pkgs {
+install_apt_pkgs() {
   run_as_root apt-get update -qq || \
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
   install_pkg_set packages.minimal
-  if (( $MINIMAL )) ; then
+  if test $MINIMAL = 1 ; then
     return 0
   fi
-  (( $HAVE_X )) && install_pkg_set packages.X
-  (( $IS_KALI )) && install_pkg_set packages.kali
+  test $HAVE_X = 1 && install_pkg_set packages.X
+  test $IS_KALI = 1 && install_pkg_set packages.kali
   install_pkg_set packages.${ARCH}
-  (( $HAVE_X )) && install_chrome
+  test $HAVE_X = 1 && install_chrome
 }
 
-function install_chrome {
+install_chrome() {
   local TMPD=`mktemp -d`
   local CHROME_ARCH=`echo ${ARCH} | sed 's/x86_64/amd64/'`
   dpkg-query -l 'google-chrome*' >/dev/null 2>&1 && return 0
@@ -264,17 +264,18 @@ function install_chrome {
   rm -rf ${TMPD}
 }
 
-function read_saved_prefs {
+read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
   local pref_file=`dirname $0`/installed-prefs
   if [ -f ${pref_file} ] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
-    source ${pref_file}
+    # source is a bashism
+    . ${pref_file}
   fi
 }
 
-function save_prefs {
-  (( $SAVE )) || return 0
+save_prefs() {
+  test $SAVE = 1 || return 0
   local pref_file=${BASEDIR}/installed-prefs
   (echo_pref BASEDIR
    echo_pref MINIMAL
@@ -284,11 +285,11 @@ function save_prefs {
    echo_pref VERBOSE) > $pref_file
 }
 
-function echo_pref {
+echo_pref() {
   echo "$1=\${$1:-${!1}}"
 }
 
-function cleanup {
+cleanup() {
   # Needs zsh
   if ! test -x /usr/bin/zsh ; then
     return 0
@@ -300,15 +301,15 @@ function cleanup {
 EOF
 }
 
-function verbose {
-  (( ${VERBOSE:-0} )) && echo "$@" >&2 || return 0
+verbose() {
+  test ${VERBOSE:-0} = 1 && echo "$@" >&2 || return 0
 }
 
 # Operations
 
-function install_main {
-  (( $MINIMAL )) || prerequisites
-  (( $INSTALL_PKGS )) && is_deb_system && install_apt_pkgs
+install_main() {
+  test $MINIMAL = 1 || prerequisites
+  test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
   install_dotfile_dir "${BASEDIR}/dotfiles"
   test -d "${BASEDIR}/private_dotfiles" && \
     test -d "${BASEDIR}/.git/git-crypt" && \
@@ -316,8 +317,8 @@ function install_main {
   test -d "${BASEDIR}/local_dotfiles" && \
     install_dotfile_dir "${BASEDIR}/local_dotfiles"
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-  (( $MINIMAL )) || postinstall
-  (( $INSTALL_KEYS )) && install_keys
+  test $MINIMAL = 1 || postinstall
+  test $INSTALL_KEYS = 1 && install_keys
   save_prefs
   cleanup
 }
@@ -336,7 +337,7 @@ VERBOSE=${VERBOSE:-0}
 SAVE=${SAVE:-1}
 
 # Check prerequisites
-if [[ ! -d $BASEDIR ]] ; then
+if [ ! -d $BASEDIR ] ; then
   echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
