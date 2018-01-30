@@ -1,14 +1,21 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 set -o nounset
 set -o errexit
 
-FINDTYPE="-xtype"
+case $(uname) in
+  Linux)
+    FINDTYPE="-xtype"
+    ;;
+  Darwin|*BSD)
+    FINDTYPE="-type"
+    ;;
+  *)
+    echo "Unknown OS: $(uname), guessing no GNU utils."
+    FINDTYPE="-type"
+    ;;
+esac
 
-if [ `uname` == 'Darwin' ] ; then
-  # MacOS specifics
-  FINDTYPE="-type"
-fi
 
 function prerequisites {
   if which zsh > /dev/null 2>&1 ; then
