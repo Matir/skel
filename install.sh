@@ -16,15 +16,30 @@ case $(uname) in
     ;;
 esac
 
+is_comment() {
+  if [ $(echo "${1}" | cut -c1-1) = '#' ] ; then
+    true
+  else
+    false
+  fi
+}
 
 prerequisites() {
   if which zsh > /dev/null 2>&1 ; then
-    if [[ $- = *i* ]] ; then
-      if [[ `getent passwd $USER | cut -d: -f7` != */zsh ]] ; then
-        echo 'Enter password to change shell.' >&2
-        chsh -s `which zsh`
-      fi
-    fi
+    case $- in
+      *i*)
+        case `getent passwd $USER | cut -d: -f7` in
+          */zsh)
+            ;;
+          *)
+            if [ `id` -ne 0 ] ; then
+              echo 'Enter password to change shell.' >&2
+            fi
+            chsh -s `which zsh`
+            ;;
+        esac
+        ;;
+    esac
     install_git https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
   else
     echo "ZSH not found!" >&2
@@ -135,13 +150,16 @@ ssh_key_already_installed() {
   local TMPF=`mktemp`
   local key
   while read key ; do
+    if is_comment "${key}" ; then
+      continue
+    fi
     echo "$key" > $TMPF
     local EFP=`ssh-keygen -l -f ${TMPF} 2>/dev/null | awk '{print $2}'`
     if [ "$EFP" = "$KEYFP" ] ; then
       rm $TMPF 2>/dev/null
       return 0
     fi
-  done < <(grep -v '^#' ${AK})
+  done < ${AK}
   rm $TMPF 2>/dev/null
   return 1
 }
@@ -220,7 +238,7 @@ install_pkg_set() {
   local pkg_list=""
   if [ ! -f "${pkg_file}" ] ; then return 0 ; fi
   while read line ; do
-    if [ $(echo "${line}" | cut -c1-1) = '#' ] ; then
+    if is_comment "${line}" ; then
       continue
     fi
     if [ -z "${line}" ] ; then
@@ -286,7 +304,8 @@ save_prefs() {
 }
 
 echo_pref() {
-  echo "$1=\${$1:-${!1}}"
+  eval "local val=\${$1}"
+  echo "$1=\${$1:-${val}}"
 }
 
 cleanup() {
@@ -368,6 +387,10 @@ case $OPERATION in
     ;;
   pwndbg)
     install_pwndbg
+    ;;
+  test)
+    # Do nothing, just sourcing
+    set +o errexit
     ;;
   *)
     echo "Unknown operation $OPERATION." >/dev/stderr
