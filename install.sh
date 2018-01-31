@@ -100,7 +100,7 @@ install_git() {
 
 add_bin_symlink() {
   local LINKNAME=${HOME}/bin/${2:-`basename $1`}
-  if [ -e ${LINKNAME} && ! -h ${LINKNAME} ] ; then
+  if [ -e ${LINKNAME} -a ! -h ${LINKNAME} ] ; then
     echo "Refusing to overwrite ${LINKNAME}" >&2
     return 1
   fi
@@ -132,12 +132,6 @@ postinstall() {
   # Install other useful tools
   install_git https://github.com/trustedsec/ptf.git ${HOME}/bin/ptframework && \
     add_bin_symlink ${HOME}/bin/ptframework/ptf
-  # Refresh all gpg keys
-  if test -x "`which gpg2`" ; then
-    gpg2 --refresh-keys
-  else
-    gpg --refresh-keys
-  fi
 }
 
 ssh_key_already_installed() {
