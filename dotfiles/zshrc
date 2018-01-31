@@ -64,6 +64,11 @@ if [ -x /usr/bin/ack-grep ] ; then
   alias ack='/usr/bin/ack-grep'
 fi
 
+# Most is nice, if we have it
+if command -v most >/dev/null 2>&1; then
+  export PAGER="most"
+fi
+
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
 
