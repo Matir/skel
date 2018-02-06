@@ -39,11 +39,13 @@
   user = matir
 
 # Site specific config
-[url "https://github.com/"]
-  insteadOf = github://
+[url "https://www.github.com/"]
+  insteadOf = "github:"
+  insteadOf = "github://"
 
 [url "ssh://git@github.com/"]
-  pushInsteadOf = github://
+  pushInsteadOf = "github:"
+  pushInsteadOf = "github://"
 
 [url "git://gist.github.com/"]
 	insteadOf = "gist:"
@@ -51,5 +53,6 @@
 [url "git@gist.github.com:"]
 	pushInsteadOf = "gist:"
 	pushInsteadOf = "git://gist.github.com/"
+
 [credential]
 	helper = cache --timeout=36000
