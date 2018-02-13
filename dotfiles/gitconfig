@@ -39,7 +39,7 @@
   user = matir
 
 # Site specific config
-[url "https://www.github.com/"]
+[url "https://github.com./"]
   insteadOf = "github:"
   insteadOf = "github://"
 
