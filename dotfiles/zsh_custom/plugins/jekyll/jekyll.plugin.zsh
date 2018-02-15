@@ -112,11 +112,11 @@ function jekyll {
       fi
       FILENAME=$(_jekyll_find_post "${TITLE}" "${SLUG}" "${JEKYLL_DIR}")
       if [ $? -ne 0 ] ; then
-        return
+        return 1
       fi
       if ! [[ "${FILENAME}" =~ '/_drafts/' ]] ; then
         echo "${FILENAME} is not a draft." >&2
-        return
+        return 1
       fi
       NEWNAME=$(echo "${FILENAME}" | sed "s/_drafts\//_posts\/${DATE}-/")
       mv "${FILENAME}" "${NEWNAME}"
