@@ -320,15 +320,19 @@ verbose() {
 
 # Operations
 
-install_main() {
-  test $MINIMAL = 1 || prerequisites
-  test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
+install_dotfiles() {
   install_dotfile_dir "${BASEDIR}/dotfiles"
   test -d "${BASEDIR}/private_dotfiles" && \
     test -d "${BASEDIR}/.git/git-crypt" && \
     install_dotfile_dir "${BASEDIR}/private_dotfiles"
   test -d "${BASEDIR}/local_dotfiles" && \
     install_dotfile_dir "${BASEDIR}/local_dotfiles"
+}
+
+install_main() {
+  test $MINIMAL = 1 || prerequisites
+  test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
+  install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
   test $MINIMAL = 1 || postinstall
   test $INSTALL_KEYS = 1 && install_keys
@@ -371,6 +375,9 @@ OPERATION=${1:-install}
 case $OPERATION in
   install)
     install_main
+    ;;
+  dotfiles)
+    install_dotfiles
     ;;
   package*)
     if [ ${2:-default} != default ] ; then
