@@ -23,6 +23,7 @@ python-dev
 python-hachoir-urwid
 python-html5lib
 python-imaging
+python-nwdiag
 python-pip
 python-scapy
 python-virtualenv
