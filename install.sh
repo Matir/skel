@@ -183,6 +183,8 @@ install_ssh_keys() {
 }
 
 install_gpg_keys() {
+  which gpg >/dev/null 2>&1 || \
+    return 0
   local key
   for key in ${BASEDIR}/keys/gpg/* ; do
     gpg --import < ${key} >/dev/null
