@@ -324,9 +324,11 @@ install_dotfiles() {
   install_dotfile_dir "${BASEDIR}/dotfiles"
   test -d "${BASEDIR}/private_dotfiles" && \
     test -d "${BASEDIR}/.git/git-crypt" && \
-    install_dotfile_dir "${BASEDIR}/private_dotfiles"
+    install_dotfile_dir "${BASEDIR}/private_dotfiles" || \
+    true
   test -d "${BASEDIR}/local_dotfiles" && \
-    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+    install_dotfile_dir "${BASEDIR}/local_dotfiles" || \
+    true
 }
 
 install_main() {
