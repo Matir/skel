@@ -1,0 +1,3 @@
+#!/bin/bash
+# Launch chrome for burp
+exec /usr/bin/google-chrome-beta --ignore-certificate-errors --user-data-dir=${HOME}/.config/chrome-pentest --proxy-server=127.0.0.1:8080
