@@ -28,9 +28,6 @@ alias mdcode="sed 's/^/    /'"
 # Intel format plz
 alias objdump="command objdump -M intel"
 
-# Launch chrome for burp
-alias google-chrome-burp="/usr/bin/google-chrome-beta --ignore-certificate-errors --user-data-dir=${HOME}/.config/chrome-pentest --proxy-server=127.0.0.1:8080 >/dev/null 2>&1 &"
-
 # Useful directory utilities
 alias dircount="for d in * ; do find \$d -type d | wc -l | tr -d '\n' ; echo ' ' \$d ; done | sort -n"
 
