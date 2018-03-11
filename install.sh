@@ -40,7 +40,7 @@ prerequisites() {
         esac
         ;;
     esac
-    install_git https://github.com/robbyrussell/oh-my-zsh.git $HOME/.oh-my-zsh
+    install_git --recursive https://github.com/sorin-ionescu/prezto.git $HOME/.zprezto
   else
     echo "ZSH not found!" >&2
   fi
