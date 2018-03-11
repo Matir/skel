@@ -28,16 +28,9 @@ else
   alias ls='ls -G'
 fi
 
-# Load oh-my-zsh
-if [ -d $HOME/.oh-my-zsh ] ; then
-  ZSH=$HOME/.oh-my-zsh
-  ZSH_THEME="matir"
-  ZSH_CUSTOM="$HOME/.zsh_custom"
-  plugins=(encode64 gpg-agent pep8 pip python tmux urltools extract sudo virsh virtualenv jekyll metasploit gcloud safe-paste)
-  test -f /usr/share/virtualenvwrapper/virtualenvwrapper.sh && plugins+=(virtualenvwrapper)
-  source $ZSH/oh-my-zsh.sh
-  unset ZSH_THEME
-  unset ZSH_CUSTOM
+# Load prezto
+if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
+  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
 
 # .profile is universal
@@ -80,3 +73,6 @@ function start_esp {
   export PATH="${PATH}:${HOME}/tools/esp/xtensa-esp32-elf/bin"
   export IDF_PATH="${HOME}/tools/esp/esp-idf"
 }
+
+# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
+export PATH="$PATH:$HOME/.rvm/bin"

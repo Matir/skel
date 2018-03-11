@@ -79,7 +79,7 @@ function jekyll {
   case "${1:-help}" in
     help|--help)
       command jekyll help
-      echo "Added by oh-my-zsh plugin:"
+      echo "Added by zsh plugin:"
       echo "  draft                 Create a new draft post."
       echo "  post                  Create a new post to publish immediately."
       echo "  publish               Publish a draft post by name."

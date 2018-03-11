@@ -1,0 +1,36 @@
+function prompt_matir_setup {
+  autoload -Uz add-zsh-hook
+  autoload -Uz vcs_info
+  autoload -Uz colors
+
+  prompt_opts=(sp subst cr percent)
+
+  colors
+
+  add-zsh-hook precmd prompt_matir_precmd
+
+  zstyle ':vcs_info:*' enable git
+  zstyle ':vcs_info:*' check-for-changes true
+  zstyle ':vcs_info:*' formats ' (%b%u)'
+  zstyle ':vcs_info:*' stagedstr '*'
+  zstyle ':vcs_info:*' unstagedstr '*'
+
+  # TODO: add virtualenv/rvm info
+  PROMPT='%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] %{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:%{$fg[green]%}%32<...<%~%<<%{$fg[blue]%}${vcs_info_msg_0_}%{$fg[white]%}%#%{$reset_color%} '
+
+  # Rprompt setup
+  local show_return="✘ "
+  # Default is to show the return value
+  if zstyle -T ':prezto:module:prompt' show-return-val; then
+    show_return+='%? '
+  fi
+  RPROMPT='%(?:: %{$fg[red]%}'
+  RPROMPT+=${show_return}
+  RPROMPT+='%{$reset_color)%}'
+}
+
+function prompt_matir_precmd {
+  vcs_info
+}
+
+prompt_matir_setup "$@"
