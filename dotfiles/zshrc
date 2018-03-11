@@ -73,6 +73,3 @@ function start_esp {
   export PATH="${PATH}:${HOME}/tools/esp/xtensa-esp32-elf/bin"
   export IDF_PATH="${HOME}/tools/esp/esp-idf"
 }
-
-# Add RVM to PATH for scripting. Make sure this is the last PATH variable change.
-export PATH="$PATH:$HOME/.rvm/bin"
