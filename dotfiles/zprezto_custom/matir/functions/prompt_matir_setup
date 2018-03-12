@@ -1,3 +1,5 @@
+# vim: syntax=zsh
+
 function prompt_matir_setup {
   autoload -Uz add-zsh-hook
   autoload -Uz vcs_info
@@ -9,6 +11,7 @@ function prompt_matir_setup {
 
   add-zsh-hook precmd prompt_matir_precmd
 
+  # Git related styles
   zstyle ':vcs_info:*' enable git
   zstyle ':vcs_info:*' check-for-changes true
   zstyle ':vcs_info:*' formats ' (%b%u%c)'
@@ -16,7 +19,19 @@ function prompt_matir_setup {
   zstyle ':vcs_info:*' unstagedstr '*'
 
   # TODO: add virtualenv/rvm info
-  PROMPT='%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] %{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:%{$fg[green]%}%32<...<%~%<<%{$fg[blue]%}${vcs_info_msg_0_}%{$fg[white]%}%#%{$reset_color%} '
+  PROMPT='%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] '  # History #
+  PROMPT+='%{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@'  # username@
+  PROMPT+='%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:'  # hostname
+  PROMPT+='%{$fg[green]%}%32<...<%~%<<'  # path
+  PROMPT+='%{$fg[blue]%}${vcs_info_msg_0_}'  # VCS info
+  PROMPT+='%{$fg[white]%}%#%{$reset_color%} '  # prompt symbol
+
+  # Editor options
+  zstyle ':prezto:module:editor:info:keymap:primary' format ''
+  zstyle ':prezto:module:editor:info:keymap:primary:insert' format 'I'
+  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format 'O'
+  zstyle ':prezto:module:editor:info:keymap:alternate' format ' [VICMD]'
+  zstyle ':prezto:module:editor:info:completing' format '...'
 
   # Rprompt setup
   local show_return="✘ "
@@ -26,7 +41,8 @@ function prompt_matir_setup {
   fi
   RPROMPT='%(?:: %{$fg[red]%}'
   RPROMPT+=${show_return}
-  RPROMPT+='%{$reset_color)%}'
+  RPROMPT+='%{$reset_color%})'
+  RPROMPT+='${editor_info[keymap]}'
 }
 
 function prompt_matir_precmd {
