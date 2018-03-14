@@ -1,3 +1,11 @@
 #!/bin/bash
 
-exec xdg-open $(dirname $0)/cyberchef.html
+set -u
+
+CHEF_FILE=${HOME}/tools/cyberchef/cyberchef.html
+
+if [ ! -f ${CHEF_FILE} ] ; then
+  ${HOME}/bin/install_tool cyberchef
+fi
+
+exec xdg-open ${CHEF_FILE}
