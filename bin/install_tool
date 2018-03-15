@@ -144,8 +144,7 @@ case ${TOOL} in
     fi
     ;;
   mitmproxy)
-    # Find a better way to get the latest
-    src="https://github.com/mitmproxy/mitmproxy/releases/download/v2.0.1/mitmproxy-2.0.1-linux.tar.gz"
+    src=$(python -c 'import urllib2; import json; print(filter(lambda x: x["name"].endswith("-linux.tar.gz"), json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["assets"])[0]["browser_download_url"])')
     download ${src} /tmp/mitmproxy.tar.gz
     mkdir -p ${DESTDIR}
     tar zx -C ${DESTDIR} -f /tmp/mitmproxy.tar.gz
