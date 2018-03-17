@@ -56,6 +56,8 @@ zstyle ':prezto:load' pmodule \
 #
 # Completions
 #
+# No groups of completions.
+zstyle ':completion:*' format ''
 
 # Set the entries to ignore in static */etc/hosts* for host completion.
 # zstyle ':prezto:module:completion:*:hosts' etc-host-ignores \
