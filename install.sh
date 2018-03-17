@@ -280,7 +280,11 @@ install_chrome() {
 
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
-  local pref_file=`dirname $0`/installed-prefs
+  local old_pref_file=`dirname $0`/installed-prefs
+  local pref_file=`dirname $0`/.installed-prefs
+  if [ -f ${old_pref_file} -a ! -f ${pref_file} ] ; then
+    mv ${old_pref_file} ${pref_file}
+  fi
   if [ -f ${pref_file} ] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
     # source is a bashism
@@ -290,7 +294,7 @@ read_saved_prefs() {
 
 save_prefs() {
   test $SAVE = 1 || return 0
-  local pref_file=${BASEDIR}/installed-prefs
+  local pref_file=${BASEDIR}/.installed-prefs
   (echo_pref BASEDIR
    echo_pref MINIMAL
    echo_pref INSTALL_KEYS
