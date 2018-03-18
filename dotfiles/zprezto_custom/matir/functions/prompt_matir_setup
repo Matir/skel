@@ -18,11 +18,14 @@ function prompt_matir_setup {
   zstyle ':vcs_info:*' stagedstr '*'
   zstyle ':vcs_info:*' unstagedstr '*'
 
-  # TODO: add virtualenv/rvm info
+  # Virtualenv formatting
+  zstyle ':prezto:module:python:info:virtualenv' format ' (py:%v)'
+
   PROMPT='%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] '  # History #
   PROMPT+='%{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@'  # username@
   PROMPT+='%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:'  # hostname
   PROMPT+='%{$fg[green]%}%32<...<%~%<<'  # path
+  PROMPT+='%{$fg[magenta]%}${python_info[virtualenv]}'  # virtualenv
   PROMPT+='%{$fg[blue]%}${vcs_info_msg_0_}'  # VCS info
   PROMPT+='%{$fg[white]%}%#%{$reset_color%} '  # prompt symbol
 
@@ -47,6 +50,7 @@ function prompt_matir_setup {
 
 function prompt_matir_precmd {
   vcs_info
+  python-info
 }
 
 prompt_matir_setup "$@"
