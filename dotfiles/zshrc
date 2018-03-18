@@ -34,7 +34,7 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # .profile is universal
-# but after oh-my-zsh to use anything setup there
+# but after zprezto to use/override anything setup there
 . ~/.profile
 # Deduplicate the path
 typeset -U path
