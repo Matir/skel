@@ -60,6 +60,7 @@ function jekyll {
   local DATE
   local NEWNAME
   local JEKYLL_DIR
+  local EDITOR=${EDITOR:-vim}
 
   JEKYLL_DIR=`_jekyll_locate_dir`
 
@@ -93,7 +94,7 @@ function jekyll {
       mkdir -p "${JEKYLL_DIR}/_drafts"
       FILENAME="${JEKYLL_DIR}/_drafts/${SLUG}.md"
       printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
-      vim "${FILENAME}" '+$' '+startinsert'
+      ${EDITOR} "${FILENAME}" '+$' '+startinsert'
       ;;
     post)
       if [ -z "${SLUG}" ] ; then
@@ -103,7 +104,7 @@ function jekyll {
       FILENAME="${JEKYLL_DIR}/_posts/${DATE}-${SLUG}.md"
       printf -- "${JTEMPLATE}" "${TITLE}" > "${FILENAME}"
       _jekyll_set_date "${FILENAME}" "${DATE}"
-      vim "${FILENAME}" '+$' '+startinsert'
+      ${EDITOR} "${FILENAME}" '+$' '+startinsert'
       ;;
     publish)
       if [ -z "${SLUG}" ] ; then
@@ -131,7 +132,7 @@ function jekyll {
       if [ $? -ne 0 ] ; then
         return
       fi
-      vim "${FILENAME}"
+      ${EDITOR} "${FILENAME}"
       ;;
     *)
       command jekyll "$@"
