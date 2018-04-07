@@ -73,7 +73,7 @@ function jekyll {
   JTEMPLATE+="category: Blog\n"
   JTEMPLATE+="---\n\n"
   TITLE=${@[2,-1]}
-  SLUG=$(echo -n ${TITLE}|tr A-Z a-z|tr -c -s -- a-z0-9 -)
+  SLUG=$(echo -n ${TITLE}|tr A-Z a-z|tr -c -s -- a-z0-9 -|sed 's/^-*\([^-].*[^-]\)-*$/\1/')
   DATE=`date +%Y-%m-%d`
 
   case "${1:-help}" in
