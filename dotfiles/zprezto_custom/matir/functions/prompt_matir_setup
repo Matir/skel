@@ -17,6 +17,7 @@ function prompt_matir_setup {
   zstyle ':vcs_info:*' formats ' (%b%u%c)'
   zstyle ':vcs_info:*' stagedstr '*'
   zstyle ':vcs_info:*' unstagedstr '*'
+  zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 
   # Virtualenv formatting
   zstyle ':prezto:module:python:info:virtualenv' format ' (py:%v)'
@@ -51,6 +52,16 @@ function prompt_matir_setup {
 function prompt_matir_precmd {
   vcs_info
   python-info
+}
+
+### git: Show marker (*) if there are untracked files in repository
+# Make sure you have added staged to your 'formats':  %c
+
++vi-git-untracked(){
+  if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+    git status --porcelain | grep '??' &> /dev/null ; then
+      hook_com[staged]+='*'
+  fi
 }
 
 prompt_matir_setup "$@"
