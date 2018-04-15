@@ -12,6 +12,7 @@ kpartx
 ldap-utils
 lvm2
 most
+nasm
 opensc
 openvpn
 p7zip-full
