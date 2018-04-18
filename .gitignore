@@ -1,4 +1,5 @@
 installed-prefs
+.installed-prefs
 *.swp
 *~
 *.bak

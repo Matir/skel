@@ -90,6 +90,7 @@ function jekyll {
       echo "  post                  Create a new post to publish immediately."
       echo "  publish               Publish a draft post by name."
       echo "  edit                  Edit a post."
+      echo "  dev                   Run local server with drafts and incremental."
       ;;
     draft)
       if [ -z "${SLUG}" ] ; then
@@ -138,6 +139,9 @@ function jekyll {
         return
       fi
       ${EDITOR} "${FILENAME}"
+      ;;
+    dev)
+      command jekyll serve -D -I "$@"
       ;;
     *)
       command jekyll "$@"
