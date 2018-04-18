@@ -1,4 +1,4 @@
-setxkbmap -option ctrl:nocaps
+setxkbmap -option ctrl:nocaps -option compose:ralt
 test -x /usr/bin/xsettingsd && /usr/bin/xsettingsd &
 test -f "$HOME/.env" && "$HOME/.env"
 test -f "$HOME/.profile" && . "$HOME/.profile"
