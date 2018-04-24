@@ -34,6 +34,7 @@ if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
 fi
 
 # Overrides to prezto
+unsetopt cdablevars
 
 # No groupings of completions
  zstyle ':completion:*' format ''

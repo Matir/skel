@@ -17,3 +17,6 @@ Host warzone
   Hostname warzone.shadowcats.club
   Port 22
   User matir
+
+Host github.com
+  Hostname ssh.github.com
