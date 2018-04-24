@@ -3,7 +3,7 @@ Xcursor.size: 16
 !!!
 ! Xft for fonts
 !!!
-Xft.dpi:                    96
+!Xft.dpi:                    144
 Xft.antialias:              false
 Xft.lcdfilter:              lcddefault
 Xft.rgba:                   rgb
