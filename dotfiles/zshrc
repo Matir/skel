@@ -7,7 +7,7 @@ unsetopt beep histbeep listbeep flowcontrol
 bindkey -e
 
 # Completion
-zstyle :compinstall filename '/home/david/.zshrc'
+zstyle :compinstall filename "${HOME}/.zshrc"
 autoload -Uz compinit && compinit
 
 DIRSTACKSIZE=16
