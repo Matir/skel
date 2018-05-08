@@ -51,7 +51,9 @@ function prompt_matir_setup {
 
 function prompt_matir_precmd {
   vcs_info
-  python-info
+  if (( $+functions[python-info] )); then
+    python-info
+  fi
 }
 
 ### git: Show marker (*) if there are untracked files in repository
