@@ -36,9 +36,6 @@ fi
 # Overrides to prezto
 unsetopt cdablevars
 
-# No groupings of completions
- zstyle ':completion:*' format ''
-
 # .profile is universal
 # but after zprezto to use/override anything setup there
 . ~/.profile
