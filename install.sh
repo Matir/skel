@@ -221,7 +221,7 @@ run_as_root() {
   if [ ${USER} = "root" ] ; then
     "$@"
     return $?
-  elif groups | grep -q '\bsudo\b' ; then
+  elif test -x $(which sudo 2>/dev/null) ; then
     verbose "Using sudo to run ${1}..."
     sudo "$@"
     return $?
