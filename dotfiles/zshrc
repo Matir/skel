@@ -4,10 +4,10 @@ HISTSIZE=10000
 SAVEHIST=10000
 setopt appendhistory autocd autopushd extendedglob nohup nomatch histignorespace histlexwords histverify cbases
 unsetopt beep histbeep listbeep flowcontrol
-bindkey -e
+bindkey -v
 
 # Completion
-zstyle :compinstall filename '/home/david/.zshrc'
+zstyle :compinstall filename "${HOME}/.zshrc"
 autoload -Uz compinit && compinit
 
 DIRSTACKSIZE=16
