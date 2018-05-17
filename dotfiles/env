@@ -27,22 +27,36 @@ export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
 export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
 
 # Setup locale
-for l in en_US.UTF-8 C ; do
-  if grep -q "${l}" /usr/share/i18n/SUPPORTED ; then
-    export LC_CTYPE=${l}
-    export LC_NUMERIC=${l}
-    export LC_TIME=${l}
-    export LC_MONETARY=${l}
-    export LC_MESSAGES=${l}
-    export LC_PAPER=${l}
-    export LC_NAME=${l}
-    export LC_ADDRESS=${l}
-    export LC_TELEPHONE=${l}
-    export LC_MEASUREMENT=${l}
-    export LC_IDENTIFICATION=${l}
-    break
-  fi
-done
+if test -f /usr/share/i18n/SUPPORTED ; then
+  for l in en_US.UTF-8 C ; do
+    if grep -q "${l}" /usr/share/i18n/SUPPORTED ; then
+      export LC_CTYPE=${l}
+      export LC_NUMERIC=${l}
+      export LC_TIME=${l}
+      export LC_MONETARY=${l}
+      export LC_MESSAGES=${l}
+      export LC_PAPER=${l}
+      export LC_NAME=${l}
+      export LC_ADDRESS=${l}
+      export LC_TELEPHONE=${l}
+      export LC_MEASUREMENT=${l}
+      export LC_IDENTIFICATION=${l}
+      break
+    fi
+  done
+else
+  export LC_CTYPE=C
+  export LC_NUMERIC=C
+  export LC_TIME=C
+  export LC_MONETARY=C
+  export LC_MESSAGES=C
+  export LC_PAPER=C
+  export LC_NAME=C
+  export LC_ADDRESS=C
+  export LC_TELEPHONE=C
+  export LC_MEASUREMENT=C
+  export LC_IDENTIFICATION=C
+fi
 export LC_COLLATE=C
 
 if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
