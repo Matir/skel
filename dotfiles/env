@@ -15,7 +15,7 @@ export LESS="-MR"
 export QUOTING_STYLE="literal"  # Coreutils quotes
 
 # Fix gnome-terminal
-if [[ $TERM == "xterm" && $COLORTERM == "gnome-terminal" ]] ; then
+if [ "$TERM" == "xterm" -a "$COLORTERM" == "gnome-terminal" ] ; then
   export TERM="xterm-256color"
 fi
 
@@ -59,4 +59,4 @@ else
 fi
 export LC_COLLATE=C
 
-if [[ -e $HOME/.localenv ]] ; then source $HOME/.localenv ; fi
+if [ -e $HOME/.localenv ] ; then source $HOME/.localenv ; fi
