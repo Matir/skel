@@ -1,22 +1,21 @@
-# Universal Settings (can't override)
-# Never fall back to protocol 1: it's broken
+# Universal Settings
 Protocol 2
 
+Include ~/.ssh/config.d/*
+
 # Defaults (May be Overridden)
+Host *.*
+  CheckHostIP         yes
+
 Host *
-	ControlMaster 	auto
-	ControlPath		~/.ssh/master/%r@%h:%p
-	ControlPersist	yes
-	ForwardAgent	no
-	ForwardX11		no
-	ForwardX11Trusted	no
-	ServerAliveInterval 120
-	CheckHostIP no
-
-Host warzone
-  Hostname warzone.shadowcats.club
-  Port 22
-  User matir
-
-Host github.com
-  Hostname ssh.github.com
+  CheckHostIP         no
+  ControlMaster       auto
+  ControlPath         ~/.ssh/master/%r@%h:%p
+  ControlPersist      yes
+  ForwardAgent        no
+  ForwardX11          no
+  ForwardX11Trusted   no
+  ServerAliveInterval 120
+  UpdateHostKeys      yes
+  User                david
+  VerifyHostKeyDNS    yes
