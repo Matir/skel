@@ -46,8 +46,17 @@ typeset -U path
 # Keybindings
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
+# ctrl-arrow keys
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+# ok, a few convenience bindings
+bindkey '^w' backward-kill-word
+bindkey '^r' history-incremental-search-backward
+
 
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
