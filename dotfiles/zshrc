@@ -32,6 +32,8 @@ fi
 if [[ -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
   source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 fi
+# noglob scp is so annoying
+unalias scp
 
 # Overrides to prezto
 unsetopt cdablevars
@@ -46,8 +48,17 @@ typeset -U path
 # Keybindings
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
+# ctrl-arrow keys
 bindkey '^[[1;5C' forward-word
 bindkey '^[[1;5D' backward-word
+bindkey '^P' up-history
+bindkey '^N' down-history
+bindkey '^?' backward-delete-char
+bindkey '^h' backward-delete-char
+# ok, a few convenience bindings
+bindkey '^w' backward-kill-word
+bindkey '^r' history-incremental-search-backward
+
 
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
@@ -67,12 +78,3 @@ fi
 
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
-
-function start_esp {
-  if [ ! -d ${HOME}/tools/esp ] ; then
-    echo "ESP not installed!" >/dev/stderr
-    return 1
-  fi
-  export PATH="${PATH}:${HOME}/tools/esp/xtensa-esp32-elf/bin"
-  export IDF_PATH="${HOME}/tools/esp/esp-idf"
-}
