@@ -177,6 +177,7 @@ exec --no-startup-id gnome-settings-daemon
 exec --no-startup-id (sleep 2; nm-applet) &
 exec --no-startup-id xset r rate 200 20
 exec --no-startup-id ~/bin/autostart.py
+exec --no-startup-id dex --autostart --environment x-cinnamon
 
 # customize windows
 for_window [window_role="pop-up"] floating enable
