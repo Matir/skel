@@ -5,17 +5,21 @@ Include ~/.ssh/config.d/*
 
 # Defaults (May be Overridden)
 Host *.*
-  CheckHostIP         yes
+  CheckHostIP                 yes
 
 Host *
-  CheckHostIP         no
-  ControlMaster       auto
-  ControlPath         ~/.ssh/master/%r@%h:%p
-  ControlPersist      yes
-  ForwardAgent        no
-  ForwardX11          no
-  ForwardX11Trusted   no
-  ServerAliveInterval 120
-  UpdateHostKeys      yes
-  User                david
-  VerifyHostKeyDNS    yes
+  CheckHostIP                 no
+  ControlMaster               auto
+  ControlPath                 ~/.ssh/master/%r@%h:%p
+  ControlPersist              yes
+  ForwardAgent                no
+  ForwardX11                  no
+  ForwardX11Trusted           no
+  ServerAliveInterval         120
+  UpdateHostKeys              yes
+  User                        david
+  VerifyHostKeyDNS            yes
+  CanonicalizeHostname        yes
+  CanonicalDomains            systemoverlord.com
+  CanonicalizeMaxDots         0
+  CanonicalizeFallbackLocal   yes
