@@ -1,13 +1,18 @@
 # Universal Settings
 Protocol 2
+CanonicalizeHostname        yes
+CanonicalizeMaxDots         0
+CanonicalizeFallbackLocal   yes
 
 Include ~/.ssh/config.d/*
+
+CanonicalDomains            systemoverlord.com
 
 # Defaults (May be Overridden)
 Host *.*
   CheckHostIP                 yes
 
-Host *
+Match canonical all
   CheckHostIP                 no
   ControlMaster               auto
   ControlPath                 ~/.ssh/master/%r@%h:%p
@@ -19,7 +24,3 @@ Host *
   UpdateHostKeys              yes
   User                        david
   VerifyHostKeyDNS            yes
-  CanonicalizeHostname        yes
-  CanonicalDomains            systemoverlord.com
-  CanonicalizeMaxDots         0
-  CanonicalizeFallbackLocal   yes
