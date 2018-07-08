@@ -348,6 +348,13 @@ install_main() {
   cleanup
 }
 
+install_dconf() {
+  which dconf >/dev/null 2>&1 || return 1
+  find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read dcpath ; do
+    dconf load ${dcpath}/ < "${BASEDIR}/dconf/${dcpath}"
+  done
+}
+
 # Setup variables
 read_saved_prefs
 
@@ -400,6 +407,10 @@ case $OPERATION in
   test)
     # Do nothing, just sourcing
     set +o errexit
+    ;;
+  dconf)
+    # Load dconf
+    install_dconf
     ;;
   *)
     echo "Unknown operation $OPERATION." >/dev/stderr
