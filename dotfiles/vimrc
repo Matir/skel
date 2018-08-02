@@ -51,7 +51,6 @@ imap <S-Tab> <Esc><<A
 " Line numbering, ruler
 set number
 set ruler
-set cursorline
 
 " File options
 set encoding=utf-8
