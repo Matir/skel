@@ -232,7 +232,10 @@ run_as_root() {
 install_pkg_set() {
   local pkg_file=${BASEDIR}/${1}
   local pkg_list=""
-  if [ ! -f "${pkg_file}" ] ; then return 0 ; fi
+  if [ ! -f "${pkg_file}" ] ; then
+    echo "Package set $(basename ${pkg_file}) does not exist." 1>&2
+    return 1
+  fi
   while read line ; do
     if is_comment "${line}" ; then
       continue
@@ -395,11 +398,8 @@ case $OPERATION in
     install_dotfiles
     ;;
   package*)
-    if [ ${2:-default} != default ] ; then
-      install_pkg_set packages.${2}
-    else
-      install_pkg_set packages
-    fi
+    PKG_SET=${2:-minimal}
+    install_pkg_set packages.${PKG_SET}
     ;;
   pwndbg)
     install_pwndbg
