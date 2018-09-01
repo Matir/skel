@@ -199,6 +199,17 @@ case ${TOOL} in
     src=$(python -c 'import urllib2; import json; print(filter(lambda x: x["name"]=="cyberchef.htm", json.load(urllib2.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"])[0]["browser_download_url"])')
     download ${src} ${DESTDIR}/cyberchef.html
     ;;
+  apktool)
+    mkdir -p ${DESTDIR}
+    download \
+      https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool \
+      ${DESTDIR}/apktool
+    download \
+      https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.3.3.jar \
+      ${DESTDIR}/apktool.jar
+    chmod +x ${DESTDIR}/apktool
+    add_bin_symlink apktool
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
