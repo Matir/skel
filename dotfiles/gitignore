@@ -17,3 +17,6 @@ Thumbs.db
 # Try to avoid accidentally checking in private keys
 id_rsa
 id_ecdsa
+
+# Kicad backup files
+*.kicad_pcb-bak

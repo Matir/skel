@@ -65,6 +65,15 @@ function check_sudo {
   sudo -l >/dev/null
 }
 
+function add_bin_symlink {
+  local TARGET NAME BINDIR
+  TARGET=${1}
+  NAME=${2:-$(basename ${1})}
+  BINDIR=${HOME}/bin/tools/
+  mkdir -p -- ${BINDIR}
+  ln -sf ${DESTDIR}/${TARGET} ${BINDIR}/${NAME}
+}
+
 DESTDIR="${HOME}/tools/${TOOL}"
 
 if [ -d ${DESTDIR} ] ; then
@@ -113,10 +122,11 @@ case ${TOOL} in
     gtemp=`mktemp -d`
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
     # TODO: find a way to make this version independent
-    gsdk="google-cloud-sdk-142.0.0-linux-x86_64.tar.gz"
+    gsdk="google-cloud-sdk-209.0.0-linux-x86_64.tar.gz"
     download "${gbase}${gsdk}" /tmp/gcloud.tar.gz
     tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C ${DESTDIR}
     rm /tmp/gcloud.tar.gz
+    add_bin_symlink bin/gcloud
     ;;
   android-sdk)
     # TODO: find a way to make this version independent
@@ -144,11 +154,13 @@ case ${TOOL} in
     fi
     ;;
   mitmproxy)
-    src=$(python -c 'import urllib2; import json; print(filter(lambda x: x["name"].endswith("-linux.tar.gz"), json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["assets"])[0]["browser_download_url"])')
-    download ${src} /tmp/mitmproxy.tar.gz
+    ver=$(python -c 'import urllib2; import json; print(json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["name"].replace("v",""))')
+    download https://snapshots.mitmproxy.org/${ver}/mitmproxy-${ver}-linux.tar.gz /tmp/mitmproxy.tar.gz
     mkdir -p ${DESTDIR}
     tar zx -C ${DESTDIR} -f /tmp/mitmproxy.tar.gz
     rm /tmp/mitmproxy.tar.gz
+    add_bin_symlink mitmproxy
+    add_bin_symlink mitmweb
     ;;
   esp)
     src="https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz"
@@ -186,6 +198,17 @@ case ${TOOL} in
     mkdir -p ${DESTDIR}
     src=$(python -c 'import urllib2; import json; print(filter(lambda x: x["name"]=="cyberchef.htm", json.load(urllib2.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"])[0]["browser_download_url"])')
     download ${src} ${DESTDIR}/cyberchef.html
+    ;;
+  apktool)
+    mkdir -p ${DESTDIR}
+    download \
+      https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool \
+      ${DESTDIR}/apktool
+    download \
+      https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.3.3.jar \
+      ${DESTDIR}/apktool.jar
+    chmod +x ${DESTDIR}/apktool
+    add_bin_symlink apktool
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr

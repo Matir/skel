@@ -5,6 +5,7 @@ set -o nounset
 
 if test -f /etc/apt/apt.conf.d/90-proxy ; then
   echo "Looks already setup."
+  exit 0
 fi
 
 cat >/etc/apt/proxy-detect <<'EOF'
@@ -25,7 +26,7 @@ fi
 echo DIRECT
 EOF
 
-chmod +x /etc/apt/proxy-detect
+chmod 755 /etc/apt/proxy-detect
 
 cat >/etc/apt/apt.conf.d/90-proxy <<'EOF'
 Acquire::http::Proxy-Auto-Detect "/etc/apt/proxy-detect";

@@ -232,7 +232,10 @@ run_as_root() {
 install_pkg_set() {
   local pkg_file=${BASEDIR}/${1}
   local pkg_list=""
-  if [ ! -f "${pkg_file}" ] ; then return 0 ; fi
+  if [ ! -f "${pkg_file}" ] ; then
+    echo "Package set $(basename ${pkg_file}) does not exist." 1>&2
+    return 1
+  fi
   while read line ; do
     if is_comment "${line}" ; then
       continue
@@ -348,6 +351,13 @@ install_main() {
   cleanup
 }
 
+install_dconf() {
+  which dconf >/dev/null 2>&1 || return 1
+  find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read dcpath ; do
+    dconf load ${dcpath}/ < "${BASEDIR}/dconf/${dcpath}"
+  done
+}
+
 # Setup variables
 read_saved_prefs
 
@@ -388,11 +398,8 @@ case $OPERATION in
     install_dotfiles
     ;;
   package*)
-    if [ ${2:-default} != default ] ; then
-      install_pkg_set packages.${2}
-    else
-      install_pkg_set packages
-    fi
+    PKG_SET=${2:-minimal}
+    install_pkg_set packages.${PKG_SET}
     ;;
   pwndbg)
     install_pwndbg
@@ -400,6 +407,10 @@ case $OPERATION in
   test)
     # Do nothing, just sourcing
     set +o errexit
+    ;;
+  dconf)
+    # Load dconf
+    install_dconf
     ;;
   *)
     echo "Unknown operation $OPERATION." >/dev/stderr
