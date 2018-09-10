@@ -1,12 +1,14 @@
 # Universal Settings
 Protocol 2
-CanonicalizeHostname        yes
-CanonicalizeMaxDots         0
-CanonicalizeFallbackLocal   yes
 
+# Permit Local Overrides
 Include ~/.ssh/config.d/*
 
+# Enable canonicalization, unless overridden
+CanonicalizeHostname        yes
+CanonicalizeFallbackLocal   yes
 CanonicalDomains            systemoverlord.com
+CanonicalizeMaxDots         0
 
 # Defaults (May be Overridden)
 Host *.*
