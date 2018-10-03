@@ -213,6 +213,10 @@ case ${TOOL} in
     chmod +x ${DESTDIR}/apktool
     add_bin_symlink apktool
     ;;
+  ptf)
+    src="https://github.com/trustedsec/ptf.git"
+    git clone ${src} ${DESTDIR}
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     exit 1
