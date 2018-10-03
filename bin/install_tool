@@ -117,6 +117,9 @@ case ${TOOL} in
       ${DESTDIR}/hak5.txt.bz2
     bunzip2 ${DESTDIR}/hak5.txt.bz2
     ;;
+  seclists)
+    git clone https://github.com/danielmiessler/SecLists.git ${DESTDIR}
+    ;;
   gcloud)
     mkdir -p ${DESTDIR}
     gtemp=`mktemp -d`
@@ -209,6 +212,10 @@ case ${TOOL} in
       ${DESTDIR}/apktool.jar
     chmod +x ${DESTDIR}/apktool
     add_bin_symlink apktool
+    ;;
+  ptf)
+    src="https://github.com/trustedsec/ptf.git"
+    git clone ${src} ${DESTDIR}
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
