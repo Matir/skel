@@ -129,9 +129,6 @@ postinstall() {
   if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
     vim +VundleInstall +qall
   fi
-  # Install other useful tools
-  install_git https://github.com/trustedsec/ptf.git ${HOME}/bin/ptframework && \
-    add_bin_symlink ${HOME}/bin/ptframework/ptf
 }
 
 ssh_key_already_installed() {
