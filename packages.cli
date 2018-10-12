@@ -11,6 +11,7 @@ jq
 kpartx
 ldap-utils
 lvm2
+msitools
 most
 nasm
 opensc
