@@ -101,6 +101,7 @@ case ${TOOL} in
     mkdir -p ${HOME}/.john
     touch ${HOME}/.john/john.pot
     ln -sf ${HOME}/.john/* ${DESTDIR}
+    add_bin_symlink john
     ;;
   wordlists)
     mkdir -p ${DESTDIR}
