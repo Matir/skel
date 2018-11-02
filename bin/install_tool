@@ -74,6 +74,8 @@ function add_bin_symlink {
   ln -sf ${DESTDIR}/${TARGET} ${BINDIR}/${NAME}
 }
 
+mkdir -p "${HOME}/tools"
+
 DESTDIR="${HOME}/tools/${TOOL}"
 
 if [ -d ${DESTDIR} ] ; then
