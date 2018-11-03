@@ -1,8 +1,9 @@
+binfmt-support
 build-essential
 cryptsetup
 dsniff
 ecryptfs-utils
-gnupg-curl
+jarwrapper
 iftop
 iptraf
 ipython
