@@ -21,6 +21,7 @@ if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
   Plugin 'Matt-Deacalion/vim-systemd-syntax'
   Plugin 'fatih/vim-go'
   Plugin 'vhda/verilog_systemverilog.vim'
+  Plugin 'editorconfig/editorconfig-vim'
   call vundle#end()
 endif
 
