@@ -8,6 +8,7 @@ bindkey -v
 
 # Completion
 zstyle :compinstall filename "${HOME}/.zshrc"
+zstyle ':completion:*' users root ${USER}
 autoload -Uz compinit && compinit
 
 DIRSTACKSIZE=16
