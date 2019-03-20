@@ -1,3 +1,9 @@
 [submodule "dotfiles/vim/pack/matir/opt/solarized8"]
 	path = dotfiles/vim/pack/matir/opt/solarized8
 	url = https://github.com/lifepillar/vim-solarized8.git
+[submodule "dotfiles/vim/pack/matir/start/surround"]
+	path = dotfiles/vim/pack/matir/start/surround
+	url = https://github.com/tpope/vim-surround.git
+[submodule "dotfiles/vim/pack/matir/start/editorconfig"]
+	path = dotfiles/vim/pack/matir/start/editorconfig
+	url = https://github.com/editorconfig/editorconfig-vim.git
