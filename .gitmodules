@@ -1,0 +1,3 @@
+[submodule "dotfiles/vim/pack/matir/opt/solarized8"]
+	path = dotfiles/vim/pack/matir/opt/solarized8
+	url = https://github.com/lifepillar/vim-solarized8.git

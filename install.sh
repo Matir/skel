@@ -44,11 +44,6 @@ prerequisites() {
   else
     echo "ZSH not found!" >&2
   fi
-  if which vim > /dev/null 2>&1 ; then
-    mkdir -p $HOME/.vim/bundle
-    install_git https://github.com/VundleVim/Vundle.vim.git \
-      $HOME/.vim/bundle/Vundle.vim
-  fi
 }
 
 install_dotfile_dir() {

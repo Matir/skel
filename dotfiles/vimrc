@@ -1,30 +1,6 @@
 " Allow full use of vim options
 set nocompatible
 
-" Enable Vundle if installed
-if filereadable(glob("~/.vim/bundle/Vundle.vim/README.md"))
-  filetype off
-  set rtp+=~/.vim/bundle/Vundle.vim
-  call vundle#begin()
-  Plugin 'gmarik/Vundle.vim'
-  Plugin 'nvie/vim-flake8'
-  Plugin 'tell-k/vim-autopep8'
-  Plugin 'tpope/vim-fugitive'
-  Plugin 'mileszs/ack.vim'
-  Plugin 'tpope/vim-unimpaired'
-  Plugin 'scrooloose/syntastic'
-  Plugin 'mattn/webapi-vim'
-  Plugin 'mattn/gist-vim'
-  Plugin 'altercation/vim-colors-solarized'
-  Plugin 'vimoutliner/vimoutliner'
-  Plugin 'PotatoesMaster/i3-vim-syntax'
-  Plugin 'Matt-Deacalion/vim-systemd-syntax'
-  Plugin 'fatih/vim-go'
-  Plugin 'vhda/verilog_systemverilog.vim'
-  Plugin 'editorconfig/editorconfig-vim'
-  call vundle#end()
-endif
-
 " Setup paths
 set backupdir=~/.cache/vim/backup//
 set directory=~/.cache/vim/swap//
@@ -64,7 +40,7 @@ else
   let g:solarized_termcolors=256
   let g:solarized_termtrans=1
 endif
-silent! colorscheme solarized
+silent! colorscheme solarized8
 " Enable filetype support
 filetype plugin indent on
 " Default ASM syntax for ft support
