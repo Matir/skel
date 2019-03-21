@@ -8,9 +8,11 @@ alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo
 alias luksFormat='cryptsetup luksFormat -s 512 -c aes-xts-plain64 -h sha256 -i 15000'
 
 # Colors
-if [ `uname` != 'Darwin' -a `uname` != 'NetBSD' ] ; then
-  # Should have a better way to check for GNU versions
+if [ ls --version >/dev/null 2>&1 ] ; then
   alias ls='ls --color=auto'
+fi
+if [ `uname` != 'Darwin' -a `uname` != 'NetBSD' -a `uname` != 'FreeBSD' -a `uname` != 'OpenBSD' ] ; then
+  # Should have a better way to check for GNU versions
   alias grep='grep --color=auto'
   alias egrep='egrep --color=auto'
   alias fgrep='fgrep --color=auto'
