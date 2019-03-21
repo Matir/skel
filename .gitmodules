@@ -7,3 +7,6 @@
 [submodule "dotfiles/vim/pack/matir/start/editorconfig"]
 	path = dotfiles/vim/pack/matir/start/editorconfig
 	url = https://github.com/editorconfig/editorconfig-vim.git
+[submodule "dotfiles/vim/pack/matir/start/fugitive"]
+	path = dotfiles/vim/pack/matir/start/fugitive
+	url = https://github.com/tpope/vim-fugitive
