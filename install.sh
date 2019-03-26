@@ -333,6 +333,7 @@ install_dotfiles() {
 }
 
 install_main() {
+  git -C ${BASEDIR} submodule update --init
   test $MINIMAL = 1 || prerequisites
   test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
   install_dotfiles
