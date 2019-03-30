@@ -1,5 +1,6 @@
 audacity
 cinnamon
+codequery
 fonts-inconsolata
 gimp
 keepassx
