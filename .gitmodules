@@ -13,3 +13,6 @@
 [submodule "dotfiles/vim/pack/matir/start/ctrlp"]
 	path = dotfiles/vim/pack/matir/start/ctrlp
 	url = https://github.com/ctrlpvim/ctrlp.vim.git
+[submodule "dotfiles/vim/pack/matir/start/vim-go"]
+	path = dotfiles/vim/pack/matir/start/vim-go
+	url = https://github.com/fatih/vim-go.git
