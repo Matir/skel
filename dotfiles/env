@@ -5,7 +5,7 @@ ulimit -c unlimited
 
 # Paths and preferences
 export PYTHONPATH="$HOME/.python:$PYTHONPATH"
-export GOPATH="$HOME/Projects/Go"
+export GOPATH="$HOME/Projects/Go:/usr/share/gocode"
 export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH:$GOPATH/bin"
 export VISUAL=vim
 export EDITOR=vim
