@@ -1,3 +1,6 @@
+# Interactive shells only.
+# Should only use POSIX constructs.
+
 # Always load ENV
 test -f "$HOME/.env" && . "$HOME/.env"
 
