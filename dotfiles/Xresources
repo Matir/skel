@@ -27,21 +27,29 @@ URxvt.lineSpace:            0
 URxvt.iso14755:             false
 
 ! Fonts
-URxvt*font: xft:inconsolata:pixelsize=16,xft:monospace:size=11
+URxvt.font: xft:inconsolata:pixelsize=16,xft:monospace:size=11
 
 ! Fix font space
 URxvt.letterSpace: -1
 
-! Scrollbar
+! Scrollbar and scrolling
 URxvt.scrollStyle:          rxvt
 URxvt.scrollBar:            false
+! do not scroll with output
+URxvt.scrollTtyOutput:      false
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt.scrollWithBuffer:     true
+! scroll back to the bottom on keypress
+URxvt.scrollTtyKeypress:    true
+
+! Allow apps to manage their own secondary screen
+URxvt.secondaryScreen:      1
+URxvt.secondaryScroll:      0
 
 ! Perl extensions
-URxvt.perl-ext-common:      default,matcher,resize-font
+URxvt.perl-ext-common:      default,matcher,font-size
 URxvt.matcher.button:       1
 URxvt.urlLauncher:          /usr/bin/xdg-open
-URxvt.resize-font.smaller:  C-Down
-URxvt.resize-font.bigger:   C-Up
 
 ! Cursor
 URxvt.cursorBlink:          true
@@ -50,11 +58,14 @@ URxvt.cursorUnderline:      false
 ! Pointer
 URxvt.pointerBlank:         true
 
+! Disable printing the terminal contents when pressing PrintScreen.
+URxvt.print-pipe:           "cat > /dev/null"
+
 ! Solarized colors begin
-URxvt.background: #002b36
-URxvt.foreground: #657b83
-URxvt.fadeColor: #002b36
-URxvt.cursorColor: #93a1a1
+URxvt.background:             #002b36
+URxvt.foreground:             #657b83
+URxvt.fadeColor:              #002b36
+URxvt.cursorColor:            #93a1a1
 URxvt.pointerColorBackground: #586e75
 URxvt.pointerColorForeground: #93a1a1
 
