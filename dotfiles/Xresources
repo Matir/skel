@@ -47,9 +47,13 @@ URxvt.secondaryScreen:      1
 URxvt.secondaryScroll:      0
 
 ! Perl extensions
-URxvt.perl-ext-common:      default,matcher,font-size
+URxvt.perl-ext-common:      default,matcher,font-size,eval
 URxvt.matcher.button:       1
 URxvt.urlLauncher:          /usr/bin/xdg-open
+
+! Copy/Paste Stuff
+URxvt.keysym.Shift-Control-V:   eval:paste_clipboard
+URxvt.keysym.Shift-Control-C:   eval:selection_to_clipboard
 
 ! Cursor
 URxvt.cursorBlink:          true
