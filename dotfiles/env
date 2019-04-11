@@ -29,6 +29,15 @@ if [ -z "${TERMINAL}" ] ; then
   done
 fi
 
+# Browser preferences
+if [ -z "${BROWSER}" ] ; then
+  for t in google-chrome-beta google-chrome firefox ; do
+    if BROWSER=$(command -v ${t}); then
+      export BROWSER
+    fi
+  done
+fi
+
 # For virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
