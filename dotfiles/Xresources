@@ -66,12 +66,18 @@ URxvt.pointerBlank:         true
 ! Disable printing the terminal contents when pressing PrintScreen.
 URxvt.print-pipe:           "cat > /dev/null"
 
-! Solarized colors begin
+!!! Solarized colors begin
+! base03
 URxvt.background:             #002b36
-URxvt.foreground:             #657b83
+! base0
+URxvt.foreground:             #839496
+! base03
 URxvt.fadeColor:              #002b36
+! base1
 URxvt.cursorColor:            #93a1a1
+! base01
 URxvt.pointerColorBackground: #586e75
+! base1
 URxvt.pointerColorForeground: #93a1a1
 
 !! black dark/light
