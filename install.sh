@@ -171,7 +171,7 @@ install_known_hosts() {
   mkdir -p ${HOME}/.ssh
   if [ -f "${HOME}/.ssh/known_hosts" ] ; then
     local tmpf=`mktemp`
-    cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort | uniq > $tmpf
+    cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort -u > $tmpf
     mv $tmpf ${HOME}/.ssh/known_hosts
   else
     cp ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts
