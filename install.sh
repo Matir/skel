@@ -103,6 +103,7 @@ add_bin_symlink() {
 }
 
 # Custom version of pwndbg's installer
+# TODO: move to install_tool.sh
 install_pwndbg() {
   if ! which gdb > /dev/null 2>&1 ; then
     return 1
@@ -120,10 +121,7 @@ install_pwndbg() {
 }
 
 postinstall() {
-  # Install Vundle plugins
-  if [ -d $HOME/.vim/bundle/Vundle.vim ] ; then
-    vim +VundleInstall +qall
-  fi
+  true
 }
 
 ssh_key_already_installed() {
