@@ -6,6 +6,9 @@ setopt appendhistory autocd autopushd extendedglob nohup nomatch histignorespace
 unsetopt beep histbeep listbeep flowcontrol
 bindkey -v
 
+# Allow core files
+ulimit -c unlimited
+
 # Completion
 zstyle :compinstall filename "${HOME}/.zshrc"
 zstyle ':completion:*' users root ${USER}

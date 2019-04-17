@@ -1,11 +1,11 @@
 # Sourced by zshrc as well as bash.
+# Should only use POSIX shell constructs.
 
 umask 027
-ulimit -c unlimited
 
 # Paths and preferences
 export PYTHONPATH="$HOME/.python:$PYTHONPATH"
-export GOPATH="$HOME/Projects/Go"
+export GOPATH="$HOME/Projects/Go:/usr/share/gocode"
 export PATH="$HOME/bin:/sbin:/usr/sbin:$PATH:$GOPATH/bin"
 export VISUAL=vim
 export EDITOR=vim
@@ -15,8 +15,27 @@ export LESS="-MR"
 export QUOTING_STYLE="literal"  # Coreutils quotes
 
 # Fix gnome-terminal
-if [ "$TERM" = "xterm" -a "$COLORTERM" = "gnome-terminal" ] ; then
+if [ "$TERM" = "xterm" ] && [ "$COLORTERM" = "gnome-terminal" ] ; then
+  # Requires `ncurses-base` package for terminfo.
   export TERM="xterm-256color"
+fi
+
+# Terminal preferences for i3
+if [ -z "${TERMINAL}" ] ; then
+  for t in urxvt gnome-terminal; do
+    if TERMINAL=$(command -v ${t}) ; then
+      export TERMINAL
+    fi
+  done
+fi
+
+# Browser preferences
+if [ -z "${BROWSER}" ] ; then
+  for t in google-chrome-beta google-chrome firefox ; do
+    if BROWSER=$(command -v ${t}); then
+      export BROWSER
+    fi
+  done
 fi
 
 # For virtualenvwrapper
@@ -59,4 +78,5 @@ else
 fi
 export LC_COLLATE=C
 
-if [ -e $HOME/.localenv ] ; then source $HOME/.localenv ; fi
+# shellcheck source=/dev/null
+test -e "$HOME/.localenv" && . "$HOME/.localenv"

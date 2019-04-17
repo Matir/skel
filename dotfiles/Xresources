@@ -4,7 +4,7 @@ Xcursor.size: 16
 ! Xft for fonts
 !!!
 !Xft.dpi:                    144
-Xft.antialias:              false
+Xft.antialias:              true
 Xft.lcdfilter:              lcddefault
 Xft.rgba:                   rgb
 Xft.hinting:                true
@@ -27,21 +27,34 @@ URxvt.lineSpace:            0
 URxvt.iso14755:             false
 
 ! Fonts
-URxvt*font: xft:inconsolata:pixelsize=16
+URxvt.font: xft:inconsolata:pixelsize=17,xft:monospace:size=12
 
 ! Fix font space
-URxvt*letterSpace: -1
+URxvt.letterSpace: -1
 
-! Scrollbar
+! Scrollbar and scrolling
 URxvt.scrollStyle:          rxvt
 URxvt.scrollBar:            false
+! do not scroll with output
+URxvt.scrollTtyOutput:      false
+! scroll in relation to buffer (with mouse scroll or Shift+Page Up)
+URxvt.scrollWithBuffer:     true
+! scroll back to the bottom on keypress
+URxvt.scrollTtyKeypress:    true
+
+! Allow apps to manage their own secondary screen
+URxvt.secondaryScreen:      1
+URxvt.secondaryScroll:      0
 
 ! Perl extensions
-URxvt.perl-ext-common:      default,matcher,resize-font
+URxvt.perl-ext-common:      default,matcher,font-size,eval
 URxvt.matcher.button:       1
 URxvt.urlLauncher:          /usr/bin/xdg-open
-URxvt.resize-font.smaller:  C-Down
-URxvt.resize-font.bigger:   C-Up
+URxvt.url-launcher:         /usr/bin/xdg-open
+
+! Copy/Paste Stuff
+URxvt.keysym.Shift-Control-V:   eval:paste_clipboard
+URxvt.keysym.Shift-Control-C:   eval:selection_to_clipboard
 
 ! Cursor
 URxvt.cursorBlink:          true
@@ -50,12 +63,21 @@ URxvt.cursorUnderline:      false
 ! Pointer
 URxvt.pointerBlank:         true
 
-! Solarized colors begin
-URxvt.background: #002b36
-URxvt.foreground: #657b83
-URxvt.fadeColor: #002b36
-URxvt.cursorColor: #93a1a1
+! Disable printing the terminal contents when pressing PrintScreen.
+URxvt.print-pipe:           "cat > /dev/null"
+
+!!! Solarized colors begin
+! base03
+URxvt.background:             #002b36
+! base0
+URxvt.foreground:             #839496
+! base03
+URxvt.fadeColor:              #002b36
+! base1
+URxvt.cursorColor:            #93a1a1
+! base01
 URxvt.pointerColorBackground: #586e75
+! base1
 URxvt.pointerColorForeground: #93a1a1
 
 !! black dark/light

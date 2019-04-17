@@ -40,6 +40,10 @@ else
   let g:solarized_termcolors=256
   let g:solarized_termtrans=1
 endif
+if $TERM ==? 'rxvt-unicode-256color'
+  " I have .Xresources setup for solarized
+  let g:solarized_use16=1
+endif
 silent! colorscheme solarized8
 " Enable filetype support
 filetype plugin indent on
