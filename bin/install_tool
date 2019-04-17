@@ -87,6 +87,7 @@ if [ -d ${DESTDIR} ] ; then
   fi
 fi
 
+# Begin main tool selection
 case ${TOOL} in
   john)
     install_pkgs libssl-dev git build-essential yasm libgmp-dev libpcap-dev \
@@ -220,8 +221,28 @@ case ${TOOL} in
     src="https://github.com/trustedsec/ptf.git"
     git clone ${src} ${DESTDIR}
     ;;
+  pwndbg)
+    if ! which gdb > /dev/null 2>&1 ; then
+      echo 'No gdb available!' >/dev/stderr
+      exit 1
+    fi
+    git clone --depth 1 -b stable https://github.com/pwndbg/pwndbg.git ${DESTDIR}
+    local PY_PACKAGES=${DESTDIR}/vendor
+    mkdir -p ${PY_PACKAGES}
+    local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
+    local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
+    PYTHON="${PYTHON}${PYVER}"
+    ${PYTHON} -m pip install --target ${PY_PACKAGES} -Ur ${DESTDIR}/requirements.txt
+    ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone unicorn
+    # capstone package is broken
+    cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
+    echo "Options:" >/dev/stderr
+    for opt in $(awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' $0|sort); do
+      echo -e "\t${opt}" >/dev/stderr
+    done
     exit 1
     ;;
 esac

@@ -26,10 +26,10 @@ end
 python
 import sys
 import os.path
-pwndbg = os.path.expanduser('~/.pwndbg/gdbinit.py')
+pwndbg = os.path.expanduser('~/tools/pwndbg/gdbinit.py')
 peda = os.path.expanduser('~/.peda/peda.py')
 if os.path.isfile(pwndbg):
-  sys.path.insert(0, os.path.expanduser('~/.pwndbg/vendor'))
+  sys.path.insert(0, os.path.expanduser('~/tools/pwndbg/vendor'))
   gdb.execute('source {}'.format(pwndbg))
 elif os.path.isfile(peda):
   gdb.execute('source {}'.format(peda))

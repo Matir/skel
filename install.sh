@@ -102,24 +102,6 @@ add_bin_symlink() {
   ln -sf ${1} ${LINKNAME}
 }
 
-# Custom version of pwndbg's installer
-# TODO: move to install_tool.sh
-install_pwndbg() {
-  if ! which gdb > /dev/null 2>&1 ; then
-    return 1
-  fi
-  install_git -b stable https://github.com/pwndbg/pwndbg.git $HOME/.pwndbg
-  mkdir -p $HOME/.pwndbg/vendor
-  local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
-  local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
-  PYTHON="${PYTHON}${PYVER}"
-  local PY_PACKAGES=$HOME/.pwndbg/vendor
-  ${PYTHON} -m pip install --target ${PY_PACKAGES} -Ur $HOME/.pwndbg/requirements.txt
-  ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone unicorn
-  # capstone package is broken
-  cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
-}
-
 postinstall() {
   true
 }
@@ -391,9 +373,6 @@ case $OPERATION in
   package*)
     PKG_SET=${2:-minimal}
     install_pkg_set packages.${PKG_SET}
-    ;;
-  pwndbg)
-    install_pwndbg
     ;;
   test)
     # Do nothing, just sourcing
