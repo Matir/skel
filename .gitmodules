@@ -16,3 +16,6 @@
 [submodule "dotfiles/vim/pack/matir/start/vim-go"]
 	path = dotfiles/vim/pack/matir/start/vim-go
 	url = https://github.com/fatih/vim-go.git
+[submodule "dotfiles/zprezto"]
+	path = dotfiles/zprezto
+	url = https://github.com/sorin-ionescu/prezto.git

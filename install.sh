@@ -40,7 +40,6 @@ prerequisites() {
         esac
         ;;
     esac
-    install_git --recursive https://github.com/sorin-ionescu/prezto.git $HOME/.zprezto
   else
     echo "ZSH not found!" >&2
   fi
@@ -313,7 +312,7 @@ install_dotfiles() {
 }
 
 install_main() {
-  git -C ${BASEDIR} submodule update --init
+  git -C ${BASEDIR} submodule update --init --recursive
   test $MINIMAL = 1 || prerequisites
   test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
   install_dotfiles
