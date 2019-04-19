@@ -1,29 +1,22 @@
 [submodule "dotfiles/vim/pack/matir/opt/solarized8"]
 	path = dotfiles/vim/pack/matir/opt/solarized8
 	url = https://github.com/lifepillar/vim-solarized8.git
-	shallow = true
 [submodule "dotfiles/vim/pack/matir/start/surround"]
 	path = dotfiles/vim/pack/matir/start/surround
 	url = https://github.com/tpope/vim-surround.git
-	shallow = true
 [submodule "dotfiles/vim/pack/matir/start/editorconfig"]
 	path = dotfiles/vim/pack/matir/start/editorconfig
 	url = https://github.com/editorconfig/editorconfig-vim.git
-	shallow = true
 [submodule "dotfiles/vim/pack/matir/start/fugitive"]
 	path = dotfiles/vim/pack/matir/start/fugitive
 	url = https://github.com/tpope/vim-fugitive
-	shallow = true
 [submodule "dotfiles/vim/pack/matir/start/ctrlp"]
 	path = dotfiles/vim/pack/matir/start/ctrlp
 	url = https://github.com/ctrlpvim/ctrlp.vim.git
-	shallow = true
 [submodule "dotfiles/vim/pack/matir/start/vim-go"]
 	path = dotfiles/vim/pack/matir/start/vim-go
 	url = https://github.com/fatih/vim-go.git
-	shallow = true
 [submodule "dotfiles/zprezto"]
 	path = dotfiles/zprezto
 	url = https://github.com/sorin-ionescu/prezto.git
 	fetchRecurseSubmodules = true
-	shallow = true
