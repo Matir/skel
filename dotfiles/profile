@@ -9,6 +9,8 @@ export GREP_COLOR='01;31'
 export GREP_COLORS='mt=01;31:mc=01;31:ms=01;31'
 
 # Setup LS_COLORS
-test -f "${HOME}/.dircolors" && eval $(dircolors "${HOME}/.dircolors")
+whence dircolors >/dev/null 2>&1 && \
+  test -f "${HOME}/.dircolors" && \
+  eval $(dircolors "${HOME}/.dircolors")
 
 test -f "${HOME}/.profile.local" && . "${HOME}/.profile.local"
