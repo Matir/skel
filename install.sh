@@ -48,16 +48,38 @@ prerequisites() {
 install_dotfile_dir() {
   local SRCDIR="${1}"
   local dotfile
+  local submodule_prune="$(git submodule status -- "${SRCDIR}" 2>/dev/null | \
+    awk '{print $2}' | \
+    while read submod ; do
+      echo -n " -o -path ${BASEDIR}/${submod}"
+    done)"
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
                     -name README.md -o \
-                    -name .gitignore \) \
+                    -name .gitignore \
+                    ${submodule_prune} \) \
       -prune -o ${FINDTYPE} f -print | \
     while read dotfile ; do
       local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
-      mkdir -p `dirname "${TARGET}"`
+      mkdir -p $(dirname "${TARGET}")
       ln -s -f "${dotfile}" "${TARGET}"
+    done
+  git submodule status -- "${SRCDIR}" 2>/dev/null | \
+    awk '{print $2}' | \
+    while read submodule ; do
+      local FULLNAME="${BASEDIR}/${submodule}"
+      local TARGET="${HOME}/.${FULLNAME#${SRCDIR}/}"
+      mkdir -p $(dirname "${TARGET}")
+      if test -L "${TARGET}" ; then
+        if [ "$(readlink "${TARGET}")" != "${FULLNAME}" ] ; then
+          echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
+        fi
+      elif test -d "${TARGET}" ; then
+        echo "rm -rf ${TARGET}" >/dev/stderr
+      else
+        ln -s -f "${FULLNAME}" "${TARGET}"
+      fi
     done
 }
 
