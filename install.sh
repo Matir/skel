@@ -2,7 +2,7 @@
 
 set -o nounset
 set -o errexit
-set -o shwordsplit 2>/dev/null  # Make zsh behave like bash
+set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
 
 case $(uname) in
   Linux)
