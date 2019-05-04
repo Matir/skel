@@ -30,3 +30,6 @@
 	path = dotfiles/tmux/tmux-logging
 	url = https://github.com/tmux-plugins/tmux-logging.git
 	fetchRecurseSubmodules = true
+[submodule "dotfiles/vim/pack/matir/start/syntastic"]
+	path = dotfiles/vim/pack/matir/start/syntastic
+	url = https://github.com/vim-syntastic/syntastic.git

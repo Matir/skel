@@ -45,8 +45,6 @@ if $TERM ==? 'rxvt-unicode-256color'
   let g:solarized_use16=1
 endif
 silent! colorscheme solarized8
-" Enable filetype support
-filetype plugin indent on
 " Default ASM syntax for ft support
 let asmsyntax="nasm"
 " Allow file modelines
@@ -142,3 +140,7 @@ command Unsmartquote %s/“\|”/"/g
 
 " Markdown options
 autocmd Filetype markdown set expandtab shiftwidth=4
+
+" Enable filetype support
+" Needs to be at end of vimrc
+filetype plugin indent on
