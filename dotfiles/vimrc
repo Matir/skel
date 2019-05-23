@@ -121,7 +121,7 @@ nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 
 " Load vim-ycm if installed on the system level
 if isdirectory("/usr/share/vim-youcompleteme")
-  set g:ycm_autoclose_preview_window_after_insertion=1
+  let g:ycm_autoclose_preview_window_after_insertion=1
   set runtimepath+=/usr/share/vim-youcompleteme
 endif
 
