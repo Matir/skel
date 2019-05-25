@@ -115,6 +115,7 @@ endfunction
 let g:syntastic_enable_signs = 1
 let g:syntastic_auto_loc_list = 2
 let g:syntastic_go_checkers = ['govet', 'errcheck', 'go']
+let g:syntastic_python_checkers=['flake8']
 
 " Have F5 run the tests and display errors
 nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
@@ -146,6 +147,12 @@ command Unsmartquote %s/“\|”/"/g
 
 " Markdown options
 autocmd Filetype markdown set expandtab shiftwidth=4
+
+" Python options
+autocmd Filetype python set expandtab shiftwidth=4
+
+" Makefile options
+autocmd BufRead,BufNewFile Makefile* set noexpandtab
 
 " Enable filetype support
 " Needs to be at end of vimrc
