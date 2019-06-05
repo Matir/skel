@@ -47,8 +47,8 @@ endif
 silent! colorscheme solarized8
 " Default ASM syntax for ft support
 let asmsyntax="nasm"
-" Allow file modelines
-set modeline
+" Too risky to allow file modelines
+set nomodeline
 " Automatically re-read changed files
 set autoread
 " fsync() after writing files
