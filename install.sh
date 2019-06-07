@@ -49,7 +49,7 @@ prerequisites() {
 install_dotfile_dir() {
   local SRCDIR="${1}"
   local dotfile
-  local submodule_prune="$(git submodule status -- "${SRCDIR}" 2>/dev/null | \
+  local submodule_prune="$(git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
     awk '{print $2}' | \
     while read submod ; do
       echo -n " -o -path ${BASEDIR}/${submod}"
