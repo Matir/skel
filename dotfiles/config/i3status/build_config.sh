@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function general {
-  cat <<-EOF
+	cat <<-EOF
 		general {
 			colors = true
 			interval = 5
@@ -45,6 +45,17 @@ function wireless {
 }
 
 function wired {
+	local def_iface="$(ip route get 1.1.1.1 2>&1 | grep -oP 'dev \K\S+')"
+	if test -n "${def_iface}" ; then
+		cat <<-EOF
+			ethernet "${def_iface}" {
+				format_up = "E: %ip"
+				format_down = "E: down"
+			}
+			order += "ethernet ${def_iface}"
+		EOF
+		return 0
+	fi
 	cat <<-EOF
 		ethernet _first_ {
 			format_up = "E: %ip"
@@ -107,7 +118,7 @@ function battery {
 }
 
 function audio {
-  cat <<-EOF
+	cat <<-EOF
 		volume master {
 			format = "♪: %volume"
 			format_muted = "♪: MUTE"
