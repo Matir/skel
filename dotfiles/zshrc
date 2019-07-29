@@ -76,6 +76,9 @@ if command -v most >/dev/null 2>&1; then
 fi
 
 # Enable grc if we have it
+if ls --version 2>&1 >/dev/null ; then
+  alias ls='ls --color -C'
+fi
 [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
 
 # Load any local settings
