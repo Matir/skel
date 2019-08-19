@@ -4,6 +4,7 @@ cryptsetup
 dsniff
 ecryptfs-utils
 exuberant-ctags
+grc
 iftop
 iptraf
 ipython
@@ -27,10 +28,10 @@ python-hachoir-urwid
 python-html5lib
 python-nwdiag
 python-pip
-python-scapy
 python-virtualenv
 python-yara
 python3
+python3-scapy
 python3-pip
 python3-virtualenv
 radare2
