@@ -130,6 +130,7 @@ bindsym $alt+Control+Left workspace prev
 
 # i3 lock
 exec --no-startup-id ~/bin/i3lock.sh &
+exec --no-startup-id xset dpms 600
 bindsym $mod+l exec \
   bash -c "i3lock -c 000000 && (sleep 2 && xset dpms force off) &"
 bindsym $alt+Control+l exec \
