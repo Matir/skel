@@ -1,6 +1,7 @@
 #!/bin/sh
 LOCKER="i3lock -c 000000"
-/usr/bin/xss-lock -- "${LOCKER}" &
+# intentionally want word splitting below
+/usr/bin/xss-lock -- ${LOCKER} &
 exec /usr/bin/xautolock \
   -time 5 \
   -detectsleep \

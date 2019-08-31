@@ -130,10 +130,11 @@ bindsym $alt+Control+Left workspace prev
 
 # i3 lock
 exec --no-startup-id ~/bin/i3lock.sh &
+exec --no-startup-id xset dpms 600
 bindsym $mod+l exec \
-  bash -c "i3lock -c 000000 -d && (sleep 2 && xset dpms force off) &"
+  bash -c "i3lock -c 000000 && (sleep 2 && xset dpms force off) &"
 bindsym $alt+Control+l exec \
-  bash -c "i3lock -c 000000 -d && (sleep 2 && xset dpms force off) &"
+  bash -c "i3lock -c 000000 && (sleep 2 && xset dpms force off) &"
 
 # things to start quickly
 bindsym $mod+g exec /usr/bin/google-chrome-beta --password-store=gnome
@@ -169,14 +170,14 @@ bindsym --release $alt+Sys_Req exec --no-startup-id \
   /usr/bin/scrot -s $screendir/$scrotformat
 
 # useful utilities
-exec --no-startup-id \
-  (which xss-lock >/dev/null || /usr/bin/cinnamon-settings-daemon) &
+#exec --no-startup-id \
+#  (which xss-lock >/dev/null || /usr/bin/cinnamon-settings-daemon) &
 exec --no-startup-id gnome-keyring-daemon --start --components=pkcs11,secrets
 # Make GTK fonts look great again
-exec --no-startup-id gnome-settings-daemon
-exec --no-startup-id (sleep 2; nm-applet) &
+#exec --no-startup-id gnome-settings-daemon
+#exec --no-startup-id (sleep 2; nm-applet) &
 exec --no-startup-id xset r rate 200 20
-exec --no-startup-id ~/bin/autostart.py
+#exec --no-startup-id ~/bin/autostart.py
 exec --no-startup-id dex --autostart --environment x-cinnamon
 
 # customize windows

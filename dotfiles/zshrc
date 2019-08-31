@@ -59,7 +59,8 @@ bindkey '^r' history-incremental-search-backward
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
   if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
-  for file in $HOME/.zshrc.d/* ; do source "$file" ; done
+  # zsh-only-ism to avoid error if glob doesn't expand
+  for file in $HOME/.zshrc.d/*(N) ; do source "$file" ; done
 fi
 
 # In case ack is named ack-grep
@@ -74,6 +75,12 @@ PATH=${PATH}:${HOME}/bin/tools
 if command -v most >/dev/null 2>&1; then
   export PAGER="most"
 fi
+
+# Enable grc if we have it
+if ls --version 2>&1 >/dev/null ; then
+  alias ls='ls --color -C'
+fi
+[[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
 
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
