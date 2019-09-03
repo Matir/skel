@@ -26,9 +26,12 @@ end
 python
 import sys
 import os.path
+gef = os.path.expanduser('~/tools/gef/gef.py')
 pwndbg = os.path.expanduser('~/tools/pwndbg/gdbinit.py')
 peda = os.path.expanduser('~/.peda/peda.py')
-if os.path.isfile(pwndbg):
+if os.path.isfile(gef):
+  gdb.execute('source {}'.format(gef))
+elif os.path.isfile(pwndbg):
   sys.path.insert(0, os.path.expanduser('~/tools/pwndbg/vendor'))
   gdb.execute('source {}'.format(pwndbg))
 elif os.path.isfile(peda):

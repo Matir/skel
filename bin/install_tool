@@ -237,6 +237,16 @@ case ${TOOL} in
     # capstone package is broken
     cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
     ;;
+  gef)
+    if ! which gdb > /dev/null 2>&1 ; then
+      echo 'No gdb available!' >/dev/stderr
+      exit 1
+    fi
+    mkdir -p ${DESTDIR}
+    download \
+      https://github.com/hugsy/gef/raw/master/gef.py \
+      ${DESTDIR}/gef.py
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
