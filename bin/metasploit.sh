@@ -1,33 +1,13 @@
 #!/bin/sh
 
 export NAME=$(basename "$0")
-export BASE="/opt/metasploit" # TODO: search this path
+export BASE="/opt/metasploit-framework" # TODO: search this path
+unset GEM_PATH
 
-# Autogen'd
-if [ -f "${BASE}/scripts/setenv.sh" ] ; then
-  . ${BASE}/scripts/setenv.sh
+if [ -f "${BASE}/bin/${NAME}" ] ; then
+  exec "${BASE}/bin/${NAME}" "$@"
 fi
 
-# Use Pro's bundled gems instead of the gemcache
-export MSF_BUNDLE_GEMS=0
-export BUNDLE_GEMFILE=${BASE}/apps/pro/Gemfile
-
-# Set a flag so Gemfile can limit gems
-export FRAMEWORK_FLAG=true
-
-export MSF_DATABASE_CONFIG=${BASE}/apps/pro/ui/config/database.yml
-export TERMINFO=${BASE}/common/share/terminfo/
-
-# Check for ruby scripts such as msfconsole directly to avoid having to add
-# msf3 to the path.
-if [ -f "${BASE}/apps/pro/msf3/${NAME}" ]; then
-	exec ${BASE}/apps/pro/msf3/${NAME} "$@"
-fi
-if [ -f "${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb" ]; then
-  exec ${BASE}/apps/pro/msf3/tools/exploit/${NAME}.rb "$@"
-fi
-
-export BASE="/opt/metasploit-framework"
 if [ -f "${BASE}/embedded/framework/tools/exploit/${NAME}.rb" ]; then
   exec ${BASE}/embedded/bin/ruby \
     "${BASE}/embedded/framework/tools/exploit/${NAME}.rb" "$@"
