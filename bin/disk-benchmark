@@ -3,6 +3,7 @@
 set -ue
 
 FILENAME=${1}
+BENCHMARK_SIZE=${BENCHMARK_SIZE:-1000m}
 
 if [ -f ${FILENAME} ] ; then
   echo "File ${FILENAME} already exists!" >/dev/stderr
@@ -11,7 +12,8 @@ fi
 
 trap "test -f ${FILENAME} && rm -f ${FILENAME}" EXIT
 
-fio --loops=5 --size=1000m --filename=${FILENAME} --stonewall --ioengine=libaio --direct=1 \
+fio --loops=5 --size=${BENCHMARK_SIZE} --filename=${FILENAME} \
+  --stonewall --ioengine=libaio --direct=1 \
   --name=Seqread --bs=1m --rw=read \
   --name=Seqwrite --bs=1m --rw=write \
   --name=512Kread --bs=512k --rw=randread \
