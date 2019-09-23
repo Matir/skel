@@ -9,6 +9,8 @@ if [ -f ${FILENAME} ] ; then
   exit 1
 fi
 
+trap "test -f ${FILENAME} && rm -f ${FILENAME}" EXIT
+
 fio --loops=5 --size=1000m --filename=${FILENAME} --stonewall --ioengine=libaio --direct=1 \
   --name=Seqread --bs=1m --rw=read \
   --name=Seqwrite --bs=1m --rw=write \
@@ -16,4 +18,3 @@ fio --loops=5 --size=1000m --filename=${FILENAME} --stonewall --ioengine=libaio 
   --name=512Kwrite --bs=512k --rw=randwrite \
   --name=4kQD32read --bs=4k --iodepth=32 --rw=randread \
   --name=4kQD32write --bs=4k --iodepth=32 --rw=randwrite
-rm -f ${FILENAME}
