@@ -86,7 +86,16 @@ if [[ $- == *i* ]] ; then
   autoload -Uz promptinit && promptinit
   # Prompt
   prompt matir
-fi
+  # Virtualenvwrapper
+  if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
+    source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
+  fi
+  # Enable grc if we have it
+  if ls --version 2>&1 >/dev/null ; then
+    alias ls='ls --color -C'
+  fi
+  [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
+fi  # End interactive-only block
 
 # In case ack is named ack-grep
 if [ -x /usr/bin/ack-grep ] ; then
@@ -100,12 +109,6 @@ PATH=${PATH}:${HOME}/bin/tools
 if command -v most >/dev/null 2>&1; then
   export PAGER="most"
 fi
-
-# Enable grc if we have it
-if ls --version 2>&1 >/dev/null ; then
-  alias ls='ls --color -C'
-fi
-[[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
 
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi

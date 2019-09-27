@@ -30,8 +30,6 @@ zstyle ':prezto:load' pmodule \
   'environment' \
   'terminal' \
   'completion' \
-  'git' \
-  'python' \
   'syntax-highlighting' \
   'history-substring-search'
 
@@ -139,7 +137,7 @@ zstyle ':prezto:module:prompt' theme 'matir'
 # zstyle ':prezto:module:python:virtualenv' auto-switch 'yes'
 
 # Automatically initialize virtualenvwrapper if pre-requisites are met.
-zstyle ':prezto:module:python:virtualenv' initialize 'yes'
+#zstyle ':prezto:module:python:virtualenv' initialize 'yes'
 
 #
 # Screen
@@ -201,10 +199,10 @@ zstyle ':prezto:module:terminal:multiplexer-title' format '%s'
 #
 
 # Auto start a session when Zsh is launched in a local terminal.
-zstyle ':prezto:module:tmux:auto-start' local 'no'
+# zstyle ':prezto:module:tmux:auto-start' local 'no'
 
 # Auto start a session when Zsh is launched in a SSH connection.
-zstyle ':prezto:module:tmux:auto-start' remote 'no'
+# zstyle ':prezto:module:tmux:auto-start' remote 'no'
 
 # Integrate with iTerm2.
 # zstyle ':prezto:module:tmux:iterm' integrate 'yes'

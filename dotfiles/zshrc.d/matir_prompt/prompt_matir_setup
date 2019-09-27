@@ -19,19 +19,16 @@ function prompt_matir_setup {
   zstyle ':vcs_info:*' unstagedstr '*'
   zstyle ':vcs_info:git*+set-message:*' hooks git-untracked
 
-  # Virtualenv formatting
-  zstyle ':prezto:module:python:info:virtualenv' format ' (py:%v)'
-
   PROMPT='%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] '  # History #
   PROMPT+='%{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@'  # username@
   PROMPT+='%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:'  # hostname
   PROMPT+='%{$fg[green]%}%32<...<%~%<<'  # path
-  PROMPT+='%{$fg[magenta]%}${python_info[virtualenv]}'  # virtualenv
+  PROMPT+='%{$fg[magenta]%}${VIRTUAL_ENV_SHORT}'  # virtualenv
   PROMPT+='%{$fg[blue]%}${vcs_info_msg_0_}'  # VCS info
   PROMPT+='%{$fg[white]%}%#%{$reset_color%} '  # prompt symbol
 
   # Rprompt setup
-  local show_return="✘ "
+  local show_return='✘ '
   RPROMPT='%(?:: %{$fg[red]%}'
   RPROMPT+=${show_return}
   RPROMPT+='%? '
@@ -49,8 +46,10 @@ zle -N zle-keymap-select
 
 function prompt_matir_precmd {
   vcs_info
-  if (( $+functions[python-info] )); then
-    python-info
+  if [ $VIRTUAL_ENV ] ; then
+    VIRTUAL_ENV_SHORT=" (py:$(basename $VIRTUAL_ENV))"
+  else
+    VIRTUAL_ENV_SHORT=""
   fi
 }
 
