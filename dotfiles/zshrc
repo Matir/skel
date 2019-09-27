@@ -22,14 +22,27 @@ setopt \
   histlexwords \
   histsavenodups \
   histverify \
+  interactivecomments \
+  longlistjobs \
   multios \
   nohup \
   nomatch \
+  notify \
   pushdignoredups \
   pushdsilent \
   pushdtohome \
+  rcquotes \
   sharehistory
-unsetopt beep histbeep listbeep flowcontrol
+unsetopt \
+  beep \
+  cdablevars \
+  histbeep \
+  listbeep \
+  flowcontrol \
+  mailwarning \
+  hup \
+  bgnice \
+  checkjobs
 # vi keybindings
 bindkey -v
 
@@ -51,16 +64,7 @@ zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
 zstyle ':completion::complete:*' use-cache on
 zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
 
-# Load prezto
-if [[ -z "${NO_ZPREZTO}" && -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
-  source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
-fi
-
-# Overrides to prezto
-unsetopt cdablevars
-
 # .profile is universal
-# but after zprezto to use/override anything setup there
 . ~/.profile
 # Deduplicate the path
 typeset -U path

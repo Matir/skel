@@ -22,10 +22,6 @@
 	path = dotfiles/vim/pack/matir/start/vim-go
 	url = https://github.com/fatih/vim-go.git
 	fetchRecurseSubmodules = true
-[submodule "dotfiles/zprezto"]
-	path = dotfiles/zprezto
-	url = https://github.com/sorin-ionescu/prezto.git
-	fetchRecurseSubmodules = true
 [submodule "dotfiles/tmux/tmux-logging"]
 	path = dotfiles/tmux/tmux-logging
 	url = https://github.com/tmux-plugins/tmux-logging.git
