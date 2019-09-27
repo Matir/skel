@@ -237,10 +237,10 @@ install_pkg_set() {
     if [ -z "${line}" ] ; then
       continue
     fi
-    if apt-cache show ${line} | grep -q 'No packages found' >/dev/null 2>&1 ; then
-      echo "Warning: package ${line} not found." >&2
-    else
+    if [ "$(apt-cache -q show ${line} 2>/dev/null)" != "" ] ; then
       pkg_list="${pkg_list} ${line}"
+    else
+      echo "Warning: package ${line} not found." >&2
     fi
   done < ${pkg_file}
   if [ -n "${pkg_list}" ] ; then
