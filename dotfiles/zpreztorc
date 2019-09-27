@@ -29,14 +29,11 @@ zstyle ':prezto:load' pmodule-dirs $HOME/.zprezto_custom
 zstyle ':prezto:load' pmodule \
   'environment' \
   'terminal' \
-  'editor' \
   'completion' \
-  'matir' \
   'git' \
   'python' \
   'syntax-highlighting' \
-  'history-substring-search' \
-  'prompt'
+  'history-substring-search'
 
 #
 # Autosuggestions

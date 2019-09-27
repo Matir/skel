@@ -30,24 +30,22 @@ function prompt_matir_setup {
   PROMPT+='%{$fg[blue]%}${vcs_info_msg_0_}'  # VCS info
   PROMPT+='%{$fg[white]%}%#%{$reset_color%} '  # prompt symbol
 
-  # Editor options
-  zstyle ':prezto:module:editor:info:keymap:primary' format ''
-  zstyle ':prezto:module:editor:info:keymap:primary:insert' format 'I'
-  zstyle ':prezto:module:editor:info:keymap:primary:overwrite' format 'O'
-  zstyle ':prezto:module:editor:info:keymap:alternate' format ' [VICMD]'
-  zstyle ':prezto:module:editor:info:completing' format '...'
-
   # Rprompt setup
   local show_return="✘ "
-  # Default is to show the return value
-  if zstyle -T ':prezto:module:prompt' show-return-val; then
-    show_return+='%? '
-  fi
   RPROMPT='%(?:: %{$fg[red]%}'
   RPROMPT+=${show_return}
+  RPROMPT+='%? '
   RPROMPT+='%{$reset_color%})'
-  RPROMPT+='${editor_info[keymap]}'
+  RPROMPT+='${PROMPT_VIMODE}'
 }
+
+function zle-keymap-select {
+  # Add prompt info
+  PROMPT_VIMODE="${${KEYMAP/vicmd/ [VICMD]}/(main|viins)/}"
+  zle reset-prompt
+}
+
+zle -N zle-keymap-select
 
 function prompt_matir_precmd {
   vcs_info

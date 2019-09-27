@@ -25,6 +25,7 @@ setopt \
   pushdtohome \
   sharehistory
 unsetopt beep histbeep listbeep flowcontrol
+# vi keybindings
 bindkey -v
 
 # Allow core files
@@ -56,7 +57,7 @@ unsetopt cdablevars
 # Deduplicate the path
 typeset -U path
 
-# Keybindings
+# Additional Keybindings
 bindkey '^[[A' history-search-backward
 bindkey '^[[B' history-search-forward
 # ctrl-arrow keys
@@ -66,7 +67,7 @@ bindkey '^P' up-history
 bindkey '^N' down-history
 bindkey '^?' backward-delete-char
 bindkey '^h' backward-delete-char
-# ok, a few convenience bindings
+# ok, a few emacs convenience bindings
 bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
 
@@ -74,13 +75,17 @@ bindkey '^r' history-incremental-search-backward
 if [[ $- == *i* ]] ; then
   if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
   # zsh-only-ism to avoid error if glob doesn't expand
-  for file in $HOME/.zshrc.d/*(N) ; do source "$file" ; done
-  # extra completions
-  fpath=(~/.zshrc.completions $fpath)
+  for file in $HOME/.zshrc.d/*.zsh(N) ; do source "$file" ; done
+  # extra completions, prompt
+  fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt $fpath)
   # Completion
   zstyle :compinstall filename "${HOME}/.zshrc"
   zstyle ':completion:*' users root ${USER}
+  # Modules after fpath
   autoload -Uz compinit && compinit
+  autoload -Uz promptinit && promptinit
+  # Prompt
+  prompt matir
 fi
 
 # In case ack is named ack-grep
