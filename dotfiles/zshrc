@@ -3,11 +3,16 @@ HISTFILE=~/.zhistory
 HISTSIZE=10000
 SAVEHIST=10000
 setopt \
+  alwaystoend \
   appendhistory \
   autocd \
+  autolist \
+  automenu \
+  autoparamslash \
   autopushd \
   banghist \
   cbases \
+  completeinword \
   extendedglob \
   extendedhistory \
   histexpiredupsfirst \
@@ -32,6 +37,7 @@ bindkey -v
 ulimit -c unlimited
 
 DIRSTACKSIZE=16
+# Set terminal title
 case $TERM in
   xterm*)
     precmd () {print -Pn "\e]0;%n@%m: %~\a"}
@@ -42,6 +48,8 @@ autoload -U colors && colors
 PS1="%{$fg[black]%}[%{$fg[yellow]%}%h%{$fg[black]%}] %{%(!.$fg[red].$fg[green])%}%8>..>%n%>>%{$fg[white]%}@%{$fg[blue]%}%12>..>%m%>>%{$fg[white]%}:%{$fg[green]%}%32<...<%~%<<%{$fg[white]%}%#%{$reset_color%} "
 
 zstyle ':completion:*:default' list-colors ${(s.:.)LS_COLORS}
+zstyle ':completion::complete:*' use-cache on
+zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
 
 # Load prezto
 if [[ -z "${NO_ZPREZTO}" && -s "${ZDOTDIR:-$HOME}/.zprezto/init.zsh" ]]; then
@@ -75,14 +83,16 @@ bindkey '^r' history-incremental-search-backward
 if [[ $- == *i* ]] ; then
   if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
   # zsh-only-ism to avoid error if glob doesn't expand
-  for file in $HOME/.zshrc.d/*.zsh(N) ; do source "$file" ; done
+  for file in $HOME/.zshrc.d/[a-zA-Z0-9]*.zsh(N) ; do
+    source "$file"
+  done
   # extra completions, prompt
   fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt $fpath)
   # Completion
-  zstyle :compinstall filename "${HOME}/.zshrc"
+  zstyle ':compinstall' filename "${HOME}/.zshrc"
   zstyle ':completion:*' users root ${USER}
   # Modules after fpath
-  autoload -Uz compinit && compinit
+  autoload -Uz compinit && compinit -i
   autoload -Uz promptinit && promptinit
   # Prompt
   prompt matir
@@ -95,6 +105,17 @@ if [[ $- == *i* ]] ; then
     alias ls='ls --color -C'
   fi
   [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
+  # Syntax highlighting and substring search
+  if test -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
+    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  fi
+  if test -f ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh ; then
+    source ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh
+    bindkey '^[[A' history-substring-search-up
+    bindkey '^[[B' history-substring-search-down
+    bindkey -M vicmd 'k' history-substring-search-up
+    bindkey -M vicmd 'j' history-substring-search-down
+  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep

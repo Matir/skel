@@ -40,3 +40,4 @@ scdaemon
 socat
 sqlite3
 ufw
+zsh-syntax-highlighting

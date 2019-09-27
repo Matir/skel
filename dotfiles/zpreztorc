@@ -28,10 +28,7 @@ zstyle ':prezto:load' pmodule-dirs $HOME/.zprezto_custom
 # The order matters.
 zstyle ':prezto:load' pmodule \
   'environment' \
-  'terminal' \
-  'completion' \
-  'syntax-highlighting' \
-  'history-substring-search'
+  'syntax-highlighting'
 
 #
 # Autosuggestions
