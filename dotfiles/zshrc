@@ -2,7 +2,28 @@
 HISTFILE=~/.zhistory
 HISTSIZE=10000
 SAVEHIST=10000
-setopt appendhistory autocd autopushd extendedglob nohup nomatch histignorespace histlexwords histverify cbases
+setopt \
+  appendhistory \
+  autocd \
+  autopushd \
+  banghist \
+  cbases \
+  extendedglob \
+  extendedhistory \
+  histexpiredupsfirst \
+  histfindnodups \
+  histignoredups \
+  histignorespace \
+  histlexwords \
+  histsavenodups \
+  histverify \
+  multios \
+  nohup \
+  nomatch \
+  pushdignoredups \
+  pushdsilent \
+  pushdtohome \
+  sharehistory
 unsetopt beep histbeep listbeep flowcontrol
 bindkey -v
 

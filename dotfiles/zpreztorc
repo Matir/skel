@@ -30,11 +30,8 @@ zstyle ':prezto:load' pmodule \
   'environment' \
   'terminal' \
   'editor' \
-  'history' \
-  'directory' \
   'completion' \
   'matir' \
-  'tmux' \
   'git' \
   'python' \
   'syntax-highlighting' \
