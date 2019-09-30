@@ -35,3 +35,6 @@ alias dircount="for d in * ; do find \$d -type d | wc -l | tr -d '\n' ; echo ' '
 
 # Drop caches for swap issues
 alias drop_caches="echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
+
+# dump acpi temperature
+alias temp='printf "%02.2f\n" "$(cat /sys/class/thermal/thermal_zone0/temp)e-3"'
