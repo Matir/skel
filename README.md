@@ -1,5 +1,5 @@
-
 ### About ###
+
 This is a repository of configuration files that I like to have on all the
 machines that I use.  I can just clone the repository and run "repo/setup.sh"
 and get most things setup the way I like them.
@@ -14,12 +14,14 @@ This now uses [git-crypt](https://github.com/AGWA/git-crypt) to protect
 I still wouldn't check in anything terribly sensitive, like private keys.
 
 ### Usefulness ###
+
 Mostly I post this to github so I can quickly grab the things I want, but it
 might also be useful to others.  Feel free to raise an issue if you have any
 questions.  I don't anticipating taking merge requests -- make your own
 dotfiles.  ;)
 
 ### Options ###
+
 ```
 BASEDIR: Where the skel framework is installed.  Defaults to $HOME/.skel
 MINIMAL: Don't do things that require git clones or installation of anything
@@ -31,9 +33,10 @@ INSTALL_PKGS: Install common packages, if on a Debian-like system.
   (Defaults to opposite of $MINIMAL.)
 SAVE: Save the install options to ${BASEDIR}/installed-prefs
 ```
+
 ### TODO ###
 
-[ ] Re-do the installation of packages.
-  [ ] Make manual installation of sets easy/possible.
-  [ ] Make missing packages not cause a full set failure.
-  [X] Allow comments and blank lines.
+-  [X] Re-do the installation of packages.
+    -  [X] Make manual installation of sets easy/possible.
+    -  [X] Make missing packages not cause a full set failure.
+    -  [X] Allow comments and blank lines. in packages
