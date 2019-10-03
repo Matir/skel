@@ -3,46 +3,47 @@ HISTFILE=~/.zhistory
 HISTSIZE=10000
 SAVEHIST=10000
 setopt \
-  alwaystoend \
-  appendhistory \
-  autocd \
-  autolist \
-  automenu \
-  autoparamslash \
-  autopushd \
-  banghist \
-  cbases \
-  completeinword \
-  extendedglob \
-  extendedhistory \
-  histexpiredupsfirst \
-  histfindnodups \
-  histignoredups \
-  histignorespace \
-  histlexwords \
-  histsavenodups \
-  histverify \
-  interactivecomments \
-  longlistjobs \
-  multios \
-  nohup \
-  nomatch \
-  notify \
-  pushdignoredups \
-  pushdsilent \
-  pushdtohome \
-  rcquotes \
-  sharehistory
+  ALWAYS_TO_END \
+  APPEND_HISTORY \
+  AUTO_CD \
+  AUTO_LIST \
+  AUTO_MENU \
+  AUTO_PARAM_SLASH \
+  AUTO_PUSHD \
+  BANG_HIST \
+  C_BASES \
+  COMPLETE_IN_WORD \
+  EXTENDED_GLOB \
+  EXTENDED_HISTORY \
+  HIST_EXPIRE_DUPS_FIRST \
+  HIST_FIND_NO_DUPS \
+  HIST_IGNORE_DUPS \
+  HIST_IGNORE_SPACE \
+  HIST_LEX_WORDS \
+  HIST_SAVE_NO_DUPS \
+  HIST_VERIFY \
+  INTERACTIVE_COMMENTS \
+  LONG_LIST_JOBS \
+  MULTIOS \
+  NO_CLOBBER \
+  NO_HUP \
+  NOMATCH \
+  NOTIFY \
+  PUSHD_IGNORE_DUPS \
+  PUSHD_SILENT \
+  PUSHD_TO_HOME \
+  RC_QUOTES \
+  SHARE_HISTORY
 unsetopt \
-  beep \
-  cdablevars \
-  histbeep \
-  listbeep \
-  flowcontrol \
-  mailwarning \
-  hup \
-  bgnice \
-  checkjobs
+  BEEP \
+  CDABLE_VARS \
+  HIST_BEEP \
+  LIST_BEEP \
+  FLOW_CONTROL \
+  MAIL_WARNING \
+  HUP \
+  BG_NICE \
+  CHECK_JOBS
 # vi keybindings
 bindkey -v
 
