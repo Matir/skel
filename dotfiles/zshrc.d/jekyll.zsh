@@ -80,6 +80,7 @@ function jekyll {
     tr -c -s -- a-z0-9 - |            # Replace non-alphanums with dashes
     sed 's/^-*\([^-].*[^-]\)-*$/\1/'  # Remove leading and trailing slashes
   )
+  TITLE=$(echo ${TITLE} | sed 's/\\/\\\\/g;s/"/\\"/g')
   DATE=`date +%Y-%m-%d`
 
   case "${1:-help}" in
