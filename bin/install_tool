@@ -23,7 +23,7 @@ while getopts -- "-:" a ; do
   esac
 done
 
-shift $(($OPTIND-1))
+shift $((OPTIND-1))
 
 if [ $# -ne 1 ] ; then
   echo "Usage: ${0} <tool>" >/dev/stderr
@@ -32,8 +32,8 @@ fi
 TOOL=${1}
 
 function die {
-  echo $* >/dev/stderr
-  return 1
+  echo "$@" >/dev/stderr
+  exit 1
 }
 
 function install_pkgs {
@@ -41,15 +41,15 @@ function install_pkgs {
     return 0
   fi
   # TODO: check if packages are already installed
-  if [ `id -u` -ne "0" ] ; then
-    sudo apt-get -y install $* || (
+  if [ "$(id -u)" -ne "0" ] ; then
+    sudo apt-get -y install "$@" || (
       echo -n "Unable to install packages, please ensure these " >/dev/stderr
       echo "are installed, then run with --no-packages." >/dev/stderr
-      echo $*
+      echo "$@"
       false )
     return 0
   fi
-  apt-get -y install $*
+  apt-get -y install "$@"
 }
 
 function download {
@@ -57,7 +57,7 @@ function download {
   DST=${2}
   echo -n "Downloading ${SRC} to ${DST}..." >&2
   # TODO: consider curl instead?
-  wget --no-server-response -q -O ${DST} --content-disposition ${SRC}
+  wget --no-server-response -q -O "${DST}" --content-disposition "${SRC}"
   echo " done." >&2
 }
 
@@ -67,71 +67,77 @@ function check_sudo {
 
 function add_bin_symlink {
   local TARGET NAME BINDIR
-  TARGET=${1}
-  NAME=${2:-$(basename ${1})}
-  BINDIR=${HOME}/bin/tools/
-  mkdir -p -- ${BINDIR}
-  ln -sf ${DESTDIR}/${TARGET} ${BINDIR}/${NAME}
+  TARGET="${1}"
+  NAME="${2:-$(basename ${1})}"
+  BINDIR="${HOME}/bin/tools/"
+  mkdir -p -- "${BINDIR}"
+  ln -sf "${DESTDIR}/${TARGET}" "${BINDIR}/${NAME}"
 }
 
 mkdir -p "${HOME}/tools"
 
 DESTDIR="${HOME}/tools/${TOOL}"
 
-if [ -d ${DESTDIR} ] ; then
-  if [ ${REINSTALL} -eq 1 ] ; then
-    rm -ri ${DESTDIR}
-  else
-    echo "${DESTDIR} exists but not reinstalling." >/dev/stderr
-    exit 1
+function makedest {
+  if [ -d "${DESTDIR}" ] ; then
+    if [ "${REINSTALL}" -eq 1 ] ; then
+      rm -ri "${DESTDIR}"
+    else
+      echo "${DESTDIR} exists but not reinstalling." >/dev/stderr
+      return 1
+    fi
   fi
-fi
+  mkdir -p "${DESTDIR}"
+}
+
+function makedest_or_die {
+  makedest || die "Aborting."
+}
 
 # Begin main tool selection
 case ${TOOL} in
   john)
+    makedest_or_die
     install_pkgs libssl-dev git build-essential yasm libgmp-dev libpcap-dev \
       pkg-config libbz2-dev libopenmpi-dev openmpi-bin libnss3-dev \
       libkrb5-dev libgmp-dev
-    jtemp=`mktemp -d`
-    git clone https://github.com/magnumripper/JohnTheRipper.git ${jtemp}/john
-    cd ${jtemp}/john/src
+    jtemp=$(mktemp -d)
+    git clone https://github.com/magnumripper/JohnTheRipper.git "${jtemp}/john"
+    cd "${jtemp}/john/src"
     ./configure && make -sj2
-    mkdir -p ${DESTDIR}
-    cp -r ${jtemp}/john/run/* ${DESTDIR}
-    rm -rf ${jtemp}
+    cp -r "${jtemp}"/john/run/* "${DESTDIR}"
+    rm -rf "${jtemp}"
     # Persistent files
-    mkdir -p ${HOME}/.john
-    touch ${HOME}/.john/john.pot
-    ln -sf ${HOME}/.john/* ${DESTDIR}
+    mkdir -p "${HOME}/.john"
+    touch "${HOME}/.john/john.pot"
+    ln -sf "${HOME}/.john/*" "${DESTDIR}"
     add_bin_symlink john
     ;;
   wordlists)
-    mkdir -p ${DESTDIR}
+    makedest
     download \
       http://downloads.skullsecurity.org/passwords/rockyou.txt.bz2 \
-      ${DESTDIR}/rockyou.txt.bz2
-    bunzip2 ${DESTDIR}/rockyou.txt.bz2
+      "${DESTDIR}/rockyou.txt.bz2"
+    bunzip2 "${DESTDIR}/rockyou.txt.bz2"
     download \
       http://downloads.skullsecurity.org/passwords/phpbb.txt.bz2 \
-      ${DESTDIR}/phpbb.txt.bz2
-    bunzip2 ${DESTDIR}/phpbb.txt.bz2
+      "${DESTDIR}/phpbb.txt.bz2"
+    bunzip2 "${DESTDIR}/phpbb.txt.bz2"
     download \
       http://downloads.skullsecurity.org/passwords/hak5.txt.bz2 \
-      ${DESTDIR}/hak5.txt.bz2
-    bunzip2 ${DESTDIR}/hak5.txt.bz2
+      "${DESTDIR}/hak5.txt.bz2"
+    bunzip2 "${DESTDIR}/hak5.txt.bz2"
     ;;
   seclists)
-    git clone https://github.com/danielmiessler/SecLists.git ${DESTDIR}
+    git clone https://github.com/danielmiessler/SecLists.git "${DESTDIR}"
     ;;
   gcloud)
-    mkdir -p ${DESTDIR}
-    gtemp=`mktemp -d`
+    makedest_or_die
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
     # TODO: find a way to make this version independent
     gsdk="google-cloud-sdk-209.0.0-linux-x86_64.tar.gz"
     download "${gbase}${gsdk}" /tmp/gcloud.tar.gz
-    tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C ${DESTDIR}
+    tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C "${DESTDIR}"
     rm /tmp/gcloud.tar.gz
     add_bin_symlink bin/gcloud
     ;;
@@ -139,62 +145,64 @@ case ${TOOL} in
     # TODO: find a way to make this version independent
     asdk="https://dl.google.com/android/repository/tools_r25.2.3-linux.zip"
     download ${asdk} /tmp/android-tools.zip
-    unzip -d ${DESTDIR} /tmp/android-tools.zip
+    unzip -d "${DESTDIR}" /tmp/android-tools.zip
     rm /tmp/android-tools.zip
     # Install components
-    ${DESTDIR}/tools/bin/sdkmanager "emulator" "platform-tools"
+    "${DESTDIR}/tools/bin/sdkmanager" "emulator" "platform-tools"
     ;;
   burp)
     # Install latest burp free
-    mkdir -p ${DESTDIR}
-    download \
-      https://portswigger.net/DownloadUpdate.ashx\?Product\=Free \
-      ${DESTDIR}/burp-free.jar
-    if [ $? -ne 0 ] ; then
+    makedest
+    if ! download \
+      https://portswigger.net/DownloadUpdate.ashx\?Product=Free \
+      "${DESTDIR}/burp-free.jar" ; then
       echo "Download failed." >&2
       exit 1
     fi
     if [ -x /usr/bin/jarwrapper ] ; then
       # We have binfmt support for jar, so add to bin
-      chmod +x ${DESTDIR}/*.jar
-      ln -sf ${DESTDIR}/*.jar ${HOME}/bin/burp
+      chmod +x "${DESTDIR}"/*.jar
+      ln -sf "${DESTDIR}"/*.jar "${HOME}/bin/burp"
     fi
     ;;
   mitmproxy)
+    makedest_or_die
     ver=$(python -c 'import urllib2; import json; print(json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["name"].replace("v",""))')
-    download https://snapshots.mitmproxy.org/${ver}/mitmproxy-${ver}-linux.tar.gz /tmp/mitmproxy.tar.gz
-    mkdir -p ${DESTDIR}
-    tar zx -C ${DESTDIR} -f /tmp/mitmproxy.tar.gz
+    download \
+      "https://snapshots.mitmproxy.org/${ver}/mitmproxy-${ver}-linux.tar.gz" \
+      /tmp/mitmproxy.tar.gz
+    tar zx -C "${DESTDIR}" -f /tmp/mitmproxy.tar.gz
     rm /tmp/mitmproxy.tar.gz
     add_bin_symlink mitmproxy
     add_bin_symlink mitmweb
     ;;
   esp)
+    makedest_or_die
     src="https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-61-gab8375a-5.2.0.tar.gz"
     download ${src} /tmp/esp32.tar.gz
-    mkdir -p ${DESTDIR}
-    tar zx -C ${DESTDIR} -f /tmp/esp32.tar.gz
+    tar zx -C "${DESTDIR}" -f /tmp/esp32.tar.gz
     rm /tmp/esp32.tar.gz
-    git clone --recursive https://github.com/espressif/esp-idf.git ${DESTDIR}/esp-idf
+    git clone --recursive https://github.com/espressif/esp-idf.git "${DESTDIR}/esp-idf"
     ;;
   dex2jar)
+    makedest_or_die
     src="https://github.com/pxb1988/dex2jar/releases/download/2.0/dex-tools-2.0.zip"
     download ${src} /tmp/dex2jar.zip
-    tmpd=`mktemp -d`
-    unzip -d ${tmpd} /tmp/dex2jar.zip
-    mv ${tmpd}/* ${DESTDIR}
+    tmpd=$(mktemp -d)
+    unzip -d "${tmpd}" /tmp/dex2jar.zip
+    mv "${tmpd}"/* "${DESTDIR}"
     rm /tmp/dex2jar.zip
-    rm -rf ${tmpd}
-    rm ${DESTDIR}/*.bat
-    chmod +x ${DESTDIR}/*.sh
+    rm -rf "${tmpd}"
+    rm "${DESTDIR}"/*.bat
+    chmod +x "${DESTDIR}"/*.sh
     ;;
   proxmark3)
     install_pkgs p7zip git build-essential libreadline5 libreadline-dev \
       libusb-0.1-4 libusb-dev libqt4-dev perl pkg-config wget libncurses5-dev \
       gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib
     src="https://github.com/Proxmark/proxmark3.git"
-    git clone ${src} ${DESTDIR}
-    cd ${DESTDIR}
+    git clone "${src}" "${DESTDIR}"
+    cd "${DESTDIR}"
     make -sj2
     check_sudo && sudo /bin/sh -c \
       "cp -rf driver/78-mm-usb-device-blacklist.rules \
@@ -202,56 +210,57 @@ case ${TOOL} in
          udevadm control --reload-rules"
     ;;
   cyberchef)
-    mkdir -p ${DESTDIR}
+    makedest
     src=$(python -c 'import urllib2; import json; print(filter(lambda x: x["name"]=="cyberchef.htm", json.load(urllib2.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"])[0]["browser_download_url"])')
-    download ${src} ${DESTDIR}/cyberchef.html
+    download "${src}" "${DESTDIR}/cyberchef.html"
     ;;
   apktool)
-    mkdir -p ${DESTDIR}
+    makedest_or_die
     download \
       https://raw.githubusercontent.com/iBotPeaches/Apktool/master/scripts/linux/apktool \
-      ${DESTDIR}/apktool
+      "${DESTDIR}/apktool"
     download \
       https://bitbucket.org/iBotPeaches/apktool/downloads/apktool_2.3.3.jar \
-      ${DESTDIR}/apktool.jar
-    chmod +x ${DESTDIR}/apktool
+      "${DESTDIR}/apktool.jar"
+    chmod +x "${DESTDIR}/apktool"
     add_bin_symlink apktool
     ;;
   ptf)
+    makedest_or_die
     src="https://github.com/trustedsec/ptf.git"
-    git clone ${src} ${DESTDIR}
+    git clone "${src}" "${DESTDIR}"
     ;;
   pwndbg)
-    if ! which gdb > /dev/null 2>&1 ; then
+    if ! command -v gdb > /dev/null 2>&1 ; then
       echo 'No gdb available!' >/dev/stderr
       exit 1
     fi
-    git clone --depth 1 -b stable https://github.com/pwndbg/pwndbg.git ${DESTDIR}
-    local PY_PACKAGES=${DESTDIR}/vendor
-    mkdir -p ${PY_PACKAGES}
-    local PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
-    local PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
+    git clone --depth 1 -b stable https://github.com/pwndbg/pwndbg.git "${DESTDIR}"
+    PY_PACKAGES=${DESTDIR}/vendor
+    mkdir -p "${PY_PACKAGES}"
+    PYVER=$(gdb -batch -q --nx -ex 'pi import platform; print(".".join(platform.python_version_tuple()[:2]))')
+    PYTHON=$(gdb -batch -q --nx -ex 'pi import sys; print(sys.executable)')
     PYTHON="${PYTHON}${PYVER}"
-    ${PYTHON} -m pip install --target ${PY_PACKAGES} -Ur ${DESTDIR}/requirements.txt
-    ${PYTHON} -m pip install --target ${PY_PACKAGES} -U capstone unicorn
+    "${PYTHON}" -m pip install --target "${PY_PACKAGES}" -Ur "${DESTDIR}/requirements.txt"
+    "${PYTHON}" -m pip install --target "${PY_PACKAGES}" -U capstone unicorn
     # capstone package is broken
-    cp ${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so ${PY_PACKAGES}/capstone
+    cp "${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so" "${PY_PACKAGES}/capstone"
     ;;
   gef)
-    if ! which gdb > /dev/null 2>&1 ; then
+    makedest_or_die
+    if ! command -v gdb > /dev/null 2>&1 ; then
       echo 'No gdb available!' >/dev/stderr
       exit 1
     fi
-    mkdir -p ${DESTDIR}
     download \
       https://github.com/hugsy/gef/raw/master/gef.py \
-      ${DESTDIR}/gef.py
+      "${DESTDIR}/gef.py"
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
-    for opt in $(awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' $0|sort); do
-      echo -e "\t${opt}" >/dev/stderr
+    awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' "$0" | sort | while read -r opt; do
+      echo -e "\\t${opt}" >/dev/stderr
     done
     exit 1
     ;;
