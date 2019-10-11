@@ -28,7 +28,7 @@ colours=bold red
 ======
 # Mounted on
 regexp=\/$|(\/[-\w\d. ]+)+$
-colours=green,bold green
+colours=bold green,green
 ======
 # Use 0-69%
 regexp=\b[1-6]?[0-9]%
