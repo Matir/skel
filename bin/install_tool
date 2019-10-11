@@ -131,6 +131,9 @@ case ${TOOL} in
   seclists)
     git clone https://github.com/danielmiessler/SecLists.git "${DESTDIR}"
     ;;
+  werdlists)
+    git clone --depth 1 https://github.com/decal/werdlists.git "${DESTDIR}"
+    ;;
   gcloud)
     makedest_or_die
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
