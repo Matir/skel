@@ -107,7 +107,7 @@ if [[ $- == *i* ]] ; then
   fi
   # Enable grc if we have it
   if ls --version 2>&1 >/dev/null ; then
-    alias ls='ls --color -C'
+    alias ls='ls --color'
   fi
   [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
   # Syntax highlighting and substring search
