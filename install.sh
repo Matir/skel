@@ -302,7 +302,8 @@ save_prefs() {
 
 echo_pref() {
   eval "local val=\${$1}"
-  echo "$1=\${$1:-${val}}"
+  # shellcheck disable=SC2154
+  echo ": \${$1:=${val}}"
 }
 
 cleanup() {
@@ -361,13 +362,13 @@ read_saved_prefs
 
 # Defaults if not passed in or saved.
 # TODO: use flags instead of environment variables.
-BASEDIR=${BASEDIR:-$HOME/.skel}
-MINIMAL=${MINIMAL:-0}
-INSTALL_KEYS=${INSTALL_KEYS:-1}
-TRUST_ALL_KEYS=${TRUST_ALL_KEYS:-0}
-INSTALL_PKGS=${INSTALL_PKGS:-0}
-VERBOSE=${VERBOSE:-0}
-SAVE=${SAVE:-1}
+: ${BASEDIR:=$HOME/.skel}
+: ${MINIMAL:=0}
+: ${INSTALL_KEYS:=1}
+: ${TRUST_ALL_KEYS:=0}
+: ${INSTALL_PKGS:=0}
+: ${VERBOSE:=0}
+: ${SAVE:=1}
 
 # Check prerequisites
 if [ ! -d $BASEDIR ] ; then
