@@ -106,8 +106,8 @@ if [[ $- == *i* ]] ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
   fi
   # Enable grc if we have it
-  if ls --version 2>&1 >/dev/null ; then
-    alias ls='ls --color'
+  if command ls --version 2>&1 >/dev/null ; then
+    alias ls="$(whence -p ls) --color -C"
   fi
   [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
   # Syntax highlighting and substring search
