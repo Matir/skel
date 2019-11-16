@@ -105,11 +105,9 @@ if [[ $- == *i* ]] ; then
   if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
   fi
-  # Enable grc if we have it
   if command ls --version 2>&1 >/dev/null ; then
     alias ls="$(whence -p ls) --color -C"
   fi
-  [[ -s "/etc/grc.zsh" ]] && source /etc/grc.zsh
   # Syntax highlighting and substring search
   if test -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
     source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
