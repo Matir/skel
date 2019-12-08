@@ -13,5 +13,11 @@ export PATH="${PATH}:${GCL}/bin"
 source ${GCL}/completion.zsh.inc
 
 which kubectl 2>/dev/null >&2 && \
-  source <(kubectl completion zsh) || \
+  function kubectl() {
+    if ! type __start_kubectl >/dev/null 2>&1; then
+        source <(command kubectl completion zsh)
+    fi
+
+    command kubectl "$@"
+  } || \
   true
