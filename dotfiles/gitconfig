@@ -1,6 +1,5 @@
 [user]
   name = David Tomaschik
-  email = david@systemoverlord.com
   signingKey = 0x5DEA789B
 
 [core]
@@ -66,3 +65,5 @@
 	conflictstyle = diff3
 [mergetool]
 	prompt = false
+[include]
+	path = ~/.gitconfig.local
