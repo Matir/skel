@@ -34,6 +34,9 @@ function prompt_matir_setup {
   RPROMPT+='%? '
   RPROMPT+='%{$reset_color%})'
   RPROMPT+='${PROMPT_VIMODE}'
+
+  # Disable virtualenv's own python info
+  VIRTUAL_ENV_DISABLE_PROMPT="yes"
 }
 
 function zle-keymap-select {
