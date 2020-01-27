@@ -66,7 +66,7 @@ install_dotfile_dir() {
       mkdir -p $(dirname "${TARGET}")
       ln -s -f "${dotfile}" "${TARGET}"
     done
-  git submodule status -- "${SRCDIR}" 2>/dev/null | \
+  git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
     awk '{print $2}' | \
     while read submodule ; do
       local FULLNAME="${BASEDIR}/${submodule}"
