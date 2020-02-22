@@ -40,4 +40,4 @@ alias drop_caches="echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
 alias gettemp='printf "%02.2f\n" "$(cat /sys/class/thermal/thermal_zone0/temp)e-3"'
 
 # get git working directory
-alias gitroot="git rev-parse --git-toplevel"
+alias gitroot="git rev-parse --show-toplevel"
