@@ -29,6 +29,20 @@ imap <S-Tab> <Esc><<A
 set number
 set ruler
 
+" Setup viminfo for recording positions, etc.
+set viminfo='10,\"100,:20,%,n~/.viminfo
+" Jump back when editing a file
+function! ResCur()
+  if line("'\"") <= line("$")
+    normal! g`"
+    return 1
+  endif
+endfunction
+augroup resCur
+  autocmd!
+  autocmd BufWinEnter * call ResCur()
+augroup END
+
 " File options
 set encoding=utf-8
 " Syntax highlighting, look and feel
