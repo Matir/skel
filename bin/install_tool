@@ -259,6 +259,11 @@ case ${TOOL} in
       https://github.com/hugsy/gef/raw/master/gef.py \
       "${DESTDIR}/gef.py"
     ;;
+  aflplusplus)
+    install_pkgs libtool-bin libglib2.0-dev libpixman-1-dev
+    git clone "https://github.com/vanhauser-thc/AFLplusplus" ${DESTDIR}
+    make -C ${DESTDIR} distrib
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
