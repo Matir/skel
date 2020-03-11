@@ -37,6 +37,7 @@ radare2
 scapy
 scdaemon
 socat
+source-highlight
 sqlite3
 ufw
 zsh-syntax-highlighting
