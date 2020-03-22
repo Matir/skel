@@ -142,10 +142,10 @@ function jekyll {
       ${EDITOR} "${FILENAME}"
       ;;
     dev)
-      command jekyll serve -D -I "$@"
+      command bundle exec jekyll serve -D -I "$@"
       ;;
     *)
-      command jekyll "$@"
+      command bundle exec jekyll "$@"
       ;;
   esac
 }
