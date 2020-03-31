@@ -270,6 +270,8 @@ case ${TOOL} in
       https://github.com/offensive-security/exploitdb.git \
       "${DESTDIR}"
     add_bin_symlink searchsploit
+    cp "${DESTDIR}/.searchsploit_rc" "${HOME}/.searchsploit_rc"
+    sed -i "s|/opt/exploitdb|${DESTDIR}|" "${HOME}/.searchsploit_rc"
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
