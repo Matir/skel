@@ -265,6 +265,12 @@ case ${TOOL} in
     git clone "https://github.com/vanhauser-thc/AFLplusplus" ${DESTDIR}
     make -C ${DESTDIR} distrib
     ;;
+  exploitdb)
+    git clone --depth 1 \
+      https://github.com/offensive-security/exploitdb.git \
+      "${DESTDIR}"
+    add_bin_symlink searchsploit
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
