@@ -41,3 +41,6 @@ alias gettemp='printf "%02.2f\n" "$(cat /sys/class/thermal/thermal_zone0/temp)e-
 
 # get git working directory
 alias gitroot="git rev-parse --show-toplevel"
+
+# SSH without host key checking
+alias sshanon="ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
