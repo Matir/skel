@@ -1,3 +1,21 @@
 #!/bin/bash
+
+CHROME_BINS="google-chrome-beta google-chrome"
+for bin in ${CHROME_BINS} ; do
+  if command -v ${bin} >/dev/null 2>&1 ; then
+    CHROME=$(command -v ${bin})
+    break
+  fi
+done
+
+if test -z "${CHROME}" ; then
+  echo "Chrome not found!" >/dev/stderr
+  exit 1
+fi
+
+# Set alternate HOME to use alternate NSS DB
+export HOME=${HOME}/.chrome-pentest
+mkdir -p ${HOME}
+
 # Launch chrome for burp
-exec /usr/bin/google-chrome-beta --ignore-certificate-errors --user-data-dir=${HOME}/.config/chrome-pentest --proxy-server=127.0.0.1:8080
+exec ${CHROME} --user-data-dir=${HOME}/chrome-pentest --proxy-server=127.0.0.1:8080
