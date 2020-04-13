@@ -83,6 +83,8 @@ bindkey '^h' backward-delete-char
 # ok, a few emacs convenience bindings
 bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
+# delete really deletes
+bindkey "^[[3~" delete-char
 
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
