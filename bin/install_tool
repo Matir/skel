@@ -170,7 +170,7 @@ case ${TOOL} in
     ;;
   mitmproxy)
     makedest_or_die
-    ver=$(python -c 'import urllib2; import json; print(json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["name"].replace("v",""))')
+    ver=$(python -c 'import urllib2; import json; print(json.load(urllib2.urlopen("https://api.github.com/repos/mitmproxy/mitmproxy/releases/latest"))["tag_name"].replace("v",""))')
     download \
       "https://snapshots.mitmproxy.org/${ver}/mitmproxy-${ver}-linux.tar.gz" \
       /tmp/mitmproxy.tar.gz
@@ -266,12 +266,27 @@ case ${TOOL} in
     make -C ${DESTDIR} distrib
     ;;
   exploitdb)
-    git clone --depth 1 \
-      https://github.com/offensive-security/exploitdb.git \
-      "${DESTDIR}"
-    add_bin_symlink searchsploit
-    cp "${DESTDIR}/.searchsploit_rc" "${HOME}/.searchsploit_rc"
-    sed -i "s|/opt/exploitdb|${DESTDIR}|" "${HOME}/.searchsploit_rc"
+    if test -d "${DESTDIR}" ; then
+      echo "Already installed, updating instead..." >/dev/stderr
+      "${DESTDIR}/searchsplit" -u
+    else
+      git clone --depth 1 \
+        https://github.com/offensive-security/exploitdb.git \
+        "${DESTDIR}"
+      add_bin_symlink searchsploit
+      cp "${DESTDIR}/.searchsploit_rc" "${HOME}/.searchsploit_rc"
+      sed -i "s|/opt/exploitdb|${DESTDIR}|" "${HOME}/.searchsploit_rc"
+    fi
+    ;;
+  cura)
+    makedest
+    ver=$(python -c 'import urllib2; import json; print(json.load(urllib2.urlopen("https://api.github.com/repos/Ultimaker/Cura/releases/latest"))["name"].replace("v",""))')
+    echo "Latest Cura is ${ver}"
+    download \
+      "https://github.com/Ultimaker/Cura/releases/download/${ver}/Ultimaker_Cura-${ver}.AppImage" \
+      "${DESTDIR}/Cura.AppImage"
+    chmod +x "${DESTDIR}/Cura.AppImage"
+    add_bin_symlink "${DESTDIR}/Cura.AppImage" cura
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
