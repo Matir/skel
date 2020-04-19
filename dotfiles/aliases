@@ -44,3 +44,6 @@ alias gitroot="git rev-parse --show-toplevel"
 
 # SSH without host key checking
 alias sshanon="ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
+
+# Straight to ipython
+alias ipy="ipython3"
