@@ -1,0 +1,37 @@
+#!/bin/bash
+
+function get_active_sink {
+  pactl list short sinks | grep RUNNING | awk '{print $2}'
+}
+
+function get_active_source {
+  pactl list short sources | grep RUNNING | awk '{print $2}'
+}
+
+function get_default_sink {
+  pactl info | grep '^Default Sink:' | awk '{print $NF}'
+}
+
+function get_default_source {
+  pactl info | grep '^Default Source:' | awk '{print $NF}'
+}
+
+function micmute {
+  MODE=${1:-toggle}
+  pactl set-source-mute $(get_default_source) ${MODE}
+}
+
+function mute {
+  MODE=${1:-toggle}
+  pactl set-sink-mute $(get_default_sink) ${MODE}
+}
+
+case "$1" in
+  mute|micmute)
+    $*
+    ;;
+  *)
+    echo "Unknown command!"
+    exit 1
+    ;;
+esac
