@@ -283,10 +283,10 @@ case ${TOOL} in
     ver=$(python3 -c 'from urllib import request; import json; print(json.load(request.urlopen("https://api.github.com/repos/Ultimaker/Cura/releases/latest"))["name"].replace("v",""))')
     echo "Latest Cura is ${ver}"
     download \
-      "https://github.com/Ultimaker/Cura/releases/download/${ver}/Ultimaker_Cura-${ver}.AppImage" \
+      "https://github.com/Ultimaker/Cura/releases/download/${ver}/Cura-${ver}.AppImage" \
       "${DESTDIR}/Cura.AppImage"
     chmod +x "${DESTDIR}/Cura.AppImage"
-    add_bin_symlink "${DESTDIR}/Cura.AppImage" cura
+    add_bin_symlink "Cura.AppImage" cura
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
