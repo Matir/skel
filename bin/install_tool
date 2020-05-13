@@ -288,6 +288,14 @@ case ${TOOL} in
     chmod +x "${DESTDIR}/Cura.AppImage"
     add_bin_symlink "Cura.AppImage" cura
     ;;
+  rr)
+    ver=$(python3 -c 'from urllib import request; import json; print(json.load(request.urlopen("https://api.github.com/repos/mozilla/rr/releases/latest"))["name"])')
+    echo "Latest rr is ${ver}"
+    download \
+      "https://github.com/mozilla/rr/releases/download/${ver}/rr-${ver}-Linux-$(uname -m).deb" \
+      "/tmp/rr.deb"
+    sudo dpkg -i /tmp/rr.deb
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
