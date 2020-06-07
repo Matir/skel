@@ -128,9 +128,6 @@ if [ -x /usr/bin/ack-grep ] ; then
   alias ack='/usr/bin/ack-grep'
 fi
 
-# Setup PATH for tools
-PATH=${PATH}:${HOME}/bin/tools
-
 # Got rust?
 if test -d ${HOME}/.cargo/bin ; then
   PATH=${PATH}:${HOME}/.cargo/bin
