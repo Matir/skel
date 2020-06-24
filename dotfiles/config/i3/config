@@ -135,6 +135,8 @@ bindsym $mod+l exec \
   bash -c "i3lock -c 000000 && (sleep 2 && xset dpms force off) &"
 bindsym $alt+Control+l exec \
   bash -c "i3lock -c 000000 && (sleep 2 && xset dpms force off) &"
+# suspend under systemd
+bindsym $mod+Control+s exec --no-startup-id systemctl suspend
 
 # things to start quickly
 bindsym $mod+g exec /usr/bin/google-chrome-beta --password-store=gnome
