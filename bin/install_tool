@@ -296,6 +296,19 @@ case ${TOOL} in
       "/tmp/rr.deb"
     sudo dpkg -i /tmp/rr.deb
     ;;
+  nmap-parse-output)
+    git clone --depth 1 \
+      https://github.com/ernw/nmap-parse-output.git \
+      "${DESTDIR}"
+    add_bin_symlink nmap-parse-output
+    cat <<EOF >"${HOME}/.zshrc.d/99-nmap-parse-output.zsh"
+if test -d ${DESTDIR} ; then
+  autoload bashcompinit
+  bashcompinit
+  source ${DESTDIR}/_nmap-parse-output
+fi
+EOF
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
