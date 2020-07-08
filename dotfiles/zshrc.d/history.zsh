@@ -24,3 +24,11 @@ histmode() {
       ;;
   esac
 }
+
+histsearch() {
+  fc -l -m "${1}" 1
+}
+
+histbrowse() {
+  fc -l 1
+}
