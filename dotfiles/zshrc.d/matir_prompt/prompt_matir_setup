@@ -49,7 +49,7 @@ zle -N zle-keymap-select
 zle -N zle-line-init zle-keymap-select
 
 function prompt_matir_precmd {
-  vcs_info
+  vcs_info 2>/dev/null
   if [ $VIRTUAL_ENV ] ; then
     VIRTUAL_ENV_SHORT=" (py:$(basename $VIRTUAL_ENV))"
   else
