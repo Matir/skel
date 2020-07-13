@@ -2,6 +2,6 @@
 
 REMOTE_LINK="${HOME}/.ssh/remote_agent.sock"
 
-if test \! -L "${REMOTE_LINK}" -a -n "${SSH_AUTH_SOCK}" ; then
+if test \! -e "${REMOTE_LINK}" -a -n "${SSH_AUTH_SOCK}" ; then
   ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
 fi
