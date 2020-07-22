@@ -6,20 +6,26 @@ REINSTALL=0
 PACKAGES=1
 
 while getopts -- "-:" a ; do
+  # shellcheck disable=SC2154
   case "${a}" in
     -)
-    case "${OPTARG}" in
-      reinstall)
-        REINSTALL=1
-        ;;
-      no-packages)
-        PACKAGES=0
-        ;;
-      *)
-        echo "Unknown long option ${OPTARG}" >/dev/stderr
-        exit 1
-        ;;
-    esac
+      case "${OPTARG}" in
+        reinstall)
+          REINSTALL=1
+          ;;
+        no-packages)
+          PACKAGES=0
+          ;;
+        *)
+          echo "Unknown long option ${OPTARG}" >/dev/stderr
+          exit 1
+          ;;
+      esac
+      ;;
+    *)
+      echo "Unknown short option ${OPTARG}" >/dev/stderr
+      exit 1
+      ;;
   esac
 done
 
@@ -68,7 +74,7 @@ function check_sudo {
 function add_bin_symlink {
   local TARGET NAME BINDIR
   TARGET="${1}"
-  NAME="${2:-$(basename ${1})}"
+  NAME="${2:-$(basename "${1}")}"
   BINDIR="${HOME}/bin/tools/"
   mkdir -p -- "${BINDIR}"
   ln -sf "${DESTDIR}/${TARGET}" "${BINDIR}/${NAME}"
@@ -262,8 +268,8 @@ case ${TOOL} in
   aflplusplus)
     install_pkgs libtool-bin libglib2.0-dev libpixman-1-dev clang clang-tools \
       llvm
-    git clone "https://github.com/vanhauser-thc/AFLplusplus" ${DESTDIR}
-    make -C ${DESTDIR} distrib
+    git clone "https://github.com/vanhauser-thc/AFLplusplus" "${DESTDIR}"
+    make -C "${DESTDIR}" distrib
     ;;
   exploitdb)
     if test -d "${DESTDIR}" ; then
@@ -308,6 +314,15 @@ if test -d ${DESTDIR} ; then
   source ${DESTDIR}/_nmap-parse-output
 fi
 EOF
+    ;;
+  logiops)
+    install_pkgs cmake libevdev-dev libudev-dev libconfig++-dev checkinstall
+    git clone "https://github.com/PixlOne/logiops.git" "${DESTDIR}"
+    mkdir -p "${DESTDIR}/build"
+    cd "${DESTDIR}/build"
+    cmake ..
+    make
+    sudo checkinstall --pkgname logiops --maintainer "${USER}" -y
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
