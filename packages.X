@@ -5,6 +5,7 @@ fonts-inconsolata
 gimp
 keepassx
 network-manager-openvpn-gnome
+solaar
 vim-gtk
 wireshark
 wkhtmltopdf
