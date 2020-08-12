@@ -275,6 +275,25 @@ install_chrome() {
   rm -rf ${TMPD}
 }
 
+setup_git_email() {
+  local gc_local="${HOME}/.gitconfig.local"
+  if test -f "${gc_local}" ; then
+    return 0
+  fi
+  if [ "${USER:0:5}" != "david" ] ; then
+    return 0
+  fi
+  local domain="$(hostname -f | egrep -o '[a-z0-9-]+\.[a-z0-9-]+$')"
+  case $(echo ${domain} | md5sum | awk '{print $1}') in
+    b21a24d528346ef7d3932306ed96ede5|a5ed434a3f5089b489576cceab824f25)
+      ;;
+    *)
+      return 0
+      ;;
+  esac
+  echo -e "[user]\n    email=${USER}@${domain}" > "${gc_local}"
+}
+
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
   local old_pref_file=$(dirname $0)/installed-prefs
@@ -347,6 +366,7 @@ install_main() {
   test $MINIMAL = 1 || postinstall
   test $INSTALL_KEYS = 1 && install_keys
   save_prefs
+  setup_git_email
   cleanup
 }
 
