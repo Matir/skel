@@ -324,6 +324,15 @@ EOF
     make
     sudo checkinstall --pkgname logiops --maintainer "${USER}" -y
     ;;
+  aws)
+    DN=$(mktemp -d)
+    cd "${DN}"
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "${DN}/awscliv2.zip"
+    unzip "${DN}/awscliv2.zip"
+    mv "${DN}/aws/dist" "${DESTDIR}"
+    add_bin_symlink aws
+    rm -rf ${DN}
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
