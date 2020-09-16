@@ -333,6 +333,13 @@ EOF
     add_bin_symlink aws
     rm -rf ${DN}
     ;;
+  tmpmail)
+    install_pkgs curl w3m jq
+    mkdir -p ${DESTDIR}
+    curl -L "https://git.io/tmpmail" > ${DESTDIR}/tmpmail
+    chmod +x ${DESTDIR}/tmpmail
+    add_bin_symlink tmpmail
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
