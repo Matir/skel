@@ -1,13 +1,24 @@
-tmp
-Downloads
+.AndroidStudio*
+.Genymobile
+.Ticket to Ride*
+.android*
+.arduino*
+.bundle
 .cache
-.local/share/Trash
-.wine
-.thumbnails
+.gradle
 .histfile
+.local/share/Steam
+.local/share/Trash
+.rvm*
+.sqlite_history
+.thumbnails
+.wine
 .zcompdump
 .zcompdump*
-.sqlite_history
-VirtualBox VMs
 Audits
+Downloads
 SpiderOak Hive
+VirtualBox VMs
+tmp
+tools
+.minikube

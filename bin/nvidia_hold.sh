@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function list_nvidia_installed {
-  dpkg-query -l '*nvidia*' | grep '^ii' | awk '{print $2}'
+  dpkg-query -l '*nvidia*' | grep '^[hi]i' | awk '{print $2}'
 }
 
 function hold_or_unhold {

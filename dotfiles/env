@@ -40,7 +40,6 @@ fi
 
 # For virtualenvwrapper
 export WORKON_HOME=$HOME/.virtualenvs
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS='--no-site-packages'
 
 # GPG full key id
 export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
