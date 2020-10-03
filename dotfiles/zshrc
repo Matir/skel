@@ -107,7 +107,7 @@ if [[ $- == *i* ]] ; then
   if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
   fi
-  if command ls --version 2>&1 >/dev/null ; then
+  if command ls --version >/dev/null 2>&1 ; then
     alias ls="$(whence -p ls) --color -C"
   fi
   # Syntax highlighting and substring search
