@@ -357,8 +357,8 @@ install_dotfiles() {
 install_main() {
   test -d ${BASEDIR}/.git && command -v git >/dev/null 2>&1 && \
     git -C ${BASEDIR} pull --ff-only
-  test $MINIMAL = 1 || command -v git >/dev/null 2>&1 && \
-    git -C ${BASEDIR} submodule update --init --recursive
+  test $MINIMAL = 1 || ( command -v git >/dev/null 2>&1 && \
+    git -C ${BASEDIR} submodule update --init --recursive )
   test $MINIMAL = 1 || prerequisites
   test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
   install_dotfiles
