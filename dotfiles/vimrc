@@ -33,9 +33,13 @@ set ruler
 set viminfo='10,\"100,:20,%,n~/.viminfo
 " Jump back when editing a file
 function! ResCur()
+  " Don't jump in git commits since they're generated.
+  if &ft == 'gitcommit'
+    return
+  endif
   if line("'\"") <= line("$")
     normal! g`"
-    return 1
+    return
   endif
 endfunction
 augroup resCur
