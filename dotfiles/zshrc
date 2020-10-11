@@ -94,15 +94,13 @@ if [[ $- == *i* ]] ; then
     source "$file"
   done
   # extra completions, prompt
-  fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt $fpath)
+  fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt ~/.zshrc.d/agnoster_prompt $fpath)
   # Completion
   zstyle ':compinstall' filename "${HOME}/.zshrc"
   zstyle ':completion:*' users root ${USER}
   # Modules after fpath
   autoload -Uz compinit && compinit -i
   autoload -Uz promptinit && promptinit
-  # Prompt
-  prompt matir
   # Virtualenvwrapper
   if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
@@ -140,3 +138,6 @@ fi
 
 # Load any local settings
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
+
+# Set prompt based on local settings
+prompt "${THEME:-matir}"
