@@ -1,7 +1,9 @@
 audacity
 cinnamon
 codequery
+flameshot
 fonts-inconsolata
+fonts-powerline
 gimp
 keepassx
 network-manager-openvpn-gnome
