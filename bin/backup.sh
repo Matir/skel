@@ -26,5 +26,8 @@ function verify_dest {
 
 verify_dest "$DEST"
 
-exec nice rsync -Hax --delete --exclude-from="$HOME/.rsync_ignore" \
+time nice rsync -Hax --delete --exclude-from="$HOME/.rsync_ignore" \
   --delete-excluded "${HOME}/" "$DEST"
+echo "Backup completed..."
+time sync
+echo "Run finished, safe to unmount."
