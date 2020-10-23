@@ -340,6 +340,12 @@ EOF
     chmod +x ${DESTDIR}/tmpmail
     add_bin_symlink tmpmail
     ;;
+  gf)
+    install_pkgs golang-go silversearcher-ag
+    go get -u github.com/tomnomnom/gf
+    mkdir -p ${HOME}/.config
+    git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
