@@ -347,7 +347,10 @@ EOF
     git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
     ;;
   ffuf)
-    go get -u go get -u github.com/ffuf/ffuf
+    go get -u github.com/ffuf/ffuf
+    ;;
+  gobuster)
+    go get -u github.com/OJ/gobuster
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
