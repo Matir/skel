@@ -346,6 +346,9 @@ EOF
     mkdir -p ${HOME}/.config
     git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
     ;;
+  ffuf)
+    go get -u go get -u github.com/ffuf/ffuf
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
