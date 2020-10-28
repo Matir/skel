@@ -50,3 +50,6 @@ alias ipy="ipython3"
 
 # Skip the header on bc
 alias bc="command bc -q"
+
+# Get a decently readable df
+alias dfh="df -h -x tmpfs -x devtmpfs"
