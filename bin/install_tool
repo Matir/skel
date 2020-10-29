@@ -184,6 +184,7 @@ case ${TOOL} in
     rm /tmp/mitmproxy.tar.gz
     add_bin_symlink mitmproxy
     add_bin_symlink mitmweb
+    add_bin_symlink mitmdump
     ;;
   esp)
     makedest_or_die
