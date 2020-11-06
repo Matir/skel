@@ -1,7 +1,15 @@
 #!/bin/sh
 
-REMOTE_LINK="${HOME}/.ssh/remote_agent.sock"
+# Roughly based on this article:
+# https://werat.github.io/2017/02/04/tmux-ssh-agent-forwarding.html
 
-if test \! -e "${REMOTE_LINK}" -a -n "${SSH_AUTH_SOCK}" ; then
+REMOTE_LINK="${HOME}/.ssh/ssh_auth_sock"
+
+if [ "${1:-}" = "force" ] && [ -S "${SSH_AUTH_SOCK}" ] ; then
+  ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
+  exit 0
+fi
+
+if test \! -S "${REMOTE_LINK}" -a -S "${SSH_AUTH_SOCK}" ; then
   ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
 fi
