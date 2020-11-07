@@ -40,4 +40,5 @@ socat
 source-highlight
 sqlite3
 ufw
+vim-youcompleteme
 zsh-syntax-highlighting
