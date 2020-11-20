@@ -6,6 +6,7 @@ fonts-inconsolata
 fonts-powerline
 gimp
 keepassx
+meld
 network-manager-openvpn-gnome
 solaar
 vim-gtk
