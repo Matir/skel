@@ -353,6 +353,9 @@ EOF
   gobuster)
     go get -u github.com/OJ/gobuster
     ;;
+  amass)
+    go get -u github.com/OWASP/Amass/cmd/amass
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
