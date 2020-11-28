@@ -181,7 +181,7 @@ install_gpg_keys() {
     return 0
   local key
   for key in ${BASEDIR}/keys/gpg/* ; do
-    gpg --import < ${key} >/dev/null
+    gpg --import < ${key} >/dev/null 2>&1
   done
 }
 
@@ -433,3 +433,5 @@ case $OPERATION in
     exit 1
     ;;
 esac
+
+echo "OK"
