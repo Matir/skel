@@ -34,11 +34,12 @@ python3-scapy
 python3-pip
 python3-virtualenv
 radare2
+ripgrep
 scapy
 scdaemon
 socat
 source-highlight
 sqlite3
-ufw
+ugrep
 vim-youcompleteme
 zsh-syntax-highlighting
