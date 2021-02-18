@@ -119,6 +119,10 @@ if [[ $- == *i* ]] ; then
     bindkey -M vicmd 'k' history-substring-search-up
     bindkey -M vicmd 'j' history-substring-search-down
   fi
+  # Suggestions
+  if test -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ; then
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
