@@ -69,3 +69,5 @@
 	path = ~/.gitconfig.local
 [pull]
 	rebase = false
+[init]
+	defaultBranch = main

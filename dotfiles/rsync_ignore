@@ -5,11 +5,14 @@
 .arduino*
 .bundle
 .cache
+.dropbox-dist
 .gradle
 .histfile
 .local/share/Steam
 .local/share/Trash
+.local/lib
 .rvm*
+.sliver
 .sqlite_history
 .thumbnails
 .wine
