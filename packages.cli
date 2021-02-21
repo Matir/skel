@@ -4,6 +4,7 @@ cryptsetup
 dsniff
 ecryptfs-utils
 exuberant-ctags
+httpie
 iftop
 iptraf
 ipython
