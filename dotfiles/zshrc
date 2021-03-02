@@ -121,9 +121,11 @@ if [[ $- == *i* ]] ; then
   fi
   # Suggestions
   if test -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ; then
-    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
     # Works well for solarized
     ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
+    # Strategy
+    ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   fi
 fi  # End interactive-only block
 
