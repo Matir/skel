@@ -23,7 +23,8 @@ set expandtab
 set shiftround
 set backspace=indent,eol,start
 " Shift-tab to go backwards in insert mode
-imap <S-Tab> <Esc><<A
+" Does not work with YCM
+inoremap <S-Tab> <C-d>
 
 " Line numbering, ruler
 set number
