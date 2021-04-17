@@ -347,6 +347,12 @@ EOF
     mkdir -p ${HOME}/.config
     git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
     ;;
+  gron)
+    go get -u github.com/tomnomnom/gron
+    ;;
+  httprobe)
+    go get -u github.com/tomnomnom/httprobe
+    ;;
   ffuf)
     go get -u github.com/ffuf/ffuf
     ;;
