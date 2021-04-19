@@ -362,6 +362,13 @@ EOF
   amass)
     go get -u github.com/OWASP/Amass/cmd/amass
     ;;
+  cht.sh)
+    install_pkgs rlwrap
+    mkdir -p ${DESTDIR}
+    curl https://cht.sh/:cht.sh > ${DESTDIR}/cht.sh
+    chmod +x ${DESTDIR}/cht.sh
+    add_bin_symlink cht.sh
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
