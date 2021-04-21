@@ -87,6 +87,10 @@ bindsym $mod+Shift+8 move container to workspace 8
 bindsym $mod+Shift+9 move container to workspace 9
 bindsym $mod+Shift+0 move container to workspace 10
 
+# do some scratchpad
+bindsym $mod+Shift+minus  move scratchpad
+bindsym $mod+minus        scratchpad show
+
 # Move workspaces between monitors
 bindsym $mod+Shift+greater move workspace to output right
 bindsym $mod+Shift+less move workspace to output left
