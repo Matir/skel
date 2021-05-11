@@ -34,6 +34,7 @@ if [ -z "${BROWSER}" ] ; then
   for t in google-chrome-beta google-chrome firefox ; do
     if BROWSER=$(command -v ${t}); then
       export BROWSER
+      break
     fi
   done
 fi
