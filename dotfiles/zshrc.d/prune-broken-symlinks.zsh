@@ -12,7 +12,7 @@ prune-broken-symlinks() {
     ASK=1
   fi
   DIR=${1:-.}
-  FINDCMD=(find -L ${DIR} -type l)
+  FINDCMD=(find -L ${DIR} -xdev -type l)
   if (($ASK)) ; then
     local FILES
     FILES=`${FINDCMD} -print`
