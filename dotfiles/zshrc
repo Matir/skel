@@ -145,9 +145,8 @@ if test -d ${HOME}/.local/bin ; then
   PATH=${PATH}:${HOME}/.local/bin
 fi
 
-# Most is nice, if we have it
-if command -v most >/dev/null 2>&1; then
-  export PAGER="most"
+if test -z "${PAGER}" && command -v less >/dev/null 2>&1; then
+  export PAGER="less"
 fi
 
 # Load any local settings
