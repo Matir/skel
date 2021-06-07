@@ -2,6 +2,10 @@ if ! which gpg-agent >/dev/null 2>&1 ; then
   return 1
 fi
 
+if test -f ${HOME}/.no-gpg-agent ; then
+  return 0
+fi
+
 # Set the default paths to gpg-agent files.
 _gpg_agent_conf="${GNUPGHOME:-$HOME/.gnupg}/gpg-agent.conf"
 _gpg_agent_env="${TMPDIR:-/tmp}/gpg-agent.env.$UID"
