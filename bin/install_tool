@@ -369,6 +369,10 @@ EOF
     chmod +x ${DESTDIR}/cht.sh
     add_bin_symlink cht.sh
     ;;
+  age)
+    go get -u github.com/FiloSottile/age/cmd/age
+    go get -u github.com/FiloSottile/age/cmd/age-keygen
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     echo "Options:" >/dev/stderr
