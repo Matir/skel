@@ -152,7 +152,7 @@ case ${TOOL} in
     ;;
   android-sdk)
     # TODO: find a way to make this version independent
-    asdk="https://dl.google.com/android/repository/tools_r25.2.3-linux.zip"
+    asdk="https://dl.google.com/android/repository/platform-tools_r31.0.2-linux.zip"
     download ${asdk} /tmp/android-tools.zip
     unzip -d "${DESTDIR}" /tmp/android-tools.zip
     rm /tmp/android-tools.zip
