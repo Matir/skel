@@ -20,3 +20,6 @@ id_ecdsa
 
 # Kicad backup files
 *.kicad_pcb-bak
+
+# Mypy cache path
+.mypy_cache

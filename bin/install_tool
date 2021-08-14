@@ -345,7 +345,11 @@ EOF
     install_pkgs golang-go silversearcher-ag
     go get -u github.com/tomnomnom/gf
     mkdir -p ${HOME}/.config
-    git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
+    if test -d ${HOME}/.config/gf ; then
+      git -C ${HOME}/.config/gf pull
+    else
+      git clone https://github.com/Matir/gf-patterns.git ${HOME}/.config/gf
+    fi
     ;;
   gron)
     go get -u github.com/tomnomnom/gron
