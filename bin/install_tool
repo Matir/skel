@@ -5,6 +5,8 @@ set -ue
 REINSTALL=0
 PACKAGES=1
 
+export GO111MODULE=on
+
 while getopts -- "-:" a ; do
   # shellcheck disable=SC2154
   case "${a}" in
@@ -364,7 +366,7 @@ EOF
     go get -u github.com/OJ/gobuster
     ;;
   amass)
-    go get -u github.com/OWASP/Amass/cmd/amass
+    go get -u github.com/OWASP/Amass/v3/...
     ;;
   cht.sh)
     install_pkgs rlwrap
