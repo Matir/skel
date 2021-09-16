@@ -133,11 +133,18 @@ endfunction
 " Options for syntastic
 let g:syntastic_enable_signs = 1
 let g:syntastic_auto_loc_list = 2
+let g:syntastic_check_on_wq = 0
 let g:syntastic_go_checkers = ['govet', 'errcheck', 'go']
 let g:syntastic_python_checkers=['flake8']
 " Because XXE
 let g:syntastic_xml_checkers=['']
 let g:syntastic_xslt_checkers=['']
+autocmd BufReadPost *
+    \  if &readonly
+    \|  let b:syntastic_mode = 'passive'
+    \| else
+    \|  silent! unlet b:syntastic_mode
+    \| endif
 
 " Have F5 run the tests and display errors
 nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
