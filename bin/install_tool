@@ -33,8 +33,16 @@ done
 
 shift $((OPTIND-1))
 
+function list_tools {
+  echo "Options:" >/dev/stderr
+  awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' "$0" | sort | while read -r opt; do
+    echo -e "\\t${opt}" >/dev/stderr
+  done
+}
+
 if [ $# -ne 1 ] ; then
   echo "Usage: ${0} <tool>" >/dev/stderr
+  list_tools
   exit 1
 fi
 TOOL=${1}
@@ -381,10 +389,7 @@ EOF
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
-    echo "Options:" >/dev/stderr
-    awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' "$0" | sort | while read -r opt; do
-      echo -e "\\t${opt}" >/dev/stderr
-    done
+    list_tools
     exit 1
     ;;
 esac
