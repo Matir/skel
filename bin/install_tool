@@ -376,8 +376,8 @@ EOF
     add_bin_symlink cht.sh
     ;;
   age)
-    go get -u github.com/FiloSottile/age/cmd/age
-    go get -u github.com/FiloSottile/age/cmd/age-keygen
+    go get -u filippo.io/age/cmd/age
+    go get -u filippo.io/age/cmd/age-keygen
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
