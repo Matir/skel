@@ -78,5 +78,8 @@ else
 fi
 export LC_COLLATE=C
 
+# Opt out of .net telemetry
+export DOTNET_CLI_TELEMETRY_OPTOUT=1
+
 # shellcheck source=/dev/null
 test -e "$HOME/.localenv" && . "$HOME/.localenv"
