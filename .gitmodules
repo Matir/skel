@@ -18,14 +18,7 @@
 	path = dotfiles/vim/pack/matir/start/ctrlp
 	url = https://github.com/ctrlpvim/ctrlp.vim.git
 	fetchRecurseSubmodules = true
-[submodule "dotfiles/vim/pack/matir/start/vim-go"]
-	path = dotfiles/vim/pack/matir/start/vim-go
-	url = https://github.com/fatih/vim-go.git
-	fetchRecurseSubmodules = true
 [submodule "dotfiles/tmux/tmux-logging"]
 	path = dotfiles/tmux/tmux-logging
 	url = https://github.com/tmux-plugins/tmux-logging.git
 	fetchRecurseSubmodules = true
-[submodule "dotfiles/vim/pack/matir/start/syntastic"]
-	path = dotfiles/vim/pack/matir/start/syntastic
-	url = https://github.com/vim-syntastic/syntastic.git
