@@ -26,7 +26,7 @@ is_comment() {
 }
 
 prerequisites() {
-  if which zsh > /dev/null 2>&1 ; then
+  if command -v zsh > /dev/null 2>&1 ; then
     case $- in
       *i*)
         case $(getent passwd $USER | cut -d: -f7) in
@@ -36,7 +36,7 @@ prerequisites() {
             if [ $(id) -ne 0 ] ; then
               echo 'Enter password to change shell.' >&2
             fi
-            chsh -s $(which zsh)
+            chsh -s $(command -v zsh)
             ;;
         esac
         ;;
@@ -98,7 +98,7 @@ install_basic_dir() {
 
 install_git() {
   # Install or update a git repository
-  if ! which git > /dev/null ; then
+  if ! command -v git > /dev/null 2>&1 ; then
     return 1
   fi
   local REPO="${*: -2:1}"
@@ -177,7 +177,7 @@ install_ssh_keys() {
 }
 
 install_gpg_keys() {
-  which gpg >/dev/null 2>&1 || \
+  command -v gpg >/dev/null 2>&1 || \
     return 0
   local key
   for key in ${BASEDIR}/keys/gpg/* ; do
@@ -215,7 +215,7 @@ run_as_root() {
   if [ ${USER} = "root" ] ; then
     "$@"
     return $?
-  elif test -x $(which sudo 2>/dev/null) ; then
+  elif test -x $(command -v sudo 2>/dev/null) ; then
     verbose "Using sudo to run ${1}..."
     sudo "$@"
     return $?
@@ -371,7 +371,7 @@ install_main() {
 }
 
 install_dconf() {
-  which dconf >/dev/null 2>&1 || return 1
+  command -v dconf >/dev/null 2>&1 || return 1
   find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read dcpath ; do
     dconf load ${dcpath}/ < "${BASEDIR}/dconf/${dcpath}"
   done
@@ -396,7 +396,7 @@ if [ ! -d $BASEDIR ] ; then
   exit 1
 fi
 
-if which dpkg-query > /dev/null 2>&1 ; then
+if command -v dpkg-query > /dev/null 2>&1 ; then
   HAVE_X=$(dpkg-query -s xserver-xorg 2>/dev/null | \
     grep -c 'Status.*installed' \
     || true)
