@@ -56,12 +56,13 @@ install_dotfile_dir() {
     while read -r submod ; do
       echo -n " -o -path ${BASEDIR}/${submod}"
     done)"
+  # shellcheck disable=SC2086
   find "${SRCDIR}" \( -name .git -o \
                     -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
                     -name README.md -o \
                     -name .gitignore \
-                    "${submodule_prune}" \) \
+                    ${submodule_prune} \) \
       -prune -o ${FINDTYPE} f -print | \
     while read -r dotfile ; do
       local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
