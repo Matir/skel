@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+# shellcheck disable=SC2155,SC2223
+
 set -o nounset
 set -o errexit
 set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
@@ -18,7 +20,7 @@ case $(uname) in
 esac
 
 is_comment() {
-  if [ $(echo "${1}" | cut -c1-1) = '#' ] ; then
+  if [ "$(echo "${1}" | cut -c1-1)" = '#' ] ; then
     true
   else
     false
@@ -29,14 +31,14 @@ prerequisites() {
   if command -v zsh > /dev/null 2>&1 ; then
     case $- in
       *i*)
-        case $(getent passwd $USER | cut -d: -f7) in
+        case "$(getent passwd "${USER}" | cut -d: -f7)" in
           */zsh)
             ;;
           *)
-            if [ $(id) -ne 0 ] ; then
+            if [ "$(id)" -ne 0 ] ; then
               echo 'Enter password to change shell.' >&2
             fi
-            chsh -s $(command -v zsh)
+            chsh -s "$(command -v zsh)"
             ;;
         esac
         ;;
@@ -51,7 +53,7 @@ install_dotfile_dir() {
   local dotfile
   local submodule_prune="$(git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
     awk '{print $2}' | \
-    while read submod ; do
+    while read -r submod ; do
       echo -n " -o -path ${BASEDIR}/${submod}"
     done)"
   find "${SRCDIR}" \( -name .git -o \
@@ -59,19 +61,19 @@ install_dotfile_dir() {
                     -name install.sh -o \
                     -name README.md -o \
                     -name .gitignore \
-                    ${submodule_prune} \) \
+                    "${submodule_prune}" \) \
       -prune -o ${FINDTYPE} f -print | \
-    while read dotfile ; do
+    while read -r dotfile ; do
       local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
-      mkdir -p $(dirname "${TARGET}")
+      mkdir -p "$(dirname "${TARGET}")"
       ln -s -f "${dotfile}" "${TARGET}"
     done
   git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
     awk '{print $2}' | \
-    while read submodule ; do
+    while read -r submodule ; do
       local FULLNAME="${BASEDIR}/${submodule}"
       local TARGET="${HOME}/.${FULLNAME#${SRCDIR}/}"
-      mkdir -p $(dirname "${TARGET}")
+      mkdir -p "$(dirname "${TARGET}")"
       if test -L "${TARGET}" ; then
         if [ "$(readlink "${TARGET}")" != "${FULLNAME}" ] ; then
           echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
@@ -89,9 +91,9 @@ install_basic_dir() {
   local DESTDIR="${2}"
   local file
   find "${SRCDIR}" ${FINDTYPE} f -print | \
-    while read file ; do
+    while read -r file ; do
     local TARGET="${2}/${file#${SRCDIR}/}"
-    mkdir -p $(dirname "${TARGET}")
+    mkdir -p "$(dirname "${TARGET}")"
     ln -s -f "${file}" "${TARGET}"
   done
 }
@@ -103,25 +105,25 @@ install_git() {
   fi
   local REPO="${*: -2:1}"
   local DESTDIR="${*: -1:1}"
-  set -- ${@:1:$(($#-2))}
-  if [ -d ${DESTDIR}/.git ] ; then
-    ( cd ${DESTDIR} ; git pull -q )
+  set -- "${@:1:$(($#-2))}"
+  if [ -d "${DESTDIR}/.git" ] ; then
+    ( cd "${DESTDIR}" ; git pull -q )
   else
-    if [ ${MINIMAL} -eq 1 ] ; then
-      git clone --depth 1 $* ${REPO} ${DESTDIR}
+    if [ "${MINIMAL}" -eq 1 ] ; then
+      git clone --depth 1 "$@" "${REPO}" "${DESTDIR}"
     else
-      git clone $* ${REPO} ${DESTDIR}
+      git clone "$@" "${REPO}" "${DESTDIR}"
     fi
   fi
 }
 
 add_bin_symlink() {
-  local LINKNAME=${HOME}/bin/${2:-$(basename $1)}
-  if [ -e ${LINKNAME} -a ! -h ${LINKNAME} ] ; then
+  local LINKNAME="${HOME}/bin/${2:-$(basename "$1")}"
+  if [ -e "${LINKNAME}" ] && ! [ -h "${LINKNAME}" ] ; then
     echo "Refusing to overwrite ${LINKNAME}" >&2
     return 1
   fi
-  ln -sf ${1} ${LINKNAME}
+  ln -sf "${1}" "${LINKNAME}"
 }
 
 postinstall() {
@@ -131,24 +133,24 @@ postinstall() {
 ssh_key_already_installed() {
   # Return 1 if the key isn't already installed, 0 if it is
   local AK="${HOME}/.ssh/authorized_keys"
-  if [ ! -f $AK ] ; then
+  if [ ! -f "$AK" ] ; then
     return 1
   fi
-  local KEYFP=$(ssh-keygen -l -f $1 2>/dev/null | awk '{print $2}')
-  local TMPF=$(mktemp)
+  local KEYFP="$(ssh-keygen -l -f "$1" 2>/dev/null | awk '{print $2}')"
+  local TMPF="$(mktemp)"
   local key
-  while read key ; do
+  while read -r key ; do
     if is_comment "${key}" ; then
       continue
     fi
-    echo "$key" > $TMPF
-    local EFP=$(ssh-keygen -l -f ${TMPF} 2>/dev/null | awk '{print $2}')
+    echo "$key" > "$TMPF"
+    local EFP="$(ssh-keygen -l -f "${TMPF}" 2>/dev/null | awk '{print $2}')"
     if [ "$EFP" = "$KEYFP" ] ; then
-      rm $TMPF 2>/dev/null
+      rm "$TMPF" 2>/dev/null
       return 0
     fi
-  done < ${AK}
-  rm $TMPF 2>/dev/null
+  done < "${AK}"
+  rm "$TMPF" 2>/dev/null
   return 1
 }
 
@@ -158,21 +160,21 @@ install_ssh_keys() {
   local AK="${HOME}/.ssh/authorized_keys"
   local key
   local keydir
-  if test ${TRUST_ALL_KEYS} = 1 ; then
-    keydir=${BASEDIR}/keys/ssh
+  if test "${TRUST_ALL_KEYS}" = 1 ; then
+    keydir="${BASEDIR}/keys/ssh"
   else
-    keydir=${BASEDIR}/keys/ssh/trusted
+    keydir="${BASEDIR}/keys/ssh/trusted"
   fi
-  for key in ${keydir}/* ; do
+  for key in "${keydir}"/* ; do
     if [ ! -f "${key}" ] ; then
       continue
     fi
     if ssh_key_already_installed "${key}" ; then
-      verbose "Key $(basename ${key}) already installed..."
+      verbose "Key $(basename "${key}") already installed..."
       continue
     fi
-    echo "# $(basename ${key}) added from skel on $(date +%Y-%m-%d)" >> ${AK}
-    cat ${key} >> ${AK}
+    echo "# $(basename "${key}") added from skel on $(date +%Y-%m-%d)" >> "${AK}"
+    cat "${key}" >> "${AK}"
   done
 }
 
@@ -180,8 +182,8 @@ install_gpg_keys() {
   command -v gpg >/dev/null 2>&1 || \
     return 0
   local key
-  for key in ${BASEDIR}/keys/gpg/* ; do
-    gpg --import < ${key} >/dev/null 2>&1
+  for key in "${BASEDIR}"/keys/gpg/* ; do
+    gpg --import < "${key}" >/dev/null 2>&1
   done
 }
 
@@ -190,13 +192,14 @@ install_known_hosts() {
   if [ ! -f "${BASEDIR}/keys/known_hosts" ] ; then
     return 0
   fi
-  mkdir -p ${HOME}/.ssh
+  mkdir -p "${HOME}/.ssh"
   if [ -f "${HOME}/.ssh/known_hosts" ] ; then
-    local tmpf=$(mktemp)
-    cat ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts | sort -u > $tmpf
-    mv $tmpf ${HOME}/.ssh/known_hosts
+    local tmpf="$(mktemp)"
+    cat "${BASEDIR}"/keys/known_hosts "${HOME}"/.ssh/known_hosts \
+      | sort -u > "$tmpf"
+    mv "$tmpf" "${HOME}"/.ssh/known_hosts
   else
-    cp ${BASEDIR}/keys/known_hosts ${HOME}/.ssh/known_hosts
+    cp "${BASEDIR}"/keys/known_hosts "${HOME}"/.ssh/known_hosts
   fi
 }
 
@@ -212,10 +215,10 @@ is_deb_system() {
 
 run_as_root() {
   # Attempt to run as root
-  if [ ${USER} = "root" ] ; then
+  if [ "${USER}" = "root" ] ; then
     "$@"
     return $?
-  elif test -x $(command -v sudo 2>/dev/null) ; then
+  elif test -x "$(command -v sudo 2>/dev/null)" ; then
     verbose "Using sudo to run ${1}..."
     sudo "$@"
     return $?
@@ -227,25 +230,25 @@ install_pkg_set() {
   local pkg_file=${BASEDIR}/${1}
   local pkg_list=""
   if [ ! -f "${pkg_file}" ] ; then
-    echo "Package set $(basename ${pkg_file}) does not exist." 1>&2
+    echo "Package set $(basename "${pkg_file}") does not exist." 1>&2
     return 1
   fi
-  while read line ; do
+  while read -r line ; do
     if is_comment "${line}" ; then
       continue
     fi
     if [ -z "${line}" ] ; then
       continue
     fi
-    if [ "$(apt-cache -q show ${line} 2>/dev/null)" != "" ] ; then
+    if [ "$(apt-cache -q show "${line}" 2>/dev/null)" != "" ] ; then
       pkg_list="${pkg_list} ${line}"
     else
       echo "Warning: package ${line} not found." >&2
     fi
-  done < ${pkg_file}
+  done < "${pkg_file}"
   if [ -n "${pkg_list}" ] ; then
     verbose "Installing ${pkg_list}"
-    run_as_root apt-get install -qqy ${pkg_list}
+    run_as_root apt-get install -qqy "${pkg_list}"
   fi
 }
 
@@ -254,25 +257,25 @@ install_apt_pkgs() {
     ( echo "Can't run apt-get commands" >&2 && \
       return 1 )
   install_pkg_set packages.minimal
-  if test $MINIMAL = 1 ; then
+  if test "$MINIMAL" = 1 ; then
     return 0
   fi
-  test $HAVE_X = 1 && install_pkg_set packages.X
-  test $IS_KALI = 1 && install_pkg_set packages.kali
-  install_pkg_set packages.${ARCH}
-  test $HAVE_X = 1 && install_chrome
+  test "$HAVE_X" = 1 && install_pkg_set packages.X
+  test "$IS_KALI" = 1 && install_pkg_set packages.kali
+  install_pkg_set "packages.${ARCH}"
+  test "$HAVE_X" = 1 && install_chrome
 }
 
 install_chrome() {
-  local TMPD=$(mktemp -d)
-  local CHROME_ARCH=$(echo ${ARCH} | sed 's/x86_64/amd64/')
+  local TMPD="$(mktemp -d)"
+  local CHROME_ARCH="${ARCH/x86_64/amd64}"
   dpkg-query -l 'google-chrome*' >/dev/null 2>&1 && return 0
-  /usr/bin/wget --quiet -O ${TMPD}/google-chrome.deb \
-    https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb
-  run_as_root /usr/bin/dpkg -i ${TMPD}/google-chrome.deb || \
+  /usr/bin/wget --quiet -O "${TMPD}/google-chrome.deb" \
+    "https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb"
+  run_as_root /usr/bin/dpkg -i "${TMPD}/google-chrome.deb" || \
     run_as_root /usr/bin/apt-get install -qq -f -y || \
     ( echo "Could not install chrome." >&2 && return 1 )
-  rm -rf ${TMPD}
+  rm -rf "${TMPD}"
 }
 
 setup_git_email() {
@@ -283,8 +286,8 @@ setup_git_email() {
   if [ "${USER:0:5}" != "david" ] ; then
     return 0
   fi
-  local domain="$(hostname -f | egrep -o '[a-z0-9-]+\.[a-z0-9-]+$')"
-  case $(echo ${domain} | md5sum | awk '{print $1}') in
+  local domain="$(hostname -f | grep -E -o '[a-z0-9-]+\.[a-z0-9-]+$')"
+  case "$(echo "${domain}" | md5sum | awk '{print $1}')" in
     b21a24d528346ef7d3932306ed96ede5|a5ed434a3f5089b489576cceab824f25)
       ;;
     *)
@@ -296,27 +299,28 @@ setup_git_email() {
 
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
-  local old_pref_file=$(dirname $0)/installed-prefs
-  local pref_file=$(dirname $0)/.installed-prefs
-  if [ -f ${old_pref_file} -a ! -f ${pref_file} ] ; then
-    mv ${old_pref_file} ${pref_file}
+  local old_pref_file="$(dirname "$0")/installed-prefs"
+  local pref_file="$(dirname "$0")/.installed-prefs"
+  if [ -f "${old_pref_file}" ] && ! [ -f "${pref_file}" ] ; then
+    mv "${old_pref_file}" "${pref_file}"
   fi
-  if [ -f ${pref_file} ] ; then
+  if [ -f "${pref_file}" ] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
     # source is a bashism
-    . ${pref_file}
+    # shellcheck disable=SC1090
+    . "${pref_file}"
   fi
 }
 
 save_prefs() {
-  test $SAVE = 1 || return 0
+  test "$SAVE" = 1 || return 0
   local pref_file=${BASEDIR}/.installed-prefs
   (echo_pref BASEDIR
    echo_pref MINIMAL
    echo_pref INSTALL_KEYS
    echo_pref TRUST_ALL_KEYS
    echo_pref INSTALL_PKGS
-   echo_pref VERBOSE) > $pref_file
+   echo_pref VERBOSE) > "$pref_file"
 }
 
 echo_pref() {
@@ -338,33 +342,35 @@ EOF
 }
 
 verbose() {
-  test ${VERBOSE:-0} = 1 && echo "$@" >&2 || return 0
+  test "${VERBOSE:-0}" = 1 && echo "$@" >&2 || return 0
 }
 
 # Operations
 
 install_dotfiles() {
   install_dotfile_dir "${BASEDIR}/dotfiles"
+  # shellcheck disable=SC2015
   test -d "${BASEDIR}/private_dotfiles" && \
     test -d "${BASEDIR}/.git/git-crypt" && \
     install_dotfile_dir "${BASEDIR}/private_dotfiles" || \
     true
+  # shellcheck disable=SC2015
   test -d "${BASEDIR}/local_dotfiles" && \
     install_dotfile_dir "${BASEDIR}/local_dotfiles" || \
     true
 }
 
 install_main() {
-  test -d ${BASEDIR}/.git && command -v git >/dev/null 2>&1 && \
-    git -C ${BASEDIR} pull --ff-only
-  test $MINIMAL = 1 || ( command -v git >/dev/null 2>&1 && \
-    git -C ${BASEDIR} submodule update --init --recursive )
-  test $MINIMAL = 1 || prerequisites
-  test $INSTALL_PKGS = 1 && is_deb_system && install_apt_pkgs
+  test -d "${BASEDIR}/.git" && command -v git >/dev/null 2>&1 && \
+    git -C "${BASEDIR}" pull --ff-only
+  test "$MINIMAL" = 1 || ( command -v git >/dev/null 2>&1 && \
+    git -C "${BASEDIR}" submodule update --init --recursive )
+  test "$MINIMAL" = 1 || prerequisites
+  test "$INSTALL_PKGS" = 1 && is_deb_system && install_apt_pkgs
   install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-  test $MINIMAL = 1 || postinstall
-  test $INSTALL_KEYS = 1 && install_keys
+  test "$MINIMAL" = 1 || postinstall
+  test "$INSTALL_KEYS" = 1 && install_keys
   save_prefs
   setup_git_email
   cleanup
@@ -372,8 +378,8 @@ install_main() {
 
 install_dconf() {
   command -v dconf >/dev/null 2>&1 || return 1
-  find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read dcpath ; do
-    dconf load ${dcpath}/ < "${BASEDIR}/dconf/${dcpath}"
+  find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read -r dcpath ; do
+    dconf load "${dcpath}/" < "${BASEDIR}/dconf/${dcpath}"
   done
 }
 
@@ -391,7 +397,7 @@ read_saved_prefs
 : ${SAVE:=1}
 
 # Check prerequisites
-if [ ! -d $BASEDIR ] ; then
+if [ ! -d "$BASEDIR" ] ; then
   echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
@@ -418,7 +424,7 @@ case $OPERATION in
     ;;
   package*)
     PKG_SET=${2:-minimal}
-    install_pkg_set packages.${PKG_SET}
+    install_pkg_set "packages.${PKG_SET}"
     ;;
   test)
     # Do nothing, just sourcing
