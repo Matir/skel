@@ -28,7 +28,7 @@ fi
 
 # Setup for libvirt
 if [ -z "${LIBVIRT_DEFAULT_URI}" ] ; then
-  if [ "$(id -u)" == "0" ] || (id -g -n | grep -q "\blibvirt\b") ; then
+  if [ "$(id -u)" = "0" ] || (id -g -n | grep -q "\blibvirt\b") ; then
     LIBVIRT_DEFAULT_URI="qemu:///system"
     export LIBVIRT_DEFAULT_URI
   fi
