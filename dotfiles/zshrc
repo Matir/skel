@@ -112,6 +112,8 @@ if [[ $- == *i* ]] ; then
   # Syntax highlighting and substring search
   if test -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
     source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  elif test -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
+    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   fi
   if test -f ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh ; then
     source ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh
