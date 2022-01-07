@@ -31,7 +31,9 @@ set number
 set ruler
 
 " Setup viminfo for recording positions, etc.
-set viminfo='10,\"100,:20,%,n~/.viminfo
+if !has('nvim')
+  set viminfo='10,\"100,:20,%,n~/.viminfo
+endif
 " Jump back when editing a file
 function! ResCur()
   " Don't jump in git commits since they're generated.
