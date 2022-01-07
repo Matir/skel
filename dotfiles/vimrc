@@ -93,7 +93,6 @@ imap <silent> <F4> <ESC>:set invpaste<CR>:set paste?<CR>
 " Mediocre Hex editing in vim
 " Source: http://vim.wikia.com/wiki/Improved_hex_editing
 " TODO: move to an include
-nnoremap <C-H> :Hexmode<CR>
 command -bar Hexmode call ToggleHex()
 function ToggleHex()
   " hex mode should be considered a read-only operation
