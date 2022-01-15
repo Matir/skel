@@ -249,7 +249,8 @@ install_pkg_set() {
   done < "${pkg_file}"
   if [ -n "${pkg_list}" ] ; then
     verbose "Installing ${pkg_list}"
-    run_as_root apt-get install -qqy "${pkg_list}"
+    # shellcheck disable=SC2086
+    run_as_root apt-get install -qqy ${pkg_list}
   fi
 }
 
