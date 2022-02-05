@@ -4,6 +4,9 @@ Protocol 2
 # Permit Local Overrides
 Include ~/.ssh/config.d/*
 
+# SSH known host hashing doesn't buy much with shell history, etc.
+HashKnownHosts no
+
 # Enable canonicalization, unless overridden
 CanonicalizeHostname        yes
 CanonicalizeFallbackLocal   yes
