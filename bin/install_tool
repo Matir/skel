@@ -395,6 +395,9 @@ EOF
     chmod +x "${DESTDIR}/docker-compose"
     add_bin_symlink docker-compose
     ;;
+  tldr)
+    pip3 install --user tldr
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
