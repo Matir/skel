@@ -25,3 +25,8 @@ VirtualBox VMs
 tmp
 tools
 .minikube
+.config/unity3d/cache
+.xsession-errors*
+.config/google-chrome-beta
+.config/google-chrome
+Unity
