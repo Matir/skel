@@ -398,6 +398,9 @@ EOF
   tldr)
     pip3 install --user tldr
     ;;
+  blint)
+    pip3 install --user blint
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
