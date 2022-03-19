@@ -4,7 +4,10 @@ build-essential
 cryptsetup
 dsniff
 ecryptfs-utils
+exa
 exuberant-ctags
+fd-find
+fzf
 httpie
 iftop
 iptraf

@@ -401,6 +401,31 @@ EOF
   blint)
     pip3 install --user blint
     ;;
+  dust)
+    if ! command -v cargo >/dev/null 2>&1 ; then
+      echo "This needs cargo (for rust)!" >/dev/stderr
+      exit 1
+    fi
+    cargo install du-dust
+    ;;
+  bottom)
+    if ! command -v cargo >/dev/null 2>&1 ; then
+      echo "This needs cargo (for rust)!" >/dev/stderr
+      exit 1
+    fi
+    cargo install bottom
+    ;;
+  delta)
+    if !check_sudo ; then
+      echo "Must be able to run as sudo."
+      exit 1
+    fi
+    dpkg_url=$(curl https://api.github.com/repos/dandavison/delta/releases/latest | \
+      jq -r '.assets[] | select(.name|test(".*_amd64.deb")) | select(.name|test(".*musl.*")|not) | .browser_download_url')
+    dpkg_name="/tmp/delta_amd64.deb"
+    download "${dpkg_url}" "${dpkg_name}"
+    sudo dpkg -i "${dpkg_name}"
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
