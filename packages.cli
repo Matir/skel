@@ -3,6 +3,7 @@ binfmt-support
 build-essential
 cryptsetup
 dsniff
+duf
 ecryptfs-utils
 exa
 exuberant-ctags
