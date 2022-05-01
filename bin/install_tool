@@ -426,6 +426,10 @@ EOF
     download "${dpkg_url}" "${dpkg_name}"
     sudo dpkg -i "${dpkg_name}"
     ;;
+  ropper)
+    install_pkgs python3-z3
+    pip3 install --user pyvex ropper
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
