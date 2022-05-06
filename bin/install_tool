@@ -430,6 +430,9 @@ EOF
     install_pkgs python3-z3
     pip3 install --user pyvex ropper
     ;;
+  kubeconform)
+    go install github.com/yannh/kubeconform/cmd/kubeconform@latest
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
