@@ -430,6 +430,15 @@ EOF
     install_pkgs python3-z3
     pip3 install --user pyvex ropper
     ;;
+  kubeval)
+    makedest
+    download \
+      "https://github.com/instrumenta/kubeval/releases/latest/download/kubeval-linux-amd64.tar.gz" \
+      "/tmp/kubeval.tar.gz"
+    tar -C "${DESTDIR}" -xzf /tmp/kubeval.tar.gz
+    rm /tmp/kubeval.tar.gz
+    add_bin_symlink kubeval
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
