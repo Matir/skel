@@ -433,6 +433,14 @@ EOF
   kubeconform)
     go install github.com/yannh/kubeconform/cmd/kubeconform@latest
     ;;
+  starship)
+    mkdir -p ${DESTDIR}
+    download \
+      "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz" \
+      /tmp/starship.tar.gz
+    tar -C ${DESTDIR} -zxf /tmp/starship.tar.gz starship
+    add_bin_symlink starship
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
