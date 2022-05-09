@@ -17,9 +17,13 @@ Thumbs.db
 # Try to avoid accidentally checking in private keys
 id_rsa
 id_ecdsa
+id_ed25519
 
 # Kicad backup files
 *.kicad_pcb-bak
 
 # Mypy cache path
 .mypy_cache
+
+# These files should basically never be committed
+.env
