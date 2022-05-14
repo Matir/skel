@@ -154,7 +154,7 @@ case ${TOOL} in
     makedest_or_die
     gbase="https://dl.google.com/dl/cloudsdk/channels/rapid/downloads/"
     # TODO: find a way to make this version independent
-    gsdk="google-cloud-sdk-277.0.0-linux-x86_64.tar.gz"
+    gsdk="google-cloud-sdk-385.0.0-linux-x86_64.tar.gz"
     download "${gbase}${gsdk}" /tmp/gcloud.tar.gz
     tar zxf /tmp/gcloud.tar.gz --strip-components=1 -C "${DESTDIR}"
     rm /tmp/gcloud.tar.gz
