@@ -1,1 +1,15 @@
 "$schema" = 'https://starship.rs/config-schema.json'
+
+[directory]
+fish_style_pwd_dir_length = 1
+
+[gcloud]
+# This is just too noisy
+disabled = true
+symbol = "️🇬️ "
+
+[status]
+disabled = false
+
+[username]
+show_always = true
