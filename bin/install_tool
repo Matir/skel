@@ -433,6 +433,15 @@ EOF
   kubeconform)
     go install github.com/yannh/kubeconform/cmd/kubeconform@latest
     ;;
+  kubectx)
+    git clone https://github.com/ahmetb/kubectx.git "${DESTDIR}"
+    add_bin_symlink kubectx
+    add_bin_symlink kubens
+    COMPDIR="${HOME}/.zshrc.completions"
+    mkdir -p "${COMPDIR}"
+    ln -sf "${DESTDIR}/completion/_kubectx.zsh" "${COMPDIR}"
+    ln -sf "${DESTDIR}/completion/_kubens.zsh" "${COMPDIR}"
+    ;;
   starship)
     mkdir -p ${DESTDIR}
     download \
