@@ -106,6 +106,8 @@ if [[ $- == *i* ]] ; then
   # Virtualenvwrapper
   if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
+  elif test -f /usr/bin/virtualenvwrapper_lazy.sh ; then
+    source /usr/bin/virtualenvwrapper_lazy.sh
   fi
   if command ls --version >/dev/null 2>&1 ; then
     alias ls="$(whence -p ls) --color=auto -C"
