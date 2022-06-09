@@ -10,6 +10,7 @@ symbol = "️🇬️ "
 
 [status]
 disabled = false
+symbol = "⛌"
 
 [username]
 show_always = true
