@@ -158,4 +158,7 @@ fi
 if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
 
 # Set prompt based on local settings
-prompt "${THEME:-matir}"
+if test -f "${HOME}/.zprompt" ; then
+  THEME=${THEME:=$(cat "${HOME}/.zprompt")}
+fi
+prompt "${THEME:-matir}" >/dev/null 2>&1
