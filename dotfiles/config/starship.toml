@@ -14,3 +14,6 @@ symbol = "⛌"
 
 [username]
 show_always = true
+
+[ruby]
+detect_variables = []
