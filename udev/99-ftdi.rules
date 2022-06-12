@@ -1,1 +1,2 @@
-BUS=="usb", SYSFS{idVendor}=="0403", SYSFS{idProduct}=="6014", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6014", GROUP="plugdev"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", GROUP="plugdev"
