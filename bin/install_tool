@@ -450,6 +450,14 @@ EOF
     tar -C ${DESTDIR} -zxf /tmp/starship.tar.gz starship
     add_bin_symlink starship
     ;;
+  arduino-cli)
+    mkdir -p "${DESTDIR}"
+    download \
+      "https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz" \
+      /tmp/arduino-cli.tar.gz
+    tar -C "${DESTDIR}" -zxf /tmp/arduino-cli.tar.gz arduino-cli
+    add_bin_symlink arduino-cli
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
