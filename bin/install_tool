@@ -458,6 +458,14 @@ EOF
     tar -C "${DESTDIR}" -zxf /tmp/arduino-cli.tar.gz arduino-cli
     add_bin_symlink arduino-cli
     ;;
+  ghidra)
+    zip_url=$(curl https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest | \
+      jq -r '.assets[] | select(.name|test(".*.zip")) | .browser_download_url')
+    download $zip_url /tmp/ghidra.zip
+    unzip -d "${DESTDIR}" /tmp/ghidra.zip
+    mv ${DESTDIR}/*/* ${DESTDIR}
+    add_bin_symlink ghidraRun ghidra
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
