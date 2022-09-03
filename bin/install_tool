@@ -461,10 +461,19 @@ EOF
   ghidra)
     zip_url=$(curl https://api.github.com/repos/NationalSecurityAgency/ghidra/releases/latest | \
       jq -r '.assets[] | select(.name|test(".*.zip")) | .browser_download_url')
-    download $zip_url /tmp/ghidra.zip
+    download "${zip_url}" /tmp/ghidra.zip
     unzip -d "${DESTDIR}" /tmp/ghidra.zip
     mv ${DESTDIR}/*/* ${DESTDIR}
     add_bin_symlink ghidraRun ghidra
+    ;;
+  doctl)
+    # TODO: other architectures
+    tar_url=$(curl https://api.github.com/repos/digitalocean/doctl/releases/latest | \
+      jq -r '.assets[] | select(.name|test(".*linux-amd64\\.tar\\.gz")) | .browser_download_url')
+    download "${tar_url}" /tmp/doctl.tar.gz
+    mkdir -p "${DESTDIR}"
+    tar -C "${DESTDIR}" -zxf /tmp/doctl.tar.gz "doctl"
+    add_bin_symlink doctl
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
