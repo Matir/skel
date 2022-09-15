@@ -245,8 +245,11 @@ case ${TOOL} in
     ;;
   cyberchef)
     makedest
-    src=$(python3 -c 'from urllib import request; import json; print(filter(lambda x: x["name"]=="cyberchef.htm", json.load(request.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"])[0]["browser_download_url"])')
-    download "${src}" "${DESTDIR}/cyberchef.html"
+    cd "${DESTDIR}"
+    src=$(python3 -c 'from urllib import request; import json; print(json.load(request.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"][0]["browser_download_url"])')
+    download "${src}" "${DESTDIR}/cyberchef.zip"
+    unzip -d "${DESTDIR}" "${DESTDIR}/cyberchef.zip"
+    ln -sf CyberChef*.html "${DESTDIR}/cyberchef.html"
     ;;
   apktool)
     makedest_or_die
