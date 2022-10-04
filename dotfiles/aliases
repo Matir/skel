@@ -53,3 +53,6 @@ alias bc="command bc -q"
 
 # Get a decently readable df
 alias dfh="df -h -x tmpfs -x devtmpfs"
+
+# Clear the GPG agent
+alias clear-gpg-agent="echo RELOADAGENT | gpg-connect-agent"
