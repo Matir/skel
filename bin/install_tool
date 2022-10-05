@@ -229,10 +229,27 @@ case ${TOOL} in
          /etc/udev/rules.d/77-mm-usb-device-blacklist.rules &&
          udevadm control --reload-rules"
     ;;
+  pm3iceman)
+    install_pkgs git ca-certificates build-essential pkg-config \
+      libreadline-dev gcc-arm-none-eabi libnewlib-dev qtbase5-dev \
+      libbz2-dev libbluetooth-dev libpython3-dev libssl-dev
+    src="https://github.com/RfidResearchGroup/proxmark3.git"
+    git clone "${src}" "${DESTDIR}"
+    cd "${DESTDIR}"
+    make clean && make -sj2
+    check_sudo && sudo /bin/sh -c \
+      "cp -rf ./driver/77-pm3-usb-device-blacklist.rules \
+         /etc/udev/rules.d/77-pm3-usb-device-blacklist.rules &&
+         udevadm control --reload-rules"
+    add_bin_symlink pm3
+    ;;
   cyberchef)
     makedest
-    src=$(python3 -c 'from urllib import request; import json; print(filter(lambda x: x["name"]=="cyberchef.htm", json.load(request.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"])[0]["browser_download_url"])')
-    download "${src}" "${DESTDIR}/cyberchef.html"
+    cd "${DESTDIR}"
+    src=$(python3 -c 'from urllib import request; import json; print(json.load(request.urlopen("https://api.github.com/repos/gchq/CyberChef/releases/latest"))["assets"][0]["browser_download_url"])')
+    download "${src}" "${DESTDIR}/cyberchef.zip"
+    unzip -d "${DESTDIR}" "${DESTDIR}/cyberchef.zip"
+    ln -sf CyberChef*.html "${DESTDIR}/cyberchef.html"
     ;;
   apktool)
     makedest_or_die
@@ -285,7 +302,7 @@ case ${TOOL} in
   exploitdb)
     if test -d "${DESTDIR}" ; then
       echo "Already installed, updating instead..." >/dev/stderr
-      "${DESTDIR}/searchsplit" -u
+      "${DESTDIR}/searchsploit" -u
     else
       git clone --depth 1 \
         https://github.com/offensive-security/exploitdb.git \
