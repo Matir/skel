@@ -81,5 +81,8 @@ export LC_COLLATE=C
 # Opt out of .net telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 
+# Suppress lvm warnings
+export LVM_SUPPRESS_FD_WARNINGS=1
+
 # shellcheck source=/dev/null
 test -e "$HOME/.localenv" && . "$HOME/.localenv"
