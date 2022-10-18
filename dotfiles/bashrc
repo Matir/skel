@@ -1,5 +1,5 @@
 # Load env first
-if [ -f $HOME/.env ] ; then source $HOME/.env ; fi
+if [ -f $HOME/.shenv ] ; then source $HOME/.shenv ; fi
 
 # History settings
 HISTCONTROL=ignoredups:ignorespace

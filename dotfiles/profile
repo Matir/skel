@@ -4,7 +4,7 @@
 # Should only use POSIX constructs.
 
 # Always load ENV
-test -f "$HOME/.env" && . "$HOME/.env"
+test -f "$HOME/.shenv" && . "$HOME/.shenv"
 
 # Setup GREP_COLORS
 export GREP_COLOR='01;31'
