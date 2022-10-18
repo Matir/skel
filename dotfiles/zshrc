@@ -66,8 +66,8 @@ zstyle ':completion::complete:*' use-cache on
 zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
 
 # .profile is universal
-. /etc/profile
-. ~/.profile
+emulate sh -c '. /etc/profile'
+emulate sh -c '. ~/.profile'
 # Deduplicate the path
 typeset -U path
 
