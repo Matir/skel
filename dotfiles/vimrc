@@ -154,7 +154,7 @@ nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 " Currently only works on debian-based systems...
 " It also does not play nicely with virtual envs, so we skip it then
 if isdirectory("/usr/share/vim-youcompleteme") && empty($VIRTUAL_ENV)
-  let g:ycm_gopls_binary_path='gopls'
+  "let g:ycm_gopls_binary_path='gopls'
   let g:ycm_autoclose_preview_window_after_insertion=1
   set runtimepath+=/usr/share/vim-youcompleteme
 endif
