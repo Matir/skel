@@ -370,7 +370,7 @@ EOF
     ;;
   gf)
     install_pkgs golang-go silversearcher-ag
-    go get -u github.com/tomnomnom/gf
+    go install github.com/tomnomnom/gf@latest
     mkdir -p ${HOME}/.config
     if test -d ${HOME}/.config/gf ; then
       git -C ${HOME}/.config/gf pull
@@ -379,19 +379,19 @@ EOF
     fi
     ;;
   gron)
-    go get -u github.com/tomnomnom/gron
+    go install github.com/tomnomnom/gron@latest
     ;;
   httprobe)
-    go get -u github.com/tomnomnom/httprobe
+    go install github.com/tomnomnom/httprobe@latest
     ;;
   ffuf)
-    go get -u github.com/ffuf/ffuf
+    go install github.com/ffuf/ffuf@latest
     ;;
   gobuster)
-    go get -u github.com/OJ/gobuster
+    go install github.com/OJ/gobuster@latest
     ;;
   amass)
-    go get -u github.com/OWASP/Amass/v3/...
+    go install github.com/OWASP/Amass/v3/...
     ;;
   cht.sh)
     install_pkgs rlwrap
@@ -401,8 +401,8 @@ EOF
     add_bin_symlink cht.sh
     ;;
   age)
-    go get -u filippo.io/age/cmd/age
-    go get -u filippo.io/age/cmd/age-keygen
+    go install filippo.io/age/cmd/age@latest
+    go install filippo.io/age/cmd/age-keygen@latest
     ;;
   docker-compose)
     mkdir -p ${DESTDIR}
