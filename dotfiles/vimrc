@@ -157,6 +157,12 @@ if isdirectory("/usr/share/vim-youcompleteme") && empty($VIRTUAL_ENV)
   "let g:ycm_gopls_binary_path='gopls'
   let g:ycm_autoclose_preview_window_after_insertion=1
   set runtimepath+=/usr/share/vim-youcompleteme
+  " Add rust settings
+  let g:tmp_rust_path=trim(system("rustc --print sysroot"))
+  if isdirectory(g:tmp_rust_path)
+    let g:ycm_rust_toolchain_root=g:tmp_rust_path
+  endif
+  unlet! g:tmp_rust_path
 endif
 
 " Enable vim-bracketed-paste mode
