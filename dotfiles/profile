@@ -34,4 +34,9 @@ if [ -z "${LIBVIRT_DEFAULT_URI}" ] ; then
   fi
 fi
 
+# Got rust? (gvim, etc.)
+if test -d "${HOME}/.cargo/bin" ; then
+  PATH="${PATH}:${HOME}/.cargo/bin"
+fi
+
 test -f "${HOME}/.profile.local" && . "${HOME}/.profile.local"

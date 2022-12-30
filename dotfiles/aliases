@@ -56,3 +56,6 @@ alias dfh="df -h -x tmpfs -x devtmpfs"
 
 # Clear the GPG agent
 alias clear-gpg-agent="echo RELOADAGENT | gpg-connect-agent"
+
+# Battery details
+alias bat-details='upower -i $(upower -e | grep battery)'
