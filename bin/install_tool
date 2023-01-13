@@ -502,6 +502,17 @@ EOF
     tar -C "${DESTDIR}" -zxf /tmp/doctl.tar.gz "doctl"
     add_bin_symlink doctl
     ;;
+  rustup)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+      sh -s -- --no-modify-path -y
+    ;;
+  igrep)
+    if ! command -v cargo >/dev/null 2>&1 ; then
+      echo "This needs cargo (for rust)!" >/dev/stderr
+      exit 1
+    fi
+    cargo install igrep
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
