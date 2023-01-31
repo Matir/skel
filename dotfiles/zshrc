@@ -133,6 +133,9 @@ if [[ $- == *i* ]] ; then
     ZSH_AUTOSUGGEST_STRATEGY=(history)
     source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
   fi
+  # History
+  alias fullhist="history 1"
+  alias longhist="history -1000"
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
