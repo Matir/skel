@@ -110,6 +110,14 @@ function makedest_or_die {
   makedest || die "Aborting."
 }
 
+function deb_only {
+  # Error if not on a debian or derivative
+  if ! test -f /etc/debian_version ; then
+    echo "This tool only available for debian." >&2
+    exit 1
+  fi
+}
+
 # Begin main tool selection
 case ${TOOL} in
   john)
@@ -323,6 +331,7 @@ case ${TOOL} in
     add_bin_symlink "Cura.AppImage" cura
     ;;
   rr)
+    deb_only
     ver=$(python3 -c 'from urllib import request; import json; print(json.load(request.urlopen("https://api.github.com/repos/mozilla/rr/releases/latest"))["name"])')
     echo "Latest rr is ${ver}"
     download \
@@ -370,7 +379,7 @@ EOF
     ;;
   gf)
     install_pkgs golang-go silversearcher-ag
-    go get -u github.com/tomnomnom/gf
+    go install github.com/tomnomnom/gf@latest
     mkdir -p ${HOME}/.config
     if test -d ${HOME}/.config/gf ; then
       git -C ${HOME}/.config/gf pull
@@ -379,19 +388,19 @@ EOF
     fi
     ;;
   gron)
-    go get -u github.com/tomnomnom/gron
+    go install github.com/tomnomnom/gron@latest
     ;;
   httprobe)
-    go get -u github.com/tomnomnom/httprobe
+    go install github.com/tomnomnom/httprobe@latest
     ;;
   ffuf)
-    go get -u github.com/ffuf/ffuf
+    go install github.com/ffuf/ffuf@latest
     ;;
   gobuster)
-    go get -u github.com/OJ/gobuster
+    go install github.com/OJ/gobuster@latest
     ;;
   amass)
-    go get -u github.com/OWASP/Amass/v3/...
+    go install github.com/OWASP/Amass/v3/...
     ;;
   cht.sh)
     install_pkgs rlwrap
@@ -401,8 +410,8 @@ EOF
     add_bin_symlink cht.sh
     ;;
   age)
-    go get -u filippo.io/age/cmd/age
-    go get -u filippo.io/age/cmd/age-keygen
+    go install filippo.io/age/cmd/age@latest
+    go install filippo.io/age/cmd/age-keygen@latest
     ;;
   docker-compose)
     mkdir -p ${DESTDIR}
@@ -433,7 +442,8 @@ EOF
     cargo install bottom
     ;;
   delta)
-    if !check_sudo ; then
+    deb_only
+    if ! check_sudo ; then
       echo "Must be able to run as sudo."
       exit 1
     fi
@@ -491,6 +501,17 @@ EOF
     mkdir -p "${DESTDIR}"
     tar -C "${DESTDIR}" -zxf /tmp/doctl.tar.gz "doctl"
     add_bin_symlink doctl
+    ;;
+  rustup)
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+      sh -s -- --no-modify-path -y
+    ;;
+  igrep)
+    if ! command -v cargo >/dev/null 2>&1 ; then
+      echo "This needs cargo (for rust)!" >/dev/stderr
+      exit 1
+    fi
+    cargo install igrep
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
