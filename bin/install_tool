@@ -513,6 +513,9 @@ EOF
     fi
     cargo install igrep
     ;;
+  unblob)
+    pip install --user unblob
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
