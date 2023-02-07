@@ -59,3 +59,6 @@ alias clear-gpg-agent="echo RELOADAGENT | gpg-connect-agent"
 
 # Battery details
 alias bat-details='upower -i $(upower -e | grep battery)'
+
+# Nvidia refresh rate
+alias nvidia-refresh-rate='nvidia-settings --display=:0 -q RefreshRate -t'
