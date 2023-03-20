@@ -84,5 +84,8 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 # Suppress lvm warnings
 export LVM_SUPPRESS_FD_WARNINGS=1
 
+# Default disable SSH forwarding in EARTHLY
+export EARTHLY_SSH_AUTH_SOCK=""
+
 # shellcheck source=/dev/null
 test -e "$HOME/.localenv" && . "$HOME/.localenv"
