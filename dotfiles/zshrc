@@ -126,13 +126,17 @@ if [[ $- == *i* ]] ; then
     bindkey -M vicmd 'j' history-substring-search-down
   fi
   # Suggestions
-  if test -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ; then
-    # Works well for solarized
-    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
-    # Strategy -- note that 'completion' is slow AF
-    ZSH_AUTOSUGGEST_STRATEGY=(history)
-    source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
-  fi
+  for sugg_path in /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ; do
+    if test -f "${sugg_path}"; then
+      # Works well for solarized
+      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
+      # Strategy -- note that 'completion' is slow AF
+      ZSH_AUTOSUGGEST_STRATEGY=(history)
+      source "${sugg_path}"
+      break
+    fi
+  done
+  unset sugg_path
   # History
   alias fullhist="history 1"
   alias longhist="history -1000"
