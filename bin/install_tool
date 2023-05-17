@@ -118,6 +118,10 @@ function deb_only {
   fi
 }
 
+function require_pipx {
+  command -v pipx >/dev/null 2>&1 || die "Requires pipx"
+}
+
 # Begin main tool selection
 case ${TOOL} in
   john)
@@ -422,10 +426,12 @@ EOF
     add_bin_symlink docker-compose
     ;;
   tldr)
-    pip3 install --user tldr
+    require_pipx
+    pipx install tldr
     ;;
   blint)
-    pip3 install --user blint
+    require_pipx
+    pipx install blint
     ;;
   dust)
     if ! command -v cargo >/dev/null 2>&1 ; then
@@ -514,7 +520,8 @@ EOF
     cargo install igrep
     ;;
   unblob)
-    pip install --user unblob
+    require_pipx
+    pipx install unblob
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
