@@ -110,7 +110,7 @@ if [[ $- == *i* ]] ; then
     source /usr/bin/virtualenvwrapper_lazy.sh
   fi
   if command ls --version >/dev/null 2>&1 ; then
-    alias ls="$(whence -p ls) --color=auto -C"
+    alias ls="$(whence -p ls) --color=auto"
   fi
   # Syntax highlighting and substring search
   if test -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
