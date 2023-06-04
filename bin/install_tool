@@ -523,6 +523,9 @@ EOF
     require_pipx
     pipx install unblob
     ;;
+  fq)
+    go install github.com/wader/fq@latest
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
