@@ -47,7 +47,7 @@ export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
 
 # Setup locale
 if test -x /usr/bin/locale ; then
-  for l in en_US.utf8 en_US.UTF-8 C.UTF-8 C ; do
+  for l in en_US.utf8 en_US.UTF-8 C.UTF-8 C.utf8 C ; do
     if /usr/bin/locale -a | grep -q "${l}" ; then
       export LC_CTYPE=${l}
       export LC_NUMERIC=${l}
