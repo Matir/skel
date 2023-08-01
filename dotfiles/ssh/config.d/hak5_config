@@ -1,0 +1,7 @@
+Host hak5squirrel
+  Hostname 172.16.32.1
+  User root
+  StrictHostKeyChecking no
+  UserKnownHostsFile /dev/null
+  HostKeyAlgorithms +ssh-rsa
+  PubkeyAcceptedAlgorithms +ssh-rsa
