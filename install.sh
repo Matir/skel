@@ -351,15 +351,20 @@ verbose() {
 
 install_dotfiles() {
   install_dotfile_dir "${BASEDIR}/dotfiles"
-  # shellcheck disable=SC2015
-  test -d "${BASEDIR}/private_dotfiles" && \
-    test -d "${BASEDIR}/.git/git-crypt" && \
-    install_dotfile_dir "${BASEDIR}/private_dotfiles" || \
-    true
-  # shellcheck disable=SC2015
-  test -d "${BASEDIR}/local_dotfiles" && \
-    install_dotfile_dir "${BASEDIR}/local_dotfiles" || \
-    true
+  if test -d "${BASEDIR}/private_dotfiles" && \
+      test -d "${BASEDIR}/.git/git-crypt" ; then
+    install_dotfile_dir "${BASEDIR}/private_dotfiles"
+  fi
+  if test -d "${BASEDIR}/local_dotfiles" ; then
+    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+  fi
+  if test -d "${BASEDIR}/dotfile_overlays" ; then
+    for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
+      if test -d "${dotfiledir}" ; then
+        install_dotfile_dir "${dotfiledir}"
+      fi
+    done
+  fi
 }
 
 install_main() {
