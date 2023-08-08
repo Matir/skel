@@ -220,3 +220,6 @@ autocmd BufRead,BufNewFile Makefile* set noexpandtab
 " Enable filetype support
 " Needs to be at end of vimrc
 filetype plugin indent on
+
+" Disable bell
+set belloff=all
