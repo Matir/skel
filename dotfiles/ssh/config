@@ -29,7 +29,8 @@ Match canonical all
   ForwardAgent                no
   ForwardX11                  no
   ForwardX11Trusted           no
-  ServerAliveInterval         120
+  ServerAliveInterval         30
+  ServerAliveCountMax         3
   UpdateHostKeys              yes
   User                        david
   VerifyHostKeyDNS            yes
