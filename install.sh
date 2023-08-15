@@ -7,6 +7,7 @@ set -o errexit
 set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
 
 USER=${USER:-$(id -un)}
+HOME=${HOME:-$(cd ~ && pwd)}
 
 case $(uname) in
   Linux)
@@ -67,7 +68,7 @@ install_dotfile_dir() {
                     ${submodule_prune} \) \
       -prune -o ${FINDTYPE} f -print | \
     while read -r dotfile ; do
-      local TARGET="${HOME}/.${dotfile#${SRCDIR}/}"
+      local TARGET="${HOME}/.${dotfile#"${SRCDIR}"/}"
       mkdir -p "$(dirname "${TARGET}")"
       ln -s -f "${dotfile}" "${TARGET}"
     done
@@ -75,7 +76,7 @@ install_dotfile_dir() {
     awk '{print $2}' | \
     while read -r submodule ; do
       local FULLNAME="${BASEDIR}/${submodule}"
-      local TARGET="${HOME}/.${FULLNAME#${SRCDIR}/}"
+      local TARGET="${HOME}/.${FULLNAME#"${SRCDIR}"/}"
       mkdir -p "$(dirname "${TARGET}")"
       if test -L "${TARGET}" ; then
         if [ "$(readlink "${TARGET}")" != "${FULLNAME}" ] ; then
@@ -95,7 +96,7 @@ install_basic_dir() {
   local file
   find "${SRCDIR}" ${FINDTYPE} f -print | \
     while read -r file ; do
-    local TARGET="${2}/${file#${SRCDIR}/}"
+    local TARGET="${2}/${file#"${SRCDIR}"/}"
     mkdir -p "$(dirname "${TARGET}")"
     ln -s -f "${file}" "${TARGET}"
   done
