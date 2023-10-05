@@ -21,3 +21,7 @@ if test -f ${HOME}/.zprompt ; then
   fi
 fi
 unset _STARSHIP_PATH
+
+function hashall {
+  tee >(md5sum) | tee >(sha1sum) | sha256sum
+}
