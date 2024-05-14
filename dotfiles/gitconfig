@@ -1,5 +1,6 @@
 [user]
   name = David Tomaschik
+  email = david@systemoverlord.com
   signingKey = 0x5DEA789B
 
 [core]
