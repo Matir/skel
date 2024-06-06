@@ -168,4 +168,7 @@ if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
 if test -f "${HOME}/.zprompt" ; then
   THEME=${THEME:=$(cat "${HOME}/.zprompt")}
 fi
+if command -v starship >/dev/null 2>&1 ; then
+  : ${THEME:=starship}
+fi
 prompt "${THEME:-matir}" >/dev/null 2>&1
