@@ -52,7 +52,7 @@ alias ipy="ipython3"
 alias bc="command bc -q"
 
 # Get a decently readable df
-alias dfh="df -h -x tmpfs -x devtmpfs -x squashfs -x fuse"
+alias dfh="df -h -x tmpfs -x devtmpfs -x squashfs -x fuse -x efivarfs"
 
 # Clear the GPG agent
 alias clear-gpg-agent="echo RELOADAGENT | gpg-connect-agent"
