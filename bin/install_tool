@@ -218,11 +218,11 @@ case ${TOOL} in
     ;;
   dex2jar)
     makedest_or_die
-    src="https://github.com/pxb1988/dex2jar/releases/download/2.0/dex-tools-2.0.zip"
+    src="https://github.com/pxb1988/dex2jar/releases/download/v2.4/dex-tools-v2.4.zip"
     download ${src} /tmp/dex2jar.zip
     tmpd=$(mktemp -d)
     unzip -d "${tmpd}" /tmp/dex2jar.zip
-    mv "${tmpd}"/* "${DESTDIR}"
+    mv "${tmpd}"/dex-tools-*/* "${DESTDIR}"
     rm /tmp/dex2jar.zip
     rm -rf "${tmpd}"
     rm "${DESTDIR}"/*.bat
