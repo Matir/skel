@@ -140,6 +140,10 @@ if [[ $- == *i* ]] ; then
   # History
   alias fullhist="history 1"
   alias longhist="history -1000"
+  # Homebrew on mac
+  if test -x /opt/homebrew/bin/brew ; then
+    eval $(/opt/homebrew/bin/brew shellenv)
+  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
