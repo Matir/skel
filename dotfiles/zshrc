@@ -97,6 +97,10 @@ if [[ $- == *i* ]] ; then
   done
   # extra completions, prompt
   fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt ~/.zshrc.d/agnoster_prompt $fpath)
+  # Homebrew on mac
+  if test -x /opt/homebrew/bin/brew ; then
+    eval $(/opt/homebrew/bin/brew shellenv)
+  fi
   # Completion
   zstyle ':compinstall' filename "${HOME}/.zshrc"
   zstyle ':completion:*' users root ${USER}
@@ -140,10 +144,6 @@ if [[ $- == *i* ]] ; then
   # History
   alias fullhist="history 1"
   alias longhist="history -1000"
-  # Homebrew on mac
-  if test -x /opt/homebrew/bin/brew ; then
-    eval $(/opt/homebrew/bin/brew shellenv)
-  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
