@@ -112,6 +112,8 @@ if [[ $- == *i* ]] ; then
     source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
   elif test -f /usr/bin/virtualenvwrapper_lazy.sh ; then
     source /usr/bin/virtualenvwrapper_lazy.sh
+  elif test -f /opt/homebrew/bin/virtualenvwrapper_lazy.sh ; then
+    source /opt/homebrew/bin/virtualenvwrapper_lazy.sh
   fi
   if command ls --version >/dev/null 2>&1 ; then
     alias ls="$(whence -p ls) --color=auto"
@@ -144,6 +146,10 @@ if [[ $- == *i* ]] ; then
   # History
   alias fullhist="history 1"
   alias longhist="history -1000"
+  # direnv if present
+  if command -v direnv >/dev/null 2>&1 ; then
+    eval "$(direnv hook zsh)"
+  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
