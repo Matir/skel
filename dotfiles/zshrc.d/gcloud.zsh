@@ -10,6 +10,9 @@ if [ -d "${GCL}" ] ; then
   source "${GCL}/completion.zsh.inc"
 elif [ -f /usr/share/google-cloud-sdk/completion.zsh.inc ] ; then
   source /usr/share/google-cloud-sdk/completion.zsh.inc
+elif [ -d /opt/homebrew/share/google-cloud-sdk/ ] ; then
+  source /opt/homebrew/share/google-cloud-sdk/completion.zsh.inc
+  source /opt/homebrew/share/google-cloud-sdk/path.zsh.inc
 fi
 
 

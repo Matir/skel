@@ -25,3 +25,13 @@ unset _STARSHIP_PATH
 function hashall {
   tee >(md5sum) | tee >(sha1sum) | sha256sum
 }
+
+function rtmux {
+  if [ "$#" -lt 1 ] ; then
+    echo "Usage: $0 <host> [tmux args]" >&2
+    return 1
+  fi
+  HOST="${1}"
+  shift
+  ssh -t ${HOST} -- tmux "$@"
+}
