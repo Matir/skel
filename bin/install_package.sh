@@ -16,9 +16,9 @@ is_sourced() {
 # Format is <apt name>:<manager>:<alternate name>
 # Use "-" for alternate name if not available
 PACKAGE_ALIASES=$(cat <<'EOF'
-bat:brew:-
 binfmt-support:brew:-
 cryptsetup:brew:-
+lvm2:brew:-
 EOF
 )
 
