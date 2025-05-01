@@ -1,0 +1,12 @@
+# ignore case unless there's an uppercase in the pattern
+--smart-case
+
+# generally stay in one file system
+--one-file-system
+
+# avoid lines too long
+--max-columns=120
+--max-columns-preview
+
+# Never search in .git
+--glob=!.git/*
