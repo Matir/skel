@@ -53,8 +53,35 @@ ulimit -c unlimited
 DIRSTACKSIZE=16
 # Set terminal title
 case $TERM in
-  xterm*)
-    precmd () {print -Pn "\e]0;%n@%m: %~\a"}
+  xterm*|screen*)
+    autoload -U add-zsh-hook
+    _term_precmd() {
+      emulate -L zsh
+      if test -n "${TMUX}" ; then
+        print -Pn "\e]2;%16<..<%~\e\\"
+      else
+        # this will also work in tmux but is not what we want
+        print -Pn "\e]0;%n@%m: %~\a"
+      fi
+    }
+    _term_preexec() {
+      emulate -L zsh
+      setopt LOCAL_OPTIONS
+      setopt EXTENDED_GLOB
+      # extract the first word of the command that is not a match for the
+      # pattern
+      # (w) = match word
+      # (r) = subscript value, not index
+      local cmd=${1[(wr)^(*=*|sudo|ssh|mosh|-*)]:gs/%/%%}
+      if test -n "${TMUX}" ; then
+        print -Pn "\e]2;${cmd}\e\\"
+      else
+        # this will also work in tmux but is not what we want
+        print -Pn "\e]0;%n@%m: %~ ($cmd)\a"
+      fi
+    }
+    add-zsh-hook precmd _term_precmd
+    add-zsh-hook preexec _term_preexec
     ;;
 esac
 
