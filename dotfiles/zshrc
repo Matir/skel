@@ -87,11 +87,27 @@ bindkey '^r' history-incremental-search-backward
 # delete really deletes
 bindkey "^[[3~" delete-char
 
+source_if_existing() {
+  if test -e "${1}" ; then source "${1}" ; else false ; fi
+}
+
+source_first_existing() {
+  while (($#)); do
+    if test -e "${1}" ; then
+      source "${1}"
+      return
+    fi
+    shift
+  done
+  return 1
+}
+
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
-  if [[ -e $HOME/.aliases ]] ; then source $HOME/.aliases ; fi
-  if [[ -e $HOME/.aliases.local ]] ; then source $HOME/.aliases.local ; fi
+  source_if_existing $HOME/.aliases
+  source_if_existing $HOME/.aliases.local
   # zsh-only-ism to avoid error if glob doesn't expand
+  # specifically sets NULLGLOB for this one glob
   for file in $HOME/.zshrc.d/[a-zA-Z0-9]*.zsh(N) ; do
     source "$file"
   done
@@ -108,41 +124,30 @@ if [[ $- == *i* ]] ; then
   autoload -Uz compinit && compinit -i
   autoload -Uz promptinit && promptinit
   # Virtualenvwrapper
-  if test -f /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh ; then
-    source /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh
-  elif test -f /usr/bin/virtualenvwrapper_lazy.sh ; then
-    source /usr/bin/virtualenvwrapper_lazy.sh
-  elif test -f /opt/homebrew/bin/virtualenvwrapper_lazy.sh ; then
-    source /opt/homebrew/bin/virtualenvwrapper_lazy.sh
-  fi
+  source_first_existing \
+    /usr/share/virtualenvwrapper/virtualenvwrapper_lazy.sh \
+    /usr/bin/virtualenvwrapper_lazy.sh \
+    /opt/homebrew/bin/virtualenvwrapper_lazy.sh
   if command ls --version >/dev/null 2>&1 ; then
     alias ls="$(whence -p ls) --color=auto"
   fi
   # Syntax highlighting and substring search
-  if test -f /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
-    source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-  elif test -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ; then
-    source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-  fi
-  if test -f ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh ; then
-    source ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh
+  source_first_existing \
+    /usr/share/{,zsh/plugins/}zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+  if source_if_existing ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh ; then
     bindkey '^[[A' history-substring-search-up
     bindkey '^[[B' history-substring-search-down
     bindkey -M vicmd 'k' history-substring-search-up
     bindkey -M vicmd 'j' history-substring-search-down
   fi
   # Suggestions
-  for sugg_path in /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ; do
-    if test -f "${sugg_path}"; then
-      # Works well for solarized
-      ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
-      # Strategy -- note that 'completion' is slow AF
-      ZSH_AUTOSUGGEST_STRATEGY=(history)
-      source "${sugg_path}"
-      break
-    fi
-  done
-  unset sugg_path
+  if source_first_existing \
+    /usr/share/{,zsh/plugins/}zsh-autosuggestions/zsh-autosuggestions.zsh ; then
+    # Works well for solarized
+    ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=10"
+    # Strategy -- note that 'completion' is slow AF
+    ZSH_AUTOSUGGEST_STRATEGY=(history)
+  fi
   # History
   alias fullhist="history 1"
   alias longhist="history -1000"
@@ -157,12 +162,7 @@ if [ -x /usr/bin/ack-grep ] ; then
   alias ack='/usr/bin/ack-grep'
 fi
 
-# Got rust?
-if test -d ${HOME}/.cargo/bin ; then
-  PATH=${PATH}:${HOME}/.cargo/bin
-fi
-
-# Pip packages
+# Pip packages and other local resources
 if test -d ${HOME}/.local/bin ; then
   PATH=${PATH}:${HOME}/.local/bin
 fi
@@ -172,7 +172,7 @@ if test -z "${PAGER}" && command -v less >/dev/null 2>&1; then
 fi
 
 # Load any local settings
-if [ -e $HOME/.zshrc.local ] ; then source $HOME/.zshrc.local ; fi
+source_if_existing $HOME/.zshrc.local
 
 # separate interactive block based on .zshrc.local
 if [[ $- == *i* ]] ; then
