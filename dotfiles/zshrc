@@ -160,7 +160,8 @@ if [[ $- == *i* ]] ; then
   fi
   # Syntax highlighting and substring search
   source_first_existing \
-    /usr/share/{,zsh/plugins/}zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+    /usr/share/{,zsh/plugins/}zsh-syntax-highlighting/zsh-syntax-highlighting.zsh \
+    /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
   if source_if_existing ${HOME}/.zshrc.d/_zsh-history-substring-search.zsh ; then
     bindkey '^[[A' history-substring-search-up
     bindkey '^[[B' history-substring-search-down
