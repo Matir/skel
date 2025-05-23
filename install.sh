@@ -257,32 +257,6 @@ install_pkg_set() {
   fi
 }
 
-install_apt_pkgs() {
-  run_as_root apt-get update -qq || \
-    ( echo "Can't run apt-get commands" >&2 && \
-      return 1 )
-  install_pkg_set packages.minimal
-  if test "$MINIMAL" = 1 ; then
-    return 0
-  fi
-  test "$HAVE_X" = 1 && install_pkg_set packages.X
-  test "$IS_KALI" = 1 && install_pkg_set packages.kali
-  install_pkg_set "packages.${ARCH}"
-  test "$HAVE_X" = 1 && install_chrome
-}
-
-install_chrome() {
-  local TMPD="$(mktemp -d)"
-  local CHROME_ARCH="${ARCH/x86_64/amd64}"
-  dpkg-query -l 'google-chrome*' >/dev/null 2>&1 && return 0
-  /usr/bin/wget --quiet -O "${TMPD}/google-chrome.deb" \
-    "https://dl.google.com/linux/direct/google-chrome-beta_current_${CHROME_ARCH}.deb"
-  run_as_root /usr/bin/dpkg -i "${TMPD}/google-chrome.deb" || \
-    run_as_root /usr/bin/apt-get install -qq -f -y || \
-    ( echo "Could not install chrome." >&2 && return 1 )
-  rm -rf "${TMPD}"
-}
-
 setup_git_email() {
   local gc_local="${HOME}/.gitconfig.local"
   if test -f "${gc_local}" ; then
@@ -324,7 +298,6 @@ save_prefs() {
    echo_pref MINIMAL
    echo_pref INSTALL_KEYS
    echo_pref TRUST_ALL_KEYS
-   echo_pref INSTALL_PKGS
    echo_pref VERBOSE) > "$pref_file"
 }
 
@@ -378,7 +351,6 @@ install_main() {
       git -C "${BASEDIR}" submodule update --init --recursive )
   fi
   test "$MINIMAL" = 1 || prerequisites
-  test "$INSTALL_PKGS" = 1 && is_deb_system && install_apt_pkgs
   install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
   test "$MINIMAL" = 1 || postinstall
@@ -395,6 +367,25 @@ install_dconf() {
   done
 }
 
+install_vim_extra() {
+  local DEST="${HOME}/.vim/pack/matir-extra"
+  local REPO="https://github.com/Matir/vim-extra.git"
+
+  if test -d "${DEST}" ; then
+    if test -d "${DEST}/.git" ; then
+      # do update
+      git -C "${DEST}" pull --ff-only
+      git -C "${DEST}" submodule update --init
+    else
+      echo "${DEST} exists but does not appear to be a git repo." >&2
+      return 1
+    fi
+  else
+    # do clone
+    git clone --recurse-submodules "${REPO}" "${DEST}"
+  fi
+}
+
 # Setup variables
 read_saved_prefs
 
@@ -404,7 +395,6 @@ read_saved_prefs
 : ${MINIMAL:=0}
 : ${INSTALL_KEYS:=1}
 : ${TRUST_ALL_KEYS:=0}
-: ${INSTALL_PKGS:=0}
 : ${VERBOSE:=0}
 : ${SAVE:=1}
 
@@ -446,8 +436,12 @@ case $OPERATION in
     # Load dconf
     install_dconf
     ;;
+  vim-extra)
+    # Install/update extra vim modules
+    install_vim_extra
+    ;;
   *)
-    echo "Unknown operation $OPERATION." >/dev/stderr
+    echo "Unknown operation $OPERATION." >&2
     exit 1
     ;;
 esac
