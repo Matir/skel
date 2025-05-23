@@ -348,7 +348,7 @@ install_main() {
     command -v git >/dev/null 2>&1 && \
       git -C "${BASEDIR}" pull --ff-only
     test "$MINIMAL" = 1 || ( command -v git >/dev/null 2>&1 && \
-      git -C "${BASEDIR}" submodule update --init --recursive )
+      git -C "${BASEDIR}" submodule update --init --recursive --depth 1 )
   fi
   test "$MINIMAL" = 1 || prerequisites
   install_dotfiles

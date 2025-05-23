@@ -15,10 +15,9 @@ function installer_main {
       fi ) || ( echo 'Failed to install git!' >/dev/stderr; false)
   fi
 
-  git clone https://github.com/Matir/skel.git ${HOME}/.skel
+  git clone --depth 1 https://github.com/Matir/skel.git ${HOME}/.skel
 
   ${HOME}/.skel/install.sh
-  ${HOME}/.skel/install.sh packages minimal
 }
 
 installer_main
