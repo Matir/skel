@@ -95,8 +95,6 @@ zstyle ':completion::complete:*' cache-path "${ZDOTDIR:-$HOME}/.zcompcache"
 # .profile is universal
 emulate sh -c '. /etc/profile'
 emulate sh -c '. ~/.profile'
-# Deduplicate the path
-typeset -U path
 
 # Additional Keybindings
 bindkey '^[[A' history-search-backward
@@ -192,12 +190,15 @@ fi
 
 # Pip packages and other local resources
 if test -d ${HOME}/.local/bin ; then
-  PATH=${PATH}:${HOME}/.local/bin
+  PATH="${PATH}:${HOME}/.local/bin"
 fi
 
 if test -z "${PAGER}" && command -v less >/dev/null 2>&1; then
   export PAGER="less"
 fi
+
+# I want this first always
+PATH="${HOME}/bin:${PATH}"
 
 # Load any local settings
 source_if_existing $HOME/.zshrc.local
@@ -216,3 +217,6 @@ if [[ $- == *i* ]] ; then
   fi
   prompt "${THEME:-matir}" >/dev/null 2>&1
 fi
+
+# Cleanup PATH
+typeset -U PATH
