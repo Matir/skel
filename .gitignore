@@ -6,3 +6,4 @@ installed-prefs
 local_dotfiles
 dotfile_overlays
 !dotfile_overlays/.keep
+!dotfile_overlays/README
