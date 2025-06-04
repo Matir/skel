@@ -13,15 +13,15 @@ CanonicalizeFallbackLocal   yes
 CanonicalDomains            systemoverlord.com
 CanonicalizeMaxDots         0
 
-# Defaults (May be Overridden)
-Host *.*
-  CheckHostIP                 yes
-
 Host *.cloudshell.dev
   # Cloudshell hostnames are too long for unix sockets
   ControlMaster no
 
-Match canonical all
+Match exec "test -d \"$XDG_RUNTIME_DIR\" && mkdir -p $XDG_RUNTIME_DIR/sshsock" final
+  ControlPath ${XDG_RUNTIME_DIR}/sshsock/%C
+
+# Anything set earlier will take precedence, so these are defaults
+Match final
   CheckHostIP                 no
   ControlMaster               auto
   ControlPath                 ~/.ssh/master/%r@%h:%p

@@ -51,6 +51,9 @@ bindkey -v
 ulimit -c unlimited
 
 DIRSTACKSIZE=16
+
+export OS="$(uname 2>/dev/null || echo "Unknown")"
+
 # Set terminal title
 case $TERM in
   xterm*|screen*)
