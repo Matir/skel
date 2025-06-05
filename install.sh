@@ -30,8 +30,12 @@ is_comment() {
   fi
 }
 
+have_command() {
+  command -v "${1}" >/dev/null 2>&1
+}
+
 prerequisites() {
-  if command -v zsh > /dev/null 2>&1 ; then
+  if have_command zsh ; then
     case $- in
       *i*)
         case "$(getent passwd "${USER}" | cut -d: -f7)" in
@@ -104,7 +108,7 @@ install_basic_dir() {
 
 install_git() {
   # Install or update a git repository
-  if ! command -v git > /dev/null 2>&1 ; then
+  if ! have_command git ; then
     return 1
   fi
   local REPO="${*: -2:1}"
@@ -183,7 +187,7 @@ install_ssh_keys() {
 }
 
 install_gpg_keys() {
-  command -v gpg >/dev/null 2>&1 || \
+  have_command gpg || \
     return 0
   local key
   for key in "${BASEDIR}"/keys/gpg/* ; do
@@ -309,10 +313,10 @@ echo_pref() {
 
 cleanup() {
   # Needs zsh
-  if ! test -x /usr/bin/zsh ; then
+  if ! have_command zsh ; then
     return 0
   fi
-  /usr/bin/zsh >/dev/null 2>&1 <<EOF
+  zsh >/dev/null 2>&1 <<EOF
   source ${BASEDIR}/dotfiles/zshrc.d/prune-broken-symlinks.zsh
   prune-broken-symlinks -y ${HOME}/.zshrc.d
   prune-broken-symlinks -y ${HOME}/bin
@@ -345,12 +349,23 @@ install_dotfiles() {
 
 install_main() {
   if test -d "${BASEDIR}/.git" ; then
-    command -v git >/dev/null 2>&1 && \
+    have_command git && \
       git -C "${BASEDIR}" pull --ff-only
-    test "$MINIMAL" = 1 || ( command -v git >/dev/null 2>&1 && \
+    test "$MINIMAL" = 1 || ( have_command git && \
       git -C "${BASEDIR}" submodule update --init --recursive --depth 1 )
   fi
-  test "$MINIMAL" = 1 || prerequisites
+  test "$MINIMAL" = 1 || {
+    prerequisites
+    # try to update dotfile overlays
+    if test -d "${BASEDIR}/dotfile_overlays" ; then
+      for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
+        if test -d "${dotfiledir}/.git" ; then
+          git -C "${dotfiledir}" pull --ff-only || true
+          git -C "${dotfiledir}" submodule update --init --recursive --depth 1 || true
+        fi
+      done
+    fi
+  }
   install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
   test "$MINIMAL" = 1 || postinstall
@@ -361,7 +376,7 @@ install_main() {
 }
 
 install_dconf() {
-  command -v dconf >/dev/null 2>&1 || return 1
+  have_command dconf || return 1
   find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read -r dcpath ; do
     dconf load "${dcpath}/" < "${BASEDIR}/dconf/${dcpath}"
   done
@@ -404,7 +419,7 @@ if [ ! -d "$BASEDIR" ] ; then
   exit 1
 fi
 
-if command -v dpkg-query > /dev/null 2>&1 ; then
+if have_command dpkg-query ; then
   HAVE_X=$(dpkg-query -s xserver-xorg 2>/dev/null | \
     grep -c 'Status.*installed' \
     || true)
