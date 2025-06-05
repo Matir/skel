@@ -22,10 +22,10 @@ prune-broken-symlinks() {
     echo ${FILES}
     echo -n 'Delete these links? [y/n] '
     if read -q ; then
-      ${FINDCMD} -delete
+      ${FINDCMD} -print0 | xargs -r -0 rm
     fi
     echo
   else
-      ${FINDCMD} -print -delete
+      ${FINDCMD} -print0 | xargs -r -0 rm
   fi
 }
