@@ -4,7 +4,7 @@ if test -x /opt/homebrew/bin/brew
 end
 
 if command -q starship
-  source (starship init fish --print-full-init | psub)
+  starship init fish --print-full-init | source
 end
 
 # Want this at the bottom to put this path first

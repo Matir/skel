@@ -17,3 +17,13 @@ show_always = true
 
 [ruby]
 detect_variables = []
+
+[shell]
+fish_indicator = '󰈺 '
+zsh_indicator = ''
+bash_indicator = ''
+powershell_indicator = '_'
+unknown_indicator = '??'
+style = 'cyan bold'
+disabled = false
+format = '[$indicator]($style)'
