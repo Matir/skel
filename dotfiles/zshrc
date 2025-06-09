@@ -130,6 +130,10 @@ source_first_existing() {
   return 1
 }
 
+have_command() {
+  command -v "${1}" &>/dev/null
+}
+
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
   source_if_existing $HOME/.aliases
