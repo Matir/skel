@@ -25,7 +25,7 @@ fi
 export GPG_TTY="$(tty)"
 
 # Setup SSH agent support
-if grep '^enable-ssh-support' "$_gpg_agent_conf" &> /dev/null; then
+if grep -q '^enable-ssh-support' "$_gpg_agent_conf" &> /dev/null; then
   # Load required functions.
   autoload -Uz add-zsh-hook
 
