@@ -1,4 +1,4 @@
 --follow
 --pager=less -LMXRF
 --smart-case
---ignore-dir='match:bazel-.*'
+--ignore-dir=match:bazel-.*
