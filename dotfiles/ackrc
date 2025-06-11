@@ -1,5 +1,4 @@
 --follow
 --pager=less -LMXRF
 --smart-case
---ignore-dir=bazel-out
---ignore-dir=bazel-bin
+--ignore-dir='match:bazel-.*'
