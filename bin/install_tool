@@ -480,7 +480,7 @@ EOF
   starship)
     mkdir -p ${DESTDIR}
     download \
-      "https://github.com/starship/starship/releases/latest/download/starship-x86_64-unknown-linux-musl.tar.gz" \
+      "https://github.com/starship/starship/releases/latest/download/starship-$(uname -m)-unknown-linux-musl.tar.gz" \
       /tmp/starship.tar.gz
     tar -C ${DESTDIR} -zxf /tmp/starship.tar.gz starship
     add_bin_symlink starship
