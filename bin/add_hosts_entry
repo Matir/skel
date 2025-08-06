@@ -1,0 +1,70 @@
+#!/usr/bin/env python3
+
+# vim: set ft=python:
+
+import datetime
+import ipaddress
+import os
+import sys
+import sys.path
+
+
+def generate_hosts_entry(ip_address_str, hostnames):
+    """
+    Generates a string formatted for /etc/hosts after validating the IP address.
+
+    Args:
+        ip_address_str (str): The IP address string.
+        hostnames (list): A list of hostname strings.
+
+    Returns:
+        str: A formatted string for /etc/hosts, or None if validation fails.
+    """
+    try:
+        # Validate the IP address
+        ip = ipaddress.ip_address(ip_address_str)
+    except ValueError:
+        print(f"Error: '{ip_address_str}' is not a valid IP address.", file=sys.stderr)
+        return None
+
+    # Join hostnames with spaces
+    hostnames_str = " ".join(hostnames)
+
+    # Return the formatted line
+    return f"{ip}    {hostnames_str}"
+
+
+def append_hosts_entry(entry, hosts_file="/etc/hosts"):
+    when = datetime.datetime.now().strftime("%Y-%m-%d %H:%M")
+    try:
+        with open(hosts_file, "a") as fp:
+            fp.write(f"# Added by add_hosts_entry {when}\n{entry}\n")
+        return True
+    except PermissionError:
+        if os.geteuid() == 0:
+            print(f"Error: failed opening {hosts_file} for writing.",
+                  file=sys.stderr)
+            return False
+        return relaunch_with_sudo()
+
+
+def relaunch_with_sudo():
+    script_abspath = os.path.abspath(sys.argv[0])
+    os.execvp("sudo", [script_abspath] + sys.argv[1:])
+
+
+if __name__ == "__main__":
+    # Check for correct number of arguments
+    if len(sys.argv) < 3:
+        print("Usage: python3 generate_hosts_entry.py <ip_address> <hostname1> [hostname2 ...]", file=sys.stderr)
+        sys.exit(1)
+
+    ip_to_add = sys.argv[1]
+    hostnames_to_add = sys.argv[2:]
+
+    # Generate the entry
+    entry = generate_hosts_entry(ip_to_add, hostnames_to_add)
+    if not entry:
+        sys.exit(1)
+    if not append_hosts_entry(entry):
+        sys.exit(1)
