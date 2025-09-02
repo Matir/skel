@@ -12,22 +12,24 @@ HOME=${HOME:-$(cd ~ && pwd)}
 case $(uname) in
   Linux)
     FINDTYPE="-xtype"
+    MD5CMD="md5sum"
     ;;
   Darwin|*BSD)
     FINDTYPE="-type"
+    MD5CMD="md5 -q"
     ;;
   *)
     echo "Unknown OS: $(uname), guessing no GNU utils."
     FINDTYPE="-type"
+    MD5CMD="md5sum"
     ;;
 esac
 
 is_comment() {
-  if [ "$(echo "${1}" | cut -c1-1)" = '#' ] ; then
-    true
-  else
-    false
-  fi
+  case "${1}" in
+    \#*) return 0 ;;
+    *) return 1 ;;
+  esac
 }
 
 have_command() {
@@ -42,10 +44,8 @@ prerequisites() {
           */zsh)
             ;;
           *)
-            if [ "$(id)" -ne 0 ] ; then
-              echo 'Enter password to change shell.' >&2
-            fi
-            chsh -s "$(command -v zsh)"
+            echo "Your login shell is not zsh. To change it, run:" >&2
+            echo "chsh -s $(command -v zsh)" >&2
             ;;
         esac
         ;;
@@ -144,22 +144,16 @@ ssh_key_already_installed() {
   if [ ! -f "$AK" ] ; then
     return 1
   fi
-  local KEYFP="$(ssh-keygen -l -f "$1" 2>/dev/null | awk '{print $2}')"
-  local TMPF="$(mktemp)"
-  local key
-  while read -r key ; do
-    if is_comment "${key}" ; then
-      continue
-    fi
-    echo "$key" > "$TMPF"
-    local EFP="$(ssh-keygen -l -f "${TMPF}" 2>/dev/null | awk '{print $2}')"
-    if [ "$EFP" = "$KEYFP" ] ; then
-      rm "$TMPF" 2>/dev/null
-      return 0
-    fi
-  done < "${AK}"
-  rm "$TMPF" 2>/dev/null
-  return 1
+  # Extract the key data (field 2) from the key file, ignoring comments
+  local key_data
+  key_data=$(awk '/^ssh-/ {print $2}' "$1")
+  if [ -z "${key_data}" ]; then
+    # Not a valid key file
+    return 1
+  fi
+  # Use grep with fixed-string matching to see if the key is present.
+  # The exit code of grep is 0 on match, 1 on no match, which is perfect.
+  grep -F -q -- "${key_data}" "${AK}"
 }
 
 install_ssh_keys() {
@@ -270,7 +264,7 @@ setup_git_email() {
     return 0
   fi
   local domain="$(hostname -f | grep -E -o '[a-z0-9-]+\.[a-z0-9-]+$')"
-  case "$(echo "${domain}" | md5sum | awk '{print $1}')" in
+  case "$(echo "${domain}" | ${MD5CMD} | awk '{print $1}')" in
     b21a24d528346ef7d3932306ed96ede5|a5ed434a3f5089b489576cceab824f25)
       ;;
     *)
@@ -377,8 +371,9 @@ install_main() {
 
 install_dconf() {
   have_command dconf || return 1
-  find "${BASEDIR}/dconf" -type f -printf '/%P\n' | while read -r dcpath ; do
-    dconf load "${dcpath}/" < "${BASEDIR}/dconf/${dcpath}"
+  find "${BASEDIR}/dconf" -type f | while read -r fullpath ; do
+    local dcpath="/${fullpath#"${BASE-DIR}/dconf/"}"
+    dconf load "${dcpath}/" < "${fullpath}"
   done
 }
 
@@ -418,17 +413,6 @@ if [ ! -d "$BASEDIR" ] ; then
   echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
-
-if have_command dpkg-query ; then
-  HAVE_X=$(dpkg-query -s xserver-xorg 2>/dev/null | \
-    grep -c 'Status.*installed' \
-    || true)
-else
-  HAVE_X=0
-fi
-
-IS_KALI=$(grep -ci kali /etc/os-release 2>/dev/null || true)
-ARCH=$(uname -m)
 
 OPERATION=${1:-install}
 
