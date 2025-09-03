@@ -7,7 +7,7 @@ fi
 
 if [ `whoami` != "root" ] ; then
   if which sudo >/dev/null 2>&1 ; then
-    sudo $0 $*
+    sudo "$0" "$@"
     exit
   fi
   echo "Sorry, this requires root." >&2
