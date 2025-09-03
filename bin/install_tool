@@ -134,6 +134,7 @@ function require_pipx {
 # Begin main tool selection
 case ${TOOL} in
   john)
+    deb_only
     makedest_or_die
     install_pkgs libssl-dev git build-essential yasm libgmp-dev libpcap-dev \
       pkg-config libbz2-dev libopenmpi-dev openmpi-bin libnss3-dev \
@@ -230,6 +231,7 @@ case ${TOOL} in
     chmod +x "${DESTDIR}"/*.sh
     ;;
   proxmark3)
+    deb_only
     install_pkgs p7zip git build-essential libreadline5 libreadline-dev \
       libusb-0.1-4 libusb-dev libqt4-dev perl pkg-config wget libncurses5-dev \
       gcc-arm-none-eabi libstdc++-arm-none-eabi-newlib
@@ -243,6 +245,7 @@ case ${TOOL} in
          udevadm control --reload-rules"
     ;;
   pm3iceman)
+    deb_only
     # arch:
     # sudo pacman -Syu git base-devel readline bzip2 lz4 arm-none-eabi-gcc arm-none-eabi-newlib qt5-base bluez python gd --needed
     install_pkgs git ca-certificates build-essential pkg-config \
@@ -297,8 +300,14 @@ case ${TOOL} in
     PYTHON="${PYTHON}${PYVER}"
     "${PYTHON}" -m pip install --target "${PY_PACKAGES}" -Ur "${DESTDIR}/requirements.txt"
     "${PYTHON}" -m pip install --target "${PY_PACKAGES}" -U capstone unicorn
-    # capstone package is broken
-    cp "${PY_PACKAGES}/usr/lib/*/dist-packages/capstone/libcapstone.so" "${PY_PACKAGES}/capstone"
+    # capstone package is broken, find and copy the library manually
+    capstone_so_path=$(find "${PY_PACKAGES}/usr/lib" -name "libcapstone.so" -type f)
+    if [ -z "${capstone_so_path}" ]; then
+      die "Could not find libcapstone.so for pwndbg."
+    elif [ "$(echo "${capstone_so_path}" | wc -l)" -ne 1 ]; then
+      die "Found multiple libcapstone.so files for pwndbg, aborting."
+    fi
+    cp "${capstone_so_path}" "${PY_PACKAGES}/capstone/"
     ;;
   gef)
     makedest_or_die
@@ -311,6 +320,7 @@ case ${TOOL} in
       "${DESTDIR}/gef.py"
     ;;
   aflplusplus)
+    deb_only
     install_pkgs libtool-bin libglib2.0-dev libpixman-1-dev clang clang-tools \
       llvm python3-setuptools
     git clone "https://github.com/vanhauser-thc/AFLplusplus" "${DESTDIR}"
@@ -339,6 +349,7 @@ case ${TOOL} in
     ;;
   rr)
     deb_only
+    check_sudo
     download \
       "$(get_latest_github_release_url "mozilla/rr" ".*-Linux-.*\\.deb")" \
       "${TMPDIR}/rr.deb"
@@ -358,12 +369,14 @@ fi
 EOF
     ;;
   logiops)
+    deb_only
     install_pkgs cmake libevdev-dev libudev-dev libconfig++-dev checkinstall
     git clone "https://github.com/PixlOne/logiops.git" "${DESTDIR}"
     mkdir -p "${DESTDIR}/build"
     cd "${DESTDIR}/build" || exit
     cmake ..
     make
+    check_sudo
     sudo checkinstall --pkgname logiops --maintainer "${USER}" -y
     ;;
   aws)
@@ -461,6 +474,7 @@ EOF
     sudo dpkg -i "${dpkg_name}"
     ;;
   ropper)
+    deb_only
     install_pkgs python3-z3
     pip3 install --user pyvex ropper
     ;;
