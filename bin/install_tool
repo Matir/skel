@@ -378,18 +378,18 @@ EOF
   tmpmail)
     install_pkgs curl w3m jq
     mkdir -p "${DESTDIR}"
-    curl -L "https://git.io/tmpmail" > "${DESTDIR}"/tmpmail
-    chmod +x "${DESTDIR}"/tmpmail
+    download "https://git.io/tmpmail" "${DESTDIR}/tmpmail"
+    chmod +x "${DESTDIR}/tmpmail"
     add_bin_symlink tmpmail
     ;;
   gf)
     install_pkgs golang-go silversearcher-ag
     go install github.com/tomnomnom/gf@latest
-    mkdir -p "${HOME}"/.config
-    if test -d "${HOME}"/.config/gf ; then
-      git -C "${HOME}"/.config/gf pull
+    mkdir -p "${HOME}/.config"
+    if test -d "${HOME}/.config/gf" ; then
+      git -C "${HOME}/.config/gf" pull
     else
-      git clone https://github.com/Matir/gf-patterns.git "${HOME}"/.config/gf
+      git clone https://github.com/Matir/gf-patterns.git "${HOME}/.config/gf"
     fi
     ;;
   gron)
@@ -410,8 +410,8 @@ EOF
   cht.sh)
     install_pkgs rlwrap
     mkdir -p "${DESTDIR}"
-    curl https://cht.sh/:cht.sh > "${DESTDIR}"/cht.sh
-    chmod +x "${DESTDIR}"/cht.sh
+    download "https://cht.sh/:cht.sh" "${DESTDIR}/cht.sh"
+    chmod +x "${DESTDIR}/cht.sh"
     add_bin_symlink cht.sh
     ;;
   age)
@@ -508,8 +508,9 @@ EOF
     add_bin_symlink doctl
     ;;
   rustup)
-    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-      sh -s -- --no-modify-path -y
+    rustup_init="${TMPDIR}/rustup-init.sh"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs -o "${rustup_init}"
+    sh "${rustup_init}" --no-modify-path -y
     ;;
   igrep)
     if ! command -v cargo >/dev/null 2>&1 ; then
