@@ -835,14 +835,14 @@ case "$1" in
   fi
   cd /proc
   N=$2
-  if [ -d $N ] ; then
+  if [ -d "$N" ] ; then
     # read permissions?
-    if [ ! -r $N/exe ] ; then
+    if [ ! -r "$N/exe" ] ; then
       if !(root_privs) ; then
-        printf "\033[31mNo read permissions for '/proc/$N/exe' (run as root).\033[m\n\n"
+        printf "\033[31mNo read permissions for '/proc/%s/exe' (run as root).\033[m\n\n" "$N"
         exit 1
       fi
-      if [ ! `readlink $N/exe` ] ; then
+      if [ ! "$(readlink "$N/exe")" ] ; then
         printf "\033[31mPermission denied. Requested process ID belongs to a kernel thread.\033[m\n\n"
         exit 1
       fi
@@ -860,9 +860,9 @@ case "$1" in
       printf "\033[31mError: libc not found.\033[m\n\n"
       exit 1
     fi
-    printf "* Process name (PID)                         : %s (%d)\n" `head -1 $N/status | cut -b 7-` $N
-    FS_chk_func_libc=( $(readelf -s $FS_libc | grep _chk@@ | awk '{ print $8 }' | cut -c 3- | sed -e 's/_chk@.*//') )
-    FS_functions=( $(readelf -s $2/exe | awk '{ print $8 }' | sed 's/_*//' | sed -e 's/@.*//') )
+    printf "* Process name (PID)                         : %s (%d)\n" "$(head -1 "$N/status" | cut -b 7-)" "$N"
+    FS_chk_func_libc=( $(readelf -s "$FS_libc" | grep _chk@@ | awk '{ print $8 }' | cut -c 3- | sed -e 's/_chk@.*//') )
+    FS_functions=( $(readelf -s "$2/exe" | awk '{ print $8 }' | sed 's/_*//' | sed -e 's/@.*//') )
 
     FS_libc_check
     FS_binary_check
