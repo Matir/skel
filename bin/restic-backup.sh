@@ -12,7 +12,7 @@ case "${RESTIC_BACKEND:=${RESTIC_DEFAULT_BE}}" in
     export RESTIC_REPOSITORY="gs:systemoverlord-backups-scar-2:/"
     ;;
   b2)
-    . ${HOME}/.restic-backups-scar-creds
+    . "${HOME}/.restic-backups-scar-creds"
     export AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY
     export RESTIC_REPOSITORY="s3:s3.us-west-004.backblazeb2.com/systemoverlord-backups-scar"
@@ -23,7 +23,7 @@ case "${RESTIC_BACKEND:=${RESTIC_DEFAULT_BE}}" in
     ;;
 esac
 
-cd ${HOME}
+cd "${HOME}"
 
 if [ -z "${1}" ] ; then
 
