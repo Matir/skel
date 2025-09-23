@@ -5,7 +5,7 @@ function list_nvidia_installed {
 }
 
 function hold_or_unhold {
-  apt-mark "${1:-hold}" $(list_nvidia_installed)
+  list_nvidia_installed | xargs apt-mark "${1:-hold}"
 }
 
 case "$1" in

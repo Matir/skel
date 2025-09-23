@@ -3,8 +3,12 @@
 CHROME=`which google-chrome`
 
 if [ `id -u` != "0" ] ; then
-  exec $CHROME "$@"
+  exec "$CHROME" "$@"
 fi
 
-CMD="${CHROME} --user-data-dir=${HOME}/.chrome-data-dir \"$@\""
-su -c "${CMD}" chromeuser
+args=()
+for x in "$@"; do
+    args+=("$(printf %q "$x")")
+done
+
+su -c "$CHROME --user-data-dir=${HOME}/.chrome-data-dir ${args[*]}" chromeuser

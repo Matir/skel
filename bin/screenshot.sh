@@ -25,14 +25,6 @@ function flameshot_gui_capture {
   flameshot gui -p "${SCREENDIR}"
 }
 
-function flameshot_region_capture {
-  flameshot_gui_capture
-}
-
-function flameshot_window_capture {
-  flameshot_gui_capture
-}
-
 function flameshot_full_capture {
   flameshot full -p "${SCREENDIR}"
 }
@@ -52,7 +44,35 @@ function scrot_full_capture {
 case "${CMD}" in
   region|window|full)
     mkdir -p "${SCREENDIR}"
-    ${TOOL}_${CMD}_capture
+    case "${TOOL}" in
+      flameshot)
+        case "${CMD}" in
+          region|window)
+            flameshot_gui_capture
+            ;;
+          full)
+            flameshot_full_capture
+            ;;
+        esac
+        ;;
+      scrot)
+        case "${CMD}" in
+          region)
+            scrot_region_capture
+            ;;
+          window)
+            scrot_window_capture
+            ;;
+          full)
+            scrot_full_capture
+            ;;
+        esac
+        ;;
+      *)
+        echo "Error: Unknown or unsupported tool '${TOOL}'" >&2
+        exit 1
+        ;;
+    esac
     exit $?
     ;;
   *)

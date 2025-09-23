@@ -42,7 +42,7 @@ install_package() {
       return 1
     fi
     echo "Installing '$package' using apt-get..."
-    sudo apt-get install -y "$package"
+    sudo apt-get install -y -- "$package"
     return 0
   elif command -v yum &> /dev/null; then
     package=$(package_alias yum "${package}")
@@ -51,7 +51,7 @@ install_package() {
       return 1
     fi
     echo "Installing '$package' using yum..."
-    sudo yum install -y "$package"
+    sudo yum install -y -- "$package"
     return 0
   elif command -v pacman &> /dev/null; then
     package=$(package_alias pacman "${package}")
@@ -60,7 +60,7 @@ install_package() {
       return 1
     fi
     echo "Installing '$package' using pacman..."
-    sudo pacman -S "$package"
+    sudo pacman -S -- "$package"
     return 0
   # For macOS, assume Homebrew is installed
   elif command -v brew &> /dev/null; then
@@ -70,7 +70,7 @@ install_package() {
       return 1
     fi
     echo "Installing '$package' using Homebrew..."
-    brew install "$package"
+    brew install -- "$package"
     return 0
   else
     echo "Error: No suitable package manager found."

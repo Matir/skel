@@ -43,6 +43,6 @@ function get_bridge_ifaces {
   bridge link | grep "master ${1}" | cut -d: -f2 | cut -d@ -f1
 }
 
-for iface in $(get_bridge_ifaces "${BRIDGE}") ; do
+get_bridge_ifaces "${BRIDGE}" | while IFS= read -r iface ; do
   handle_iface "$iface"
 done

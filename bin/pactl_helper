@@ -37,7 +37,7 @@ function volume {
 
 case "$1" in
   mute|micmute|volume)
-    $*
+    "$@"
     ;;
   *)
     echo "Unknown command!"
