@@ -87,5 +87,26 @@ export LVM_SUPPRESS_FD_WARNINGS=1
 # Default disable SSH forwarding in EARTHLY
 export EARTHLY_SSH_AUTH_SOCK=""
 
-# shellcheck source=/dev/null
-test -e "$HOME/.localenv" && . "$HOME/.localenv"
+# Setup XDG-like dirs on MacOS
+# Based on https://leebyron.com/til/mac-xdg/
+if [ "$(uname)" = "Darwin" ] ; then
+  original_options=$(echo "$-")
+  set -a
+  # Anything set here will be exported
+  : "${XDG_BIN_HOME:=$HOME/.local/bin}"
+  : "${XDG_CACHE_HOME:=$HOME/Library/Caches}"
+  : "${XDG_CONFIG_HOME:=$HOME/.config}"
+  : "${XDG_DATA_HOME:=$HOME/.local/share}"
+  : "${XDG_RUNTIME_DIR:=$TMPDIR/runtime-$UID}"
+  : "${XDG_STATE_HOME:=$HOME/.local/state}"
+  set -f # Temporarily disable globbing to handle options with special characters
+  set -- "-$original_options"
+  unset original_options
+fi
+
+if test -e "$HOME/.localenv"; then
+  # shellcheck source=/dev/null
+  . "$HOME/.localenv"
+else
+  true
+fi
