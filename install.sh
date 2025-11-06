@@ -211,50 +211,6 @@ install_keys() {
   install_known_hosts
 }
 
-is_deb_system() {
-  test -f /usr/bin/apt-get
-}
-
-run_as_root() {
-  # Attempt to run as root
-  if [ "${USER}" = "root" ] ; then
-    "$@"
-    return $?
-  elif test -x "$(command -v sudo 2>/dev/null)" ; then
-    verbose "Using sudo to run ${1}..."
-    sudo "$@"
-    return $?
-  fi
-  return 1
-}
-
-install_pkg_set() {
-  local pkg_file=${BASEDIR}/packages/${1}
-  local pkg_list=""
-  if [ ! -f "${pkg_file}" ] ; then
-    echo "Package set $(basename "${pkg_file}") does not exist." 1>&2
-    return 1
-  fi
-  while read -r line ; do
-    if is_comment "${line}" ; then
-      continue
-    fi
-    if [ -z "${line}" ] ; then
-      continue
-    fi
-    if [ "$(apt-cache -q show "${line}" 2>/dev/null)" != "" ] ; then
-      pkg_list="${pkg_list} ${line}"
-    else
-      echo "Warning: package ${line} not found." >&2
-    fi
-  done < "${pkg_file}"
-  if [ -n "${pkg_list}" ] ; then
-    verbose "Installing ${pkg_list}"
-    # shellcheck disable=SC2086
-    run_as_root apt-get install -qqy ${pkg_list}
-  fi
-}
-
 setup_git_email() {
   local gc_local="${HOME}/.gitconfig.local"
   if test -f "${gc_local}" ; then
@@ -369,14 +325,6 @@ install_main() {
   cleanup
 }
 
-install_dconf() {
-  have_command dconf || return 1
-  find "${BASEDIR}/dconf" -type f | while read -r fullpath ; do
-    local dcpath="/${fullpath#"${BASE-DIR}/dconf/"}"
-    dconf load "${dcpath}/" < "${fullpath}"
-  done
-}
-
 install_vim_extra() {
   local DEST="${HOME}/.vim/pack/matir-extra"
   local REPO="https://github.com/Matir/vim-extra.git"
@@ -423,17 +371,9 @@ case $OPERATION in
   dotfiles)
     install_dotfiles
     ;;
-  package*)
-    PKG_SET=${2:-minimal}
-    install_pkg_set "${PKG_SET}"
-    ;;
   test)
     # Do nothing, just sourcing
     set +o errexit
-    ;;
-  dconf)
-    # Load dconf
-    install_dconf
     ;;
   vim-extra)
     # Install/update extra vim modules
