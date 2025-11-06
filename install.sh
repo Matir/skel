@@ -25,13 +25,6 @@ case $(uname) in
     ;;
 esac
 
-is_comment() {
-  case "${1}" in
-    \#*) return 0 ;;
-    *) return 1 ;;
-  esac
-}
-
 have_command() {
   command -v "${1}" >/dev/null 2>&1
 }
@@ -100,42 +93,10 @@ install_basic_dir() {
   local file
   find "${SRCDIR}" ${FINDTYPE} f -print | \
     while read -r file ; do
-    local TARGET="${2}/${file#"${SRCDIR}"/}"
+    local TARGET="${DESTDIR}/${file#"${SRCDIR}"/}"
     mkdir -p "$(dirname "${TARGET}")"
     ln -s -f "${file}" "${TARGET}"
   done
-}
-
-install_git() {
-  # Install or update a git repository
-  if ! have_command git ; then
-    return 1
-  fi
-  local REPO="${*: -2:1}"
-  local DESTDIR="${*: -1:1}"
-  set -- "${@:1:$(($#-2))}"
-  if [ -d "${DESTDIR}/.git" ] ; then
-    ( cd "${DESTDIR}" ; git pull -q )
-  else
-    if [ "${MINIMAL}" -eq 1 ] ; then
-      git clone --depth 1 "$@" "${REPO}" "${DESTDIR}"
-    else
-      git clone "$@" "${REPO}" "${DESTDIR}"
-    fi
-  fi
-}
-
-add_bin_symlink() {
-  local LINKNAME="${HOME}/bin/${2:-$(basename "$1")}"
-  if [ -e "${LINKNAME}" ] && ! [ -h "${LINKNAME}" ] ; then
-    echo "Refusing to overwrite ${LINKNAME}" >&2
-    return 1
-  fi
-  ln -sf "${1}" "${LINKNAME}"
-}
-
-postinstall() {
-  true
 }
 
 ssh_key_already_installed() {
@@ -318,7 +279,6 @@ install_main() {
   }
   install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-  test "$MINIMAL" = 1 || postinstall
   test "$INSTALL_KEYS" = 1 && install_keys
   save_prefs
   setup_git_email
