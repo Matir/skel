@@ -2,6 +2,7 @@
 
 [directory]
 fish_style_pwd_dir_length = 1
+truncate_to_repo = false
 
 [gcloud]
 # This is just too noisy
