@@ -5,6 +5,10 @@
     }
   },
   "context": {
-    "fileName": ["AGENTS.md", "GEMINI.md"]
-  }
+    "fileName": [
+      "AGENTS.md",
+      "GEMINI.md"
+    ]
+  },
+  "selectedAuthType": "gemini-api-key"
 }
