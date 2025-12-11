@@ -28,3 +28,6 @@ unknown_indicator = '??'
 style = 'cyan bold'
 disabled = false
 format = '[$indicator]($style)'
+
+[pulumi]
+disabled = true
