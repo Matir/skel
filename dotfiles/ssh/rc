@@ -5,23 +5,26 @@
 
 REMOTE_LINK="${HOME}/.ssh/ssh_auth_sock"
 
-if [ "${1:-}" = "force" ] && [ -S "${SSH_AUTH_SOCK}" ] ; then
-  ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
-  exit 0
+if [ -S "${SSH_AUTH_SOCK}" ] ; then
+  SSH_REMOTE_AUTH_SOCK="${SSH_AUTH_SOCK}"
+  export SSH_REMOTE_AUTH_SOCK
+  if [ "${1:-}" = "force" ] || [ ! -S "${REMOTE_LINK}" ] ; then
+    ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
+    SSH_AUTH_SOCK="${REMOTE_LINK}"
+    export SSH_AUTH_SOCK
+  fi
 fi
 
-if test \! -S "${REMOTE_LINK}" -a -S "${SSH_AUTH_SOCK}" ; then
-  ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
-fi
-
-# Handle X forwarding, per sshd(8)
-if read proto cookie && [ -n "$DISPLAY" ]; then
-  if [ `echo $DISPLAY | cut -c1-10` = 'localhost:' ]; then
-    # X11UseLocalhost=yes
-    echo add unix:`echo $DISPLAY |
-      cut -c11-` $proto $cookie
-  else
-    # X11UseLocalhost=no
-    echo add $DISPLAY $proto $cookie
-  fi | xauth -q -
+# if stdin is a tty, don't do the cookie step
+if [ ! -t 0 ] ; then
+  # Handle X forwarding, per sshd(8)
+  if read -r proto cookie && [ -n "$DISPLAY" ]; then
+    if [ "$(echo "$DISPLAY" | cut -c1-10)" = 'localhost:' ]; then
+      # X11UseLocalhost=yes
+      echo add "unix:$(echo "$DISPLAY" | cut -c11-)" "$proto" "$cookie"
+    else
+      # X11UseLocalhost=no
+      echo add "$DISPLAY $proto $cookie"
+    fi | xauth -q -
+  fi
 fi
