@@ -13,6 +13,13 @@ CanonicalizeFallbackLocal   yes
 CanonicalDomains            systemoverlord.com
 CanonicalizeMaxDots         0
 
+# Identity files
+IdentityFile ~/.ssh/id_ed25519_sk
+IdentityFile ~/.ssh/id_ecdsa_sk
+IdentityFile ~/.ssh/id_ed25519
+IdentityFile ~/.ssh/id_ecdsa
+IdentityFile ~/.ssh/id_rsa
+
 Host *.cloudshell.dev
   # Cloudshell hostnames are too long for unix sockets
   ControlMaster no
