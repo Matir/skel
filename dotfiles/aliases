@@ -66,3 +66,6 @@ alias nvidia-refresh-rate='nvidia-settings --display=:0 -q RefreshRate -t'
 
 # Earthly ssh
 alias earthly='earthly --ssh-auth-sock ""'
+
+# to clipboard
+alias toclip='xclip -selection clipboard'
