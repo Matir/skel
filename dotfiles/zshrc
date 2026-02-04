@@ -56,33 +56,76 @@ export OS="$(uname 2>/dev/null || echo "Unknown")"
 
 # Set terminal title
 case $TERM in
+  # Only set the title for terminals that are likely to support it
   xterm*|screen*)
+    # add-zsh-hook is a zsh utility for managing hooks
     autoload -U add-zsh-hook
-    _term_precmd() {
-      emulate -L zsh
+
+    # Variable to hold the manual title, initialized to empty
+    MANUAL_TERMINAL_TITLE=""
+
+    # Manually set the terminal title. Clears the title if no argument is given.
+    set_title() {
+      MANUAL_TERMINAL_TITLE="${1:-}" # Assign argument or empty string
+      # If the argument is empty, restore the automatic title.
+      if [ -z "${MANUAL_TERMINAL_TITLE}" ] ; then
+        _term_precmd
+        return
+      fi
+      # Otherwise, set the manual title.
       if test -n "${TMUX}" ; then
+        print -Pn "\e]2;${MANUAL_TERMINAL_TITLE}\e\\"
+      else
+        print -Pn "\e]0;${MANUAL_TERMINAL_TITLE}\a"
+      fi
+    }
+
+    # precmd hook runs before each prompt
+    _term_precmd() {
+      # If a manual title is set, do nothing.
+      if test -n "${MANUAL_TERMINAL_TITLE}" ; then
+        return
+      fi
+      # emulate zsh to ensure consistent behavior
+      emulate -L zsh
+      # If we are in tmux, we want to set the window title
+      if test -n "${TMUX}" ; then
+        # Set tmux window title to a truncated path
         print -Pn "\e]2;%16<..<%~\e\\"
       else
         # this will also work in tmux but is not what we want
+        # Set terminal title to user@host: path
         print -Pn "\e]0;%n@%m: %~\a"
       fi
     }
+    # preexec hook runs before each command
     _term_preexec() {
+      # If a manual title is set, do nothing.
+      if test -n "${MANUAL_TERMINAL_TITLE}" ; then
+        return
+      fi
+      # emulate zsh to ensure consistent behavior
       emulate -L zsh
+      # Set local options to avoid affecting the rest of the shell
       setopt LOCAL_OPTIONS
       setopt EXTENDED_GLOB
       # extract the first word of the command that is not a match for the
       # pattern
       # (w) = match word
       # (r) = subscript value, not index
+      # This extracts the command, ignoring environment variables and common wrappers
       local cmd=${1[(wr)^(*=*|sudo|ssh|mosh|-*)]:gs/%/%%}
+      # If we are in tmux, we want to set the window title
       if test -n "${TMUX}" ; then
+        # Set the tmux window title to the command being run
         print -Pn "\e]2;${cmd}\e\\"
       else
         # this will also work in tmux but is not what we want
+        # Set the terminal title to include the command being run
         print -Pn "\e]0;%n@%m: %~ ($cmd)\a"
       fi
     }
+    # Add the hooks to zsh
     add-zsh-hook precmd _term_precmd
     add-zsh-hook preexec _term_preexec
     ;;
