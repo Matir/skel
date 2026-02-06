@@ -233,6 +233,8 @@ if [[ $- == *i* ]] ; then
   fi
   test -e "${HOME}/.iterm2_shell_integration.zsh" && \
     source "${HOME}/.iterm2_shell_integration.zsh" || true
+  # mise, if installed
+  command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
