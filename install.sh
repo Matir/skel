@@ -8,98 +8,31 @@ set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
 
 HOME=${HOME:-$(cd ~ && pwd)}
 
-case $(uname) in
-  Linux)
-    FINDTYPE="-xtype"
-    ;;
-  Darwin|*BSD)
-    FINDTYPE="-type"
-    ;;
-  *)
-    echo "Unknown OS: $(uname), guessing no GNU utils."
-    FINDTYPE="-type"
-    ;;
-esac
+
 
 have_command() {
   command -v "${1}" >/dev/null 2>&1
 }
 
-prerequisites() {
-  local USER=${USER:-$(id -un)}
-  if have_command zsh ; then
-    case $- in
-      *i*)
-        local shell_path
-        if [[ "$(uname)" = "Darwin" ]]; then
-          # dscl output is "UserShell: /bin/zsh"
-          shell_path="$(dscl . -read "/Users/${USER}" UserShell | awk '{print $2}')"
-        else
-          shell_path="$(getent passwd "${USER}" | cut -d: -f7)"
-        fi
-        case "${shell_path}" in
-          */zsh)
-            ;;
-          *)
-            echo "Your login shell is not zsh. To change it, run:" >&2
-            echo "chsh -s $(command -v zsh)" >&2
-            ;;
-        esac
-        ;;
-    esac
-  else
-    echo "ZSH not found!" >&2
-  fi
-}
+
 
 link_directory_contents() {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
   local PREFIX="${3}"
   local file
-  local submodule_prune=""
-
-  # Submodule logic only applies when we are installing dotfiles (PREFIX=".")
-  if [[ "${PREFIX}" == "." ]]; then
-    submodule_prune="$(git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
-      awk '{print $2}' | \
-      while read -r submod ; do
-        echo -n " -o -path ${BASEDIR}/${submod}"
-      done)"
-  fi
 
   # shellcheck disable=SC2086
   find "${SRCDIR}" \( -name .git -o \
                     -name install.sh -o \
                     -name README.md -o \
-                    -name .gitignore \
-                    ${submodule_prune} \) \
-      -prune -o ${FINDTYPE} f -print | \
+                    -name .gitignore \) \
+      -prune -o -type f -print | \
     while read -r file ; do
       local TARGET="${DESTDIR}/${PREFIX}${file#"${SRCDIR}"/}"
       mkdir -p "$(dirname "${TARGET}")"
       ln -s -f "${file}" "${TARGET}"
     done
-
-  # Submodule logic only applies when we are installing dotfiles (PREFIX=".")
-  if [[ "${PREFIX}" == "." ]]; then
-    git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
-      awk '{print $2}' | \
-      while read -r submodule ; do
-        local FULLNAME="${BASEDIR}/${submodule}"
-        local TARGET="${DESTDIR}/${PREFIX}${FULLNAME#"${SRCDIR}"/}"
-        mkdir -p "$(dirname "${TARGET}")"
-        if [[ -L "${TARGET}" ]] ; then
-          if [[ "$(readlink "${TARGET}")" != "${FULLNAME}" ]] ; then
-            echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
-          fi
-        elif [[ -d "${TARGET}" ]] ; then
-          echo "rm -rf ${TARGET}" >/dev/stderr
-        else
-          ln -s -f "${FULLNAME}" "${TARGET}"
-        fi
-      done
-  fi
 }
 
 ssh_key_already_installed() {
@@ -259,7 +192,6 @@ install_main() {
     fi
   fi
   [[ "$MINIMAL" = 1 ]] || {
-    prerequisites
 
     # Install vim-plug if not already present
     local VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
@@ -294,7 +226,6 @@ install_main() {
       for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
         if [[ -d "${dotfiledir}/.git" ]] ; then
           git -C "${dotfiledir}" pull --ff-only || true
-          git -C "${dotfiledir}" submodule update --init --recursive --depth 1 || true
         fi
       done
     fi
@@ -307,24 +238,6 @@ install_main() {
   cleanup
 }
 
-install_vim_extra() {
-  local DEST="${HOME}/.vim/pack/matir-extra"
-  local REPO="https://github.com/Matir/vim-extra.git"
-
-  if [[ -d "${DEST}" ]] ; then
-    if [[ -d "${DEST}/.git" ]] ; then
-      # do update
-      git -C "${DEST}" pull --ff-only
-      git -C "${DEST}" submodule update --init
-    else
-      echo "${DEST} exists but does not appear to be a git repo." >&2
-      return 1
-    fi
-  else
-    # do clone
-    git clone --recurse-submodules "${REPO}" "${DEST}"
-  fi
-}
 
 # Setup variables
 read_saved_prefs
@@ -352,10 +265,6 @@ case $OPERATION in
     ;;
   dotfiles)
     install_dotfiles
-    ;;
-  vim-extra)
-    # Install/update extra vim modules
-    install_vim_extra
     ;;
   *)
     echo "Unknown operation $OPERATION." >&2
