@@ -223,3 +223,21 @@ filetype plugin indent on
 
 " Disable bell
 set belloff=all
+
+" Fix trailing whitespace
+function! SaveFixSpace()
+    let l:denylist = ['diff', 'patch', 'mail', 'gitcommit', 'markdown']
+    if index(l:denylist, &filetype) != -1
+        return
+    endif
+    let l:save = winsaveview()
+    " Execute the substitution on the range provided to the command
+    execute a:firstline . ',' . a:lastline . 's/\s\+$//e'
+    call winrestview(l:save)
+endfunction
+augroup CleanWhitespace
+    autocmd!
+    " This calls the command on the whole file (%) before writing the buffer
+    autocmd BufWritePre * :FixSpace
+augroup END
+command! -range=% FixSpace <line1>,<line2>call SaveFixSpace()
