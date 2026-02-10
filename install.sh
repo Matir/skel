@@ -52,14 +52,22 @@ prerequisites() {
   fi
 }
 
-install_dotfile_dir() {
+link_directory_contents() {
   local SRCDIR="${1}"
-  local dotfile
-  local submodule_prune="$(git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
-    awk '{print $2}' | \
-    while read -r submod ; do
-      echo -n " -o -path ${BASEDIR}/${submod}"
-    done)"
+  local DESTDIR="${2}"
+  local PREFIX="${3}"
+  local file
+  local submodule_prune=""
+
+  # Submodule logic only applies when we are installing dotfiles (PREFIX=".")
+  if [[ "${PREFIX}" == "." ]]; then
+    submodule_prune="$(git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
+      awk '{print $2}' | \
+      while read -r submod ; do
+        echo -n " -o -path ${BASEDIR}/${submod}"
+      done)"
+  fi
+
   # shellcheck disable=SC2086
   find "${SRCDIR}" \( -name .git -o \
                     -name install.sh -o \
@@ -67,39 +75,31 @@ install_dotfile_dir() {
                     -name .gitignore \
                     ${submodule_prune} \) \
       -prune -o ${FINDTYPE} f -print | \
-    while read -r dotfile ; do
-      local TARGET="${HOME}/.${dotfile#"${SRCDIR}"/}"
-      mkdir -p "$(dirname "${TARGET}")"
-      ln -s -f "${dotfile}" "${TARGET}"
-    done
-  git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
-    awk '{print $2}' | \
-    while read -r submodule ; do
-      local FULLNAME="${BASEDIR}/${submodule}"
-      local TARGET="${HOME}/.${FULLNAME#"${SRCDIR}"/}"
-      mkdir -p "$(dirname "${TARGET}")"
-      if [[ -L "${TARGET}" ]] ; then
-        if [[ "$(readlink "${TARGET}")" != "${FULLNAME}" ]] ; then
-          echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
-        fi
-      elif [[ -d "${TARGET}" ]] ; then
-        echo "rm -rf ${TARGET}" >/dev/stderr
-      else
-        ln -s -f "${FULLNAME}" "${TARGET}"
-      fi
-    done
-}
-
-install_basic_dir() {
-  local SRCDIR="${1}"
-  local DESTDIR="${2}"
-  local file
-  find "${SRCDIR}" \( -name .git -o -name README.md -o -name .gitignore \) -prune -o ${FINDTYPE} f -print | \
     while read -r file ; do
-    local TARGET="${DESTDIR}/${file#"${SRCDIR}"/}"
-    mkdir -p "$(dirname "${TARGET}")"
-    ln -s -f "${file}" "${TARGET}"
-  done
+      local TARGET="${DESTDIR}/${PREFIX}${file#"${SRCDIR}"/}"
+      mkdir -p "$(dirname "${TARGET}")"
+      ln -s -f "${file}" "${TARGET}"
+    done
+
+  # Submodule logic only applies when we are installing dotfiles (PREFIX=".")
+  if [[ "${PREFIX}" == "." ]]; then
+    git -C "${BASEDIR}" submodule status -- "${SRCDIR}" 2>/dev/null | \
+      awk '{print $2}' | \
+      while read -r submodule ; do
+        local FULLNAME="${BASEDIR}/${submodule}"
+        local TARGET="${DESTDIR}/${PREFIX}${FULLNAME#"${SRCDIR}"/}"
+        mkdir -p "$(dirname "${TARGET}")"
+        if [[ -L "${TARGET}" ]] ; then
+          if [[ "$(readlink "${TARGET}")" != "${FULLNAME}" ]] ; then
+            echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
+          fi
+        elif [[ -d "${TARGET}" ]] ; then
+          echo "rm -rf ${TARGET}" >/dev/stderr
+        else
+          ln -s -f "${FULLNAME}" "${TARGET}"
+        fi
+      done
+  fi
 }
 
 ssh_key_already_installed() {
@@ -237,14 +237,14 @@ verbose() {
 # Operations
 
 install_dotfiles() {
-  install_dotfile_dir "${BASEDIR}/dotfiles"
+  link_directory_contents "${BASEDIR}/dotfiles" "${HOME}" "."
   if [[ -d "${BASEDIR}/local_dotfiles" ]] ; then
-    install_dotfile_dir "${BASEDIR}/local_dotfiles"
+    link_directory_contents "${BASEDIR}/local_dotfiles" "${HOME}" "."
   fi
   if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
     for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
       if [[ -d "${dotfiledir}" ]] ; then
-        install_dotfile_dir "${dotfiledir}"
+        link_directory_contents "${dotfiledir}" "${HOME}" "."
       fi
     done
   fi
@@ -254,15 +254,42 @@ install_main() {
   if [[ -d "${BASEDIR}/.git" && have_command git ]] ; then
     if [[ -z "$(git -C "${BASEDIR}" status --porcelain)" ]]; then
       git -C "${BASEDIR}" pull --ff-only || true
-      [[ "$MINIMAL" = 1 ]] || \
-        git -C "${BASEDIR}" submodule update --init --recursive --depth 1
     else
       echo "Skipping self-update: repository has local changes." >&2
     fi
   fi
   [[ "$MINIMAL" = 1 ]] || {
     prerequisites
-    # try to update dotfile overlays
+
+    # Install vim-plug if not already present
+    local VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
+    local VIM_AUTOLOAD_DIR="${HOME}/.vim/autoload"
+    local VIM_PLUG_FILE="${VIM_AUTOLOAD_DIR}/plug.vim"
+
+    if [[ ! -f "${VIM_PLUG_FILE}" ]]; then
+      verbose "Installing vim-plug..."
+      mkdir -p "${VIM_AUTOLOAD_DIR}"
+      if have_command curl; then
+        curl -fLo "${VIM_PLUG_FILE}" --create-dirs "${VIM_PLUG_URL}"
+      else
+        echo "Error: curl not found. Cannot install vim-plug." >&2
+      fi
+        fi
+    
+        # Install TPM (Tmux Plugin Manager) if not already present
+        local TPM_DIR="${HOME}/.tmux/plugins/tpm"
+        local TPM_REPO="https://github.com/tmux-plugins/tpm"
+    
+        if [[ ! -d "${TPM_DIR}" ]]; then
+          verbose "Installing TPM (Tmux Plugin Manager)..."
+          if have_command git; then
+            git clone "${TPM_REPO}" "${TPM_DIR}"
+          else
+            echo "Error: git not found. Cannot install TPM." >&2
+          fi
+        fi
+    
+        # try to update dotfile overlays
     if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
       for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
         if [[ -d "${dotfiledir}/.git" ]] ; then
@@ -273,7 +300,7 @@ install_main() {
     fi
   }
   install_dotfiles
-  install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
+  link_directory_contents "${BASEDIR}/bin" "${HOME}/bin" ""
   [[ "$INSTALL_KEYS" = 1 ]] && install_keys
   save_prefs
   setup_git_email
