@@ -1,6 +1,6 @@
 import os
 import sys
-from IPython import prompts
+from IPython.terminal import prompts
 
 def _setup_environment():
     ip = get_ipython()
@@ -36,15 +36,18 @@ def _setup_environment():
 
     # 2. PROMPT LOGIC: Inject venv name into the UI
     class VenvPrompts(prompts.Prompts):
+
+        _prompts = prompts
+
         def in_prompt_tokens(self):
             tokens = []
             if active_venv_name:
-                tokens.append((prompts.Token.Prompt, f'({active_venv_name}) '))
+                tokens.append((self._prompts.Token.Prompt, f'({active_venv_name}) '))
 
             tokens.extend([
-                (prompts.Token.Prompt, 'In ['),
-                (prompts.Token.PromptNum, str(self.shell.execution_count)),
-                (prompts.Token.Prompt, ']: '),
+                (self._prompts.Token.Prompt, 'In ['),
+                (self._prompts.Token.PromptNum, str(self.shell.execution_count)),
+                (self._prompts.Token.Prompt, ']: '),
             ])
             return tokens
 
