@@ -6,7 +6,6 @@ set -o nounset
 set -o errexit
 set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
 
-USER=${USER:-$(id -un)}
 HOME=${HOME:-$(cd ~ && pwd)}
 
 case $(uname) in
@@ -27,11 +26,12 @@ have_command() {
 }
 
 prerequisites() {
+  local USER=${USER:-$(id -un)}
   if have_command zsh ; then
     case $- in
       *i*)
         local shell_path
-        if [ "$(uname)" = "Darwin" ]; then
+        if [[ "$(uname)" = "Darwin" ]]; then
           # dscl output is "UserShell: /bin/zsh"
           shell_path="$(dscl . -read "/Users/${USER}" UserShell | awk '{print $2}')"
         else
@@ -62,7 +62,6 @@ install_dotfile_dir() {
     done)"
   # shellcheck disable=SC2086
   find "${SRCDIR}" \( -name .git -o \
-                    -path "${SRCDIR}/private_dotfiles" -o \
                     -name install.sh -o \
                     -name README.md -o \
                     -name .gitignore \
@@ -79,11 +78,11 @@ install_dotfile_dir() {
       local FULLNAME="${BASEDIR}/${submodule}"
       local TARGET="${HOME}/.${FULLNAME#"${SRCDIR}"/}"
       mkdir -p "$(dirname "${TARGET}")"
-      if test -L "${TARGET}" ; then
-        if [ "$(readlink "${TARGET}")" != "${FULLNAME}" ] ; then
+      if [[ -L "${TARGET}" ]] ; then
+        if [[ "$(readlink "${TARGET}")" != "${FULLNAME}" ]] ; then
           echo "${TARGET} points to $(readlink "${TARGET}") not ${FULLNAME}!" >/dev/stderr
         fi
-      elif test -d "${TARGET}" ; then
+      elif [[ -d "${TARGET}" ]] ; then
         echo "rm -rf ${TARGET}" >/dev/stderr
       else
         ln -s -f "${FULLNAME}" "${TARGET}"
@@ -106,13 +105,13 @@ install_basic_dir() {
 ssh_key_already_installed() {
   # Return 1 if the key isn't already installed, 0 if it is
   local AK="${HOME}/.ssh/authorized_keys"
-  if [ ! -f "$AK" ] ; then
+  if [[ ! -f "$AK" ]] ; then
     return 1
   fi
   # Extract the key data (field 2) from the key file, ignoring comments
   local key_data
   key_data=$(awk '/^ssh-/ {print $2}' "$1")
-  if [ -z "${key_data}" ]; then
+  if [[ -z "${key_data}" ]]; then
     # Not a valid key file
     return 1
   fi
@@ -127,13 +126,13 @@ install_ssh_keys() {
   local AK="${HOME}/.ssh/authorized_keys"
   local key
   local keydir
-  if test "${TRUST_ALL_KEYS}" = 1 ; then
+  if [[ "${TRUST_ALL_KEYS}" = 1 ]] ; then
     keydir="${BASEDIR}/keys/ssh"
   else
     keydir="${BASEDIR}/keys/ssh/trusted"
   fi
   for key in "${keydir}"/* ; do
-    if [ ! -f "${key}" ] ; then
+    if [[ ! -f "${key}" ]] ; then
       continue
     fi
     if ssh_key_already_installed "${key}" ; then
@@ -156,11 +155,11 @@ install_gpg_keys() {
 
 install_known_hosts() {
   verbose 'Installing known hosts...' >&2
-  if [ ! -f "${BASEDIR}/keys/known_hosts" ] ; then
+  if [[ ! -f "${BASEDIR}/keys/known_hosts" ]] ; then
     return 0
   fi
   mkdir -p "${HOME}/.ssh"
-  if [ -f "${HOME}/.ssh/known_hosts" ] ; then
+  if [[ -f "${HOME}/.ssh/known_hosts" ]] ; then
     local tmpf="$(mktemp)"
     cat "${BASEDIR}"/keys/known_hosts "${HOME}"/.ssh/known_hosts \
       | sort -u > "$tmpf"
@@ -180,21 +179,21 @@ setup_git_email() {
   local gc_local="${HOME}/.gitconfig.local"
   local current_email=""
 
-  if [ -f "${gc_local}" ]; then
+  if [[ -f "${gc_local}" ]]; then
     current_email=$(git config -f "${gc_local}" user.email || true)
   fi
 
-  if [ -n "${GIT_EMAIL:-}" ]; then
+  if [[ -n "${GIT_EMAIL:-}" ]]; then
     # Use environment variable
     git config -f "${gc_local}" user.email "${GIT_EMAIL}"
-  elif [ -n "${current_email}" ]; then
+  elif [[ -n "${current_email}" ]]; then
     # Already has an email set
     GIT_EMAIL="${current_email}"
   else
     # Prompt the user
     echo -n "Enter git email (leave blank to skip): " >&2
     read -r GIT_EMAIL || true
-    if [ -n "${GIT_EMAIL}" ]; then
+    if [[ -n "${GIT_EMAIL}" ]]; then
       git config -f "${gc_local}" user.email "${GIT_EMAIL}"
     fi
   fi
@@ -204,7 +203,7 @@ setup_git_email() {
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
   local pref_file="$(dirname "$0")/.installed-prefs"
-  if [ -f "${pref_file}" ] ; then
+  if [[ -f "${pref_file}" ]] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
     # source is a bashism
     # shellcheck disable=SC1090
@@ -213,46 +212,38 @@ read_saved_prefs() {
 }
 
 save_prefs() {
-  test "$SAVE" = 1 || return 0
+  [[ "$SAVE" = 1 ]] || return 0
   local pref_file=${BASEDIR}/.installed-prefs
-  (echo_pref BASEDIR
-   echo_pref MINIMAL
-   echo_pref INSTALL_KEYS
-   echo_pref TRUST_ALL_KEYS
-   echo_pref VERBOSE) > "$pref_file"
-}
-
-echo_pref() {
-  eval "local val=\${$1}"
-  # shellcheck disable=SC2154
-  echo ": \${$1:=${val}}"
+  {
+    echo "BASEDIR=\"${BASEDIR}\""
+    echo "MINIMAL=\"${MINIMAL}\""
+    echo "INSTALL_KEYS=\"${INSTALL_KEYS}\""
+    echo "TRUST_ALL_KEYS=\"${TRUST_ALL_KEYS}\""
+    echo "VERBOSE=\"${VERBOSE}\""
+  } > "$pref_file"
 }
 
 cleanup() {
-  if [ -x "${BASEDIR}/bin/prune-broken-symlinks.sh" ]; then
+  if [[ -x "${BASEDIR}/bin/prune-broken-symlinks.sh" ]]; then
     "${BASEDIR}/bin/prune-broken-symlinks.sh" -y "${HOME}/.zshrc.d"
     "${BASEDIR}/bin/prune-broken-symlinks.sh" -y "${HOME}/bin"
   fi
 }
 
 verbose() {
-  test "${VERBOSE:-0}" = 1 && echo "$@" >&2 || return 0
+  [[ "${VERBOSE:-0}" = 1 ]] && echo "$@" >&2 || return 0
 }
 
 # Operations
 
 install_dotfiles() {
   install_dotfile_dir "${BASEDIR}/dotfiles"
-  if test -d "${BASEDIR}/private_dotfiles" && \
-      test -d "${BASEDIR}/.git/git-crypt" ; then
-    install_dotfile_dir "${BASEDIR}/private_dotfiles"
-  fi
-  if test -d "${BASEDIR}/local_dotfiles" ; then
+  if [[ -d "${BASEDIR}/local_dotfiles" ]] ; then
     install_dotfile_dir "${BASEDIR}/local_dotfiles"
   fi
-  if test -d "${BASEDIR}/dotfile_overlays" ; then
+  if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
     for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
-      if test -d "${dotfiledir}" ; then
+      if [[ -d "${dotfiledir}" ]] ; then
         install_dotfile_dir "${dotfiledir}"
       fi
     done
@@ -260,21 +251,21 @@ install_dotfiles() {
 }
 
 install_main() {
-  if test -d "${BASEDIR}/.git" && have_command git ; then
-    if [ -z "$(git -C "${BASEDIR}" status --porcelain)" ]; then
+  if [[ -d "${BASEDIR}/.git" && have_command git ]] ; then
+    if [[ -z "$(git -C "${BASEDIR}" status --porcelain)" ]]; then
       git -C "${BASEDIR}" pull --ff-only || true
-      test "$MINIMAL" = 1 || \
+      [[ "$MINIMAL" = 1 ]] || \
         git -C "${BASEDIR}" submodule update --init --recursive --depth 1
     else
       echo "Skipping self-update: repository has local changes." >&2
     fi
   fi
-  test "$MINIMAL" = 1 || {
+  [[ "$MINIMAL" = 1 ]] || {
     prerequisites
     # try to update dotfile overlays
-    if test -d "${BASEDIR}/dotfile_overlays" ; then
+    if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
       for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
-        if test -d "${dotfiledir}/.git" ; then
+        if [[ -d "${dotfiledir}/.git" ]] ; then
           git -C "${dotfiledir}" pull --ff-only || true
           git -C "${dotfiledir}" submodule update --init --recursive --depth 1 || true
         fi
@@ -283,7 +274,7 @@ install_main() {
   }
   install_dotfiles
   install_basic_dir "${BASEDIR}/bin" "${HOME}/bin"
-  test "$INSTALL_KEYS" = 1 && install_keys
+  [[ "$INSTALL_KEYS" = 1 ]] && install_keys
   save_prefs
   setup_git_email
   cleanup
@@ -293,8 +284,8 @@ install_vim_extra() {
   local DEST="${HOME}/.vim/pack/matir-extra"
   local REPO="https://github.com/Matir/vim-extra.git"
 
-  if test -d "${DEST}" ; then
-    if test -d "${DEST}/.git" ; then
+  if [[ -d "${DEST}" ]] ; then
+    if [[ -d "${DEST}/.git" ]] ; then
       # do update
       git -C "${DEST}" pull --ff-only
       git -C "${DEST}" submodule update --init
@@ -321,7 +312,7 @@ read_saved_prefs
 : ${SAVE:=1}
 
 # Check prerequisites
-if [ ! -d "$BASEDIR" ] ; then
+if [[ ! -d "$BASEDIR" ]] ; then
   echo "Please install to $BASEDIR!" 1>&2
   exit 1
 fi
@@ -334,10 +325,6 @@ case $OPERATION in
     ;;
   dotfiles)
     install_dotfiles
-    ;;
-  test)
-    # Do nothing, just sourcing
-    set +o errexit
     ;;
   vim-extra)
     # Install/update extra vim modules

@@ -47,7 +47,7 @@ alias cdgr='cd $(git rev-parse --show-toplevel || echo .)'
 alias sshanon="ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
 
 # Straight to ipython
-alias ipy="ipython3"
+alias ipy="ipython3 --no-banner"
 
 # Skip the header on bc
 alias bc="command bc -q"
