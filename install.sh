@@ -12,16 +12,13 @@ HOME=${HOME:-$(cd ~ && pwd)}
 case $(uname) in
   Linux)
     FINDTYPE="-xtype"
-    MD5CMD="md5sum"
     ;;
   Darwin|*BSD)
     FINDTYPE="-type"
-    MD5CMD="md5 -q"
     ;;
   *)
     echo "Unknown OS: $(uname), guessing no GNU utils."
     FINDTYPE="-type"
-    MD5CMD="md5sum"
     ;;
 esac
 
@@ -33,7 +30,14 @@ prerequisites() {
   if have_command zsh ; then
     case $- in
       *i*)
-        case "$(getent passwd "${USER}" | cut -d: -f7)" in
+        local shell_path
+        if [ "$(uname)" = "Darwin" ]; then
+          # dscl output is "UserShell: /bin/zsh"
+          shell_path="$(dscl . -read "/Users/${USER}" UserShell | awk '{print $2}')"
+        else
+          shell_path="$(getent passwd "${USER}" | cut -d: -f7)"
+        fi
+        case "${shell_path}" in
           */zsh)
             ;;
           *)
@@ -91,7 +95,7 @@ install_basic_dir() {
   local SRCDIR="${1}"
   local DESTDIR="${2}"
   local file
-  find "${SRCDIR}" ${FINDTYPE} f -print | \
+  find "${SRCDIR}" \( -name .git -o -name README.md -o -name .gitignore \) -prune -o ${FINDTYPE} f -print | \
     while read -r file ; do
     local TARGET="${DESTDIR}/${file#"${SRCDIR}"/}"
     mkdir -p "$(dirname "${TARGET}")"
@@ -174,30 +178,32 @@ install_keys() {
 
 setup_git_email() {
   local gc_local="${HOME}/.gitconfig.local"
-  if test -f "${gc_local}" ; then
-    return 0
+  local current_email=""
+
+  if [ -f "${gc_local}" ]; then
+    current_email=$(git config -f "${gc_local}" user.email || true)
   fi
-  if [ "${USER:0:5}" != "david" ] ; then
-    return 0
+
+  if [ -n "${GIT_EMAIL:-}" ]; then
+    # Use environment variable
+    git config -f "${gc_local}" user.email "${GIT_EMAIL}"
+  elif [ -n "${current_email}" ]; then
+    # Already has an email set
+    GIT_EMAIL="${current_email}"
+  else
+    # Prompt the user
+    echo -n "Enter git email (leave blank to skip): " >&2
+    read -r GIT_EMAIL || true
+    if [ -n "${GIT_EMAIL}" ]; then
+      git config -f "${gc_local}" user.email "${GIT_EMAIL}"
+    fi
   fi
-  local domain="$(hostname -f | grep -E -o '[a-z0-9-]+\.[a-z0-9-]+$')"
-  case "$(echo "${domain}" | ${MD5CMD} | awk '{print $1}')" in
-    b21a24d528346ef7d3932306ed96ede5|a5ed434a3f5089b489576cceab824f25)
-      ;;
-    *)
-      return 0
-      ;;
-  esac
-  echo -e "[user]\n    email=${USER}@${domain}" > "${gc_local}"
+  export GIT_EMAIL
 }
 
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
-  local old_pref_file="$(dirname "$0")/installed-prefs"
   local pref_file="$(dirname "$0")/.installed-prefs"
-  if [ -f "${old_pref_file}" ] && ! [ -f "${pref_file}" ] ; then
-    mv "${old_pref_file}" "${pref_file}"
-  fi
   if [ -f "${pref_file}" ] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
     # source is a bashism
@@ -223,15 +229,10 @@ echo_pref() {
 }
 
 cleanup() {
-  # Needs zsh
-  if ! have_command zsh ; then
-    return 0
+  if [ -x "${BASEDIR}/bin/prune-broken-symlinks.sh" ]; then
+    "${BASEDIR}/bin/prune-broken-symlinks.sh" -y "${HOME}/.zshrc.d"
+    "${BASEDIR}/bin/prune-broken-symlinks.sh" -y "${HOME}/bin"
   fi
-  zsh >/dev/null 2>&1 <<EOF
-  source ${BASEDIR}/dotfiles/zshrc.d/prune-broken-symlinks.zsh
-  prune-broken-symlinks -y ${HOME}/.zshrc.d
-  prune-broken-symlinks -y ${HOME}/bin
-EOF
 }
 
 verbose() {
@@ -259,11 +260,14 @@ install_dotfiles() {
 }
 
 install_main() {
-  if test -d "${BASEDIR}/.git" ; then
-    have_command git && \
-      git -C "${BASEDIR}" pull --ff-only
-    test "$MINIMAL" = 1 || ( have_command git && \
-      git -C "${BASEDIR}" submodule update --init --recursive --depth 1 )
+  if test -d "${BASEDIR}/.git" && have_command git ; then
+    if [ -z "$(git -C "${BASEDIR}" status --porcelain)" ]; then
+      git -C "${BASEDIR}" pull --ff-only || true
+      test "$MINIMAL" = 1 || \
+        git -C "${BASEDIR}" submodule update --init --recursive --depth 1
+    else
+      echo "Skipping self-update: repository has local changes." >&2
+    fi
   fi
   test "$MINIMAL" = 1 || {
     prerequisites

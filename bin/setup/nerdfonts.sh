@@ -2,7 +2,7 @@
 
 set -ue
 
-VER="v2.2.2"
+VER="v3.4.0"
 
 FONTS=(
   https://github.com/ryanoasis/nerd-fonts/releases/download/${VER}/DejaVuSansMono.zip
@@ -13,14 +13,21 @@ FONTS=(
   https://github.com/ryanoasis/nerd-fonts/releases/download/${VER}/OpenDyslexic.zip
 )
 
-FPATH=${HOME}/.fonts/nerdfonts
-mkdir -p ${FPATH}
-cd ${FPATH}
+if [ "$(uname)" = "Darwin" ]; then
+  FPATH="${HOME}/Library/Fonts"
+else
+  FPATH="${HOME}/.local/share/fonts/nerdfonts"
+fi
 
-for f in ${FONTS[@]}; do
-  BN=$(basename $f)
-  wget -O ${FPATH}/${BN} ${f}
-  unzip -o -d ${FPATH} ${FPATH}/${BN}
+mkdir -p "${FPATH}"
+cd "${FPATH}"
+
+for f in "${FONTS[@]}"; do
+  BN=$(basename "$f")
+  wget -O "${FPATH}/${BN}" "$f"
+  unzip -o -d "${FPATH}" "${FPATH}/${BN}"
 done
 
-fc-cache -v
+if command -v fc-cache >/dev/null 2>&1; then
+  fc-cache -v
+fi

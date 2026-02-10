@@ -3,6 +3,11 @@
 set -o nounset
 set -o errexit
 
+if [ "$(uname)" != "Linux" ]; then
+  echo "Error: This backup script is only intended for use on Linux." >&2
+  exit 1
+fi
+
 DEFAULT=`echo /media/${USER}/[bB]ackup/${USER}/`
 DEST="${1:-${DEFAULT}}"
 
