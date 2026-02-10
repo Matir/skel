@@ -34,13 +34,22 @@ set ruler
 
 if !empty(globpath(&rtp, 'autoload/plug.vim'))
   call plug#begin('~/.vim/plugged')
-    Plug 'lifepillar/vim-solarized8'
-    Plug 'tpope/vim-surround'
-    Plug 'editorconfig/editorconfig-vim'
-    Plug 'tpope/vim-fugitive'
+    Plug 'MaxMEllon/vim-jsx-pretty'
     Plug 'ctrlpvim/ctrlp.vim'
-  Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
-  Plug 'vim-syntastic/syntastic'
+    Plug 'earthly/earthly.vim'
+    Plug 'editorconfig/editorconfig-vim'
+    Plug 'fatih/vim-go'
+    Plug 'grailbio/bazel-compilation-database'
+    Plug 'isobit/vim-caddyfile'
+    Plug 'lifepillar/vim-solarized8'
+    Plug 'mustache/vim-mustache-handlebars'
+    Plug 'rust-lang/rust'
+    Plug 'sirtaj/vim-openscad'
+    Plug 'tpope/vim-fugitive'
+    Plug 'tpope/vim-surround'
+    Plug 'vim-syntastic/syntastic'
+    Plug 'vimwiki/vimwiki'
+    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
   call plug#end()
 endif
 
@@ -100,9 +109,6 @@ set smartcase
 " Optional highlighting
 nmap <leader>hs :set hlsearch! hlsearch?<CR>
 
-
-
-
 " Options for syntastic
 let g:syntastic_enable_signs = 1
 let g:syntastic_auto_loc_list = 2
@@ -122,7 +128,6 @@ autocmd BufReadPost *
 " Have F5 run the tests and display errors
 nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 
-
 " Load vim-ycm if installed and compiled
 if filereadable(expand('~/.vim/plugged/YouCompleteMe/python/ycm/ycm_core.so'))
   let g:ycm_autoclose_preview_window_after_insertion=1
@@ -132,10 +137,7 @@ if filereadable(expand('~/.vim/plugged/YouCompleteMe/python/ycm/ycm_core.so'))
     let g:ycm_rust_toolchain_root=g:tmp_rust_path
   endif
   unlet! g:tmp_rust_path
-else
-  echom "YCM plugin found but core library is not compiled. Run :PlugInstall or check build dependencies."
 endif
-
 
 " Include a .vimrc.local if it exists
 if filereadable(glob("~/.vimrc.local"))

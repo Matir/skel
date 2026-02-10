@@ -184,7 +184,7 @@ install_dotfiles() {
 }
 
 install_main() {
-  if [[ -d "${BASEDIR}/.git" && have_command git ]] ; then
+  if [[ -d "${BASEDIR}/.git" ]] && have_command git ; then
     if [[ -z "$(git -C "${BASEDIR}" status --porcelain)" ]]; then
       git -C "${BASEDIR}" pull --ff-only || true
     else
@@ -202,16 +202,16 @@ install_main() {
       verbose "Installing vim-plug..."
       mkdir -p "${VIM_AUTOLOAD_DIR}"
       if have_command curl; then
-        curl -fLo "${VIM_PLUG_FILE}" --create-dirs "${VIM_PLUG_URL}"
+        curl -fsLo "${VIM_PLUG_FILE}" --create-dirs "${VIM_PLUG_URL}"
       else
         echo "Error: curl not found. Cannot install vim-plug." >&2
       fi
         fi
-    
+
         # Install TPM (Tmux Plugin Manager) if not already present
         local TPM_DIR="${HOME}/.tmux/plugins/tpm"
         local TPM_REPO="https://github.com/tmux-plugins/tpm"
-    
+
         if [[ ! -d "${TPM_DIR}" ]]; then
           verbose "Installing TPM (Tmux Plugin Manager)..."
           if have_command git; then
@@ -220,7 +220,7 @@ install_main() {
             echo "Error: git not found. Cannot install TPM." >&2
           fi
         fi
-    
+
         # try to update dotfile overlays
     if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
       for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
