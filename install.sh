@@ -283,7 +283,7 @@ install_main() {
         if [[ ! -d "${TPM_DIR}" ]]; then
           verbose "Installing TPM (Tmux Plugin Manager)..."
           if have_command git; then
-            git clone "${TPM_REPO}" "${TPM_DIR}"
+            git clone --depth 1 "${TPM_REPO}" "${TPM_DIR}"
           else
             echo "Error: git not found. Cannot install TPM." >&2
           fi

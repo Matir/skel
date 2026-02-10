@@ -9,17 +9,6 @@ if !isdirectory($HOME . '/.cache/vim/swap')
   silent !mkdir -p ~/.cache/vim/{backup,swap,undo}
 endif
 
-" vim-plug plugin list
-call plug#begin('~/.vim/plugged')
-
-Plug 'lifepillar/vim-solarized8'
-Plug 'tpope/vim-surround'
-Plug 'editorconfig/editorconfig-vim'
-Plug 'tpope/vim-fugitive'
-Plug 'ctrlpvim/ctrlp.vim'
-
-call plug#end()
-
 " Make sure files get completely written, but don't write backups
 set nobackup
 set writebackup
@@ -40,6 +29,20 @@ inoremap <S-Tab> <C-d>
 " Line numbering, ruler
 set number
 set ruler
+
+" Load vim-plug plugins, if vim-plug is installed
+
+if !empty(globpath(&rtp, 'autoload/plug.vim'))
+  call plug#begin('~/.vim/plugged')
+    Plug 'lifepillar/vim-solarized8'
+    Plug 'tpope/vim-surround'
+    Plug 'editorconfig/editorconfig-vim'
+    Plug 'tpope/vim-fugitive'
+    Plug 'ctrlpvim/ctrlp.vim'
+  Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
+  Plug 'vim-syntastic/syntastic'
+  call plug#end()
+endif
 
 " Setup viminfo for recording positions, etc.
 if !has('nvim')
@@ -97,50 +100,8 @@ set smartcase
 " Optional highlighting
 nmap <leader>hs :set hlsearch! hlsearch?<CR>
 
-" Toggle paste mode
-nmap <silent> <F4> :set invpaste<CR>:set paste?<CR>
-imap <silent> <F4> <ESC>:set invpaste<CR>:set paste?<CR>
 
-" Mediocre Hex editing in vim
-" Source: http://vim.wikia.com/wiki/Improved_hex_editing
-" TODO: move to an include
-command -bar Hexmode call ToggleHex()
-function ToggleHex()
-  " hex mode should be considered a read-only operation
-  " save values for modified and read-only for restoration later,
-  " and clear the read-only flag for now
-  let l:modified=&mod
-  let l:oldreadonly=&readonly
-  let &readonly=0
-  let l:oldmodifiable=&modifiable
-  let &modifiable=1
-  if !exists("b:editHex") || !b:editHex
-    " save old options
-    let b:oldft=&ft
-    let b:oldbin=&bin
-    " set new options
-    setlocal binary " make sure it overrides any textwidth, etc.
-    let &ft="xxd"
-    " set status
-    let b:editHex=1
-    " switch to hex editor
-    %!xxd
-  else
-    " restore old options
-    let &ft=b:oldft
-    if !b:oldbin
-      setlocal nobinary
-    endif
-    " set status
-    let b:editHex=0
-    " return to normal editing
-    %!xxd -r
-  endif
-  " restore values for modified and read only state
-  let &mod=l:modified
-  let &readonly=l:oldreadonly
-  let &modifiable=l:oldmodifiable
-endfunction
+
 
 " Options for syntastic
 let g:syntastic_enable_signs = 1
@@ -161,44 +122,20 @@ autocmd BufReadPost *
 " Have F5 run the tests and display errors
 nnoremap <silent> <F5> :SyntasticCheck<CR> :Errors<CR>
 
-" Load vim-ycm if installed on the system level
-" Currently only works on debian-based systems...
-" It also does not play nicely with virtual envs, so we skip it then
-if isdirectory("/usr/share/vim-youcompleteme") && empty($VIRTUAL_ENV)
-  set runtimepath+=/usr/share/vim-youcompleteme
+
+" Load vim-ycm if installed and compiled
+if filereadable(expand('~/.vim/plugged/YouCompleteMe/python/ycm/ycm_core.so'))
+  let g:ycm_autoclose_preview_window_after_insertion=1
+  " Add rust settings
+  let g:tmp_rust_path=trim(system("rustc --print sysroot"))
+  if isdirectory(g:tmp_rust_path)
+    let g:ycm_rust_toolchain_root=g:tmp_rust_path
+  endif
+  unlet! g:tmp_rust_path
+else
+  echom "YCM plugin found but core library is not compiled. Run :PlugInstall or check build dependencies."
 endif
-let g:ycm_autoclose_preview_window_after_insertion=1
-" Add rust settings
-let g:tmp_rust_path=trim(system("rustc --print sysroot"))
-if isdirectory(g:tmp_rust_path)
-  let g:ycm_rust_toolchain_root=g:tmp_rust_path
-endif
-unlet! g:tmp_rust_path
 
-" Enable vim-bracketed-paste mode
-" From
-" https://github.com/ConradIrwin/vim-bracketed-paste/blob/master/plugin/bracketed-paste.vim
-if exists("g:loaded_bracketed_paste")
-  finish
-endif
-let g:loaded_bracketed_paste = 1
-
-let &t_ti .= "\<Esc>[?2004h"
-let &t_te = "\e[?2004l" . &t_te
-
-function! XTermPasteBegin(ret)
-  set pastetoggle=<f29>
-  set paste
-  return a:ret
-endfunction
-
-execute "set <f28>=\<Esc>[200~"
-execute "set <f29>=\<Esc>[201~"
-map <expr> <f28> XTermPasteBegin("i")
-imap <expr> <f28> XTermPasteBegin("")
-vmap <expr> <f28> XTermPasteBegin("c")
-cmap <f28> <nop>
-cmap <f29> <nop>
 
 " Include a .vimrc.local if it exists
 if filereadable(glob("~/.vimrc.local"))
@@ -235,20 +172,21 @@ filetype plugin indent on
 " Disable bell
 set belloff=all
 
-" Fix trailing whitespace
-function! SaveFixSpace()
-    let l:denylist = ['diff', 'patch', 'mail', 'gitcommit', 'markdown']
-    if index(l:denylist, &filetype) != -1
+" Fix trailing whitespace on save
+function! StripTrailingWhitespace()
+    " Don't modify files that are read-only, or certain filetypes
+    if &readonly || index(['diff', 'patch', 'mail', 'gitcommit', 'markdown'], &filetype) != -1
         return
     endif
-    let l:save = winsaveview()
-    " Execute the substitution on the range provided to the command
-    execute a:firstline . ',' . a:lastline . 's/\s\+$//e'
-    call winrestview(l:save)
+    let l:view = winsaveview()
+    " Using silent! to suppress errors if no matches are found
+    silent! %s/\s\+$//e
+    call winrestview(l:view)
 endfunction
-augroup CleanWhitespace
+
+augroup StripTrailingWhitespaceGroup
     autocmd!
-    " This calls the command on the whole file (%) before writing the buffer
-    autocmd BufWritePre * :FixSpace
+    autocmd BufWritePre * call StripTrailingWhitespace()
 augroup END
-command! -range=% FixSpace <line1>,<line2>call SaveFixSpace()
+
+command! StripSpace call StripTrailingWhitespace()
