@@ -43,13 +43,23 @@ if !empty(globpath(&rtp, 'autoload/plug.vim'))
     Plug 'isobit/vim-caddyfile'
     Plug 'lifepillar/vim-solarized8'
     Plug 'mustache/vim-mustache-handlebars'
-    Plug 'rust-lang/rust'
+    Plug 'rust-lang/rust.vim'
     Plug 'sirtaj/vim-openscad'
     Plug 'tpope/vim-fugitive'
     Plug 'tpope/vim-surround'
     Plug 'vim-syntastic/syntastic'
     Plug 'vimwiki/vimwiki'
-    Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
+
+    let s:ycm_build_tools = (
+          \ executable('cmake') &&
+          \ executable('python3-config') &&
+          \ executable('gcc') || executable('clang'))
+    let s:ycm_dir = expand('~/.vim/plugged/youcompleteme/')
+    let s:ycm_bin = s:ycm_dir . 'third_party/ycmd/ycm_core.so'
+
+    if s:ycm_build_tools || filereadable(s:ycm_bin)
+      Plug 'ycm-core/YouCompleteMe', { 'do': './install.py --all' }
+    endif
   call plug#end()
 endif
 
