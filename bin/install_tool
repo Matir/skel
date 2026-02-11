@@ -540,6 +540,21 @@ EOF
   fq)
     go install github.com/wader/fq@latest
     ;;
+  mise)
+    if command -v brew >/dev/null 2>&1; then
+      brew install mise
+    else
+      curl -sSL https://mise.jdx.dev/gpg-key.pub | gpg --import
+      INSTALL_FILE_AND_SIG="${TMPDIR}/install.sh.sig"
+      download "https://mise.jdx.dev/install.sh.sig" "${INSTALL_FILE_AND_SIG}"
+      DECRYPTED_SCRIPT="${TMPDIR}/mise_install.sh"
+      if gpg --assert-signer 24853EC9F655CE80B48E6C3A8B81C9D17413A06D --decrypt -o "${DECRYPTED_SCRIPT}" "${INSTALL_FILE_AND_SIG}" >/dev/null 2>&1; then
+        sh "${DECRYPTED_SCRIPT}"
+      else
+        die "gpg verification or decryption failed for mise installer"
+      fi
+    fi
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
