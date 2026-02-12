@@ -10,5 +10,8 @@
       "GEMINI.md"
     ]
   },
-  "selectedAuthType": "gemini-api-key"
+  "selectedAuthType": "gemini-api-key",
+  "general": {
+    "vimMode": true
+  }
 }
