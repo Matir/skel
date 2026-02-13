@@ -1,0 +1,5 @@
+#!/bin/sh
+rm -f ~/.local/share/applications/wine*.desktop
+update-desktop-database ~/.local/share/applications
+rm -f ~/.local/share/mime/packages/x-wine*.xml
+update-mime-database ~/.local/share/mime

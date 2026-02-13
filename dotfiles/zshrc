@@ -187,7 +187,7 @@ if [[ $- == *i* ]] ; then
     source "$file"
   done
   # extra completions, prompt
-  fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt ~/.zshrc.d/agnoster_prompt $fpath)
+  fpath=(~/.zshrc.completions ~/.zshrc.d/matir_prompt $fpath)
   # Homebrew on mac
   if test -x /opt/homebrew/bin/brew ; then
     eval $(/opt/homebrew/bin/brew shellenv)
