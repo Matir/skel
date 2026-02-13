@@ -5,9 +5,9 @@ fish_style_pwd_dir_length = 1
 truncate_to_repo = false
 
 [gcloud]
-# This is just too noisy
-disabled = true
 symbol = "️🇬️ "
+format = "on [$symbol$project]($style) "
+detect_env_vars = ["STARSHIP_SHOW_GCLOUD"]
 
 [status]
 disabled = false
@@ -31,3 +31,11 @@ format = '[$indicator]($style)'
 
 [pulumi]
 disabled = true
+
+[docker_context]
+# really long paths when DOCKER_HOST is set
+disabled = true
+
+[kubernetes]
+disabled = false
+detect_folders = ["k8s"]
