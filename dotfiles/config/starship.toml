@@ -20,7 +20,7 @@ show_always = true
 detect_variables = []
 
 [shell]
-fish_indicator = '󰈺 '
+fish_indicator = '🐟 '
 zsh_indicator = ''
 bash_indicator = ''
 powershell_indicator = '_'
