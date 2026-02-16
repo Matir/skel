@@ -1,0 +1,47 @@
+# Restic exclude file for macOS
+
+# General Cache Folders
+/Users/*/Library/Caches
+/Users/*/.cache
+.Trash
+/private/var/folders
+
+# Specific Application Caches
+/Users/*/Library/Application Support/Google/Chrome/Default/Application Cache
+/Users/*/Library/Application Support/Firefox/Profiles/*.default/cache2
+/Users/*/Library/Application Support/Spotify/PersistentCache
+/Users/*/Library/Metadata/CoreSpotlight
+
+# Developer related
+/Users/*/.m2
+/Users/*/.gradle
+/Users/*/node_modules
+/Users/*/go/pkg
+/Users/*/.espressif
+
+# Virtual Machine Disks
+/Users/*/VirtualBox VMs
+/Users/*/Parallels
+
+# Cloud Storage (to avoid backing up already synced files)
+/Users/*/Dropbox
+/Users/*/Google Drive
+/Users/*/.onedrive
+
+# Other
+/Users/*/Music/iTunes/iTunes Music Library.xml
+/Users/*/Music/iTunes/Previous iTunes Libraries
+
+# macOS specific
+/Users/*/.DS_Store
+/Users/*/Public/Drop Box
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+hibernationfile
+sleepimage
+swapfile

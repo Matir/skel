@@ -1,0 +1,165 @@
+#!/bin/bash
+#
+# A script to backup a single-user MacBook using restic to either a local
+# filesystem or Backblaze B2.
+
+set -o errexit
+set -o nounset
+set -o pipefail
+
+# --- Configuration ---
+# Directory to be backed up.
+# For this script, we assume the user's home directory.
+SOURCE_DIR="${HOME}"
+
+# Exclude file location. We'll create a default one next to the script.
+EXCLUDE_FILE="$HOME/.restic_exclude.darwin"
+
+# --- Functions ---
+usage() {
+  cat << EOF
+Usage: $(basename "$0") [-l /path/to/repo | -b [bucket]] [-u UPLOAD_LIMIT]
+
+A script to backup a single-user MacBook using restic.
+
+Options:
+  -l <path>   Backup to a local filesystem repository at the given path.
+  -b [bucket] Backup to a Backblaze B2 bucket. The bucket name is optional.
+              If not provided, it will be read from the B2_BUCKET_NAME
+              environment variable.
+  -u <limit>  Limit the upload speed to the given value in KB/s.
+  -h          Show this help message.
+EOF
+}
+
+# --- Main Script ---
+# Check if restic is installed
+if ! command -v restic &> /dev/null; then
+  echo "Error: restic command not found." >&2
+  echo "Please install restic first: https://restic.net/" >&2
+  exit 1
+fi
+
+if [[ $# -eq 0 ]]; then
+  usage
+  exit 1
+fi
+
+BACKUP_MODE=""
+REPO=""
+UPLOAD_LIMIT=""
+
+while getopts ":l:bu:h" opt; do
+  case ${opt} in
+    l)
+      BACKUP_MODE="local"
+      REPO="${OPTARG}"
+      ;;
+    b)
+      BACKUP_MODE="b2"
+      if [[ ${OPTIND} -le $# && "${!OPTIND}" != -* ]]; then
+        REPO="b2:${!OPTIND}:"
+        OPTIND=$((OPTIND + 1))
+      fi
+      ;;
+    u)
+      UPLOAD_LIMIT="${OPTARG}"
+      ;;
+    h)
+      usage
+      exit 0
+      ;;
+    \?)
+      echo "Invalid option: -${OPTARG}" >&2
+      usage
+      exit 1
+      ;;
+    :)
+      echo "Option -${OPTARG} requires an argument." >&2
+      usage
+      exit 1
+      ;;
+  esac
+done
+
+# --- Pre-run checks ---
+if [[ -z "${BACKUP_MODE}" ]]; then
+    echo "Error: You must specify a backup mode (-l or -b)." >&2
+    usage
+    exit 1
+fi
+
+if [[ "${BACKUP_MODE}" == "b2" ]]; then
+    if [[ -f "${HOME}/.resticb2" ]] ; then
+      . "${HOME}/.resticb2"
+    fi
+    export B2_ACCOUNT_ID
+    export B2_ACCOUNT_KEY
+    export B2_BUCKET_NAME
+    if [[ -z "${B2_ACCOUNT_ID:-}" || -z "${B2_ACCOUNT_KEY:-}" ]]; then
+        echo "Error: For Backblaze B2 backups, you must set the B2_ACCOUNT_ID and B2_ACCOUNT_KEY environment variables." >&2
+        exit 1
+    fi
+
+    if [[ -z "${REPO:-}" ]]; then
+        if [[ -n "${B2_BUCKET_NAME:-}" ]]; then
+            REPO="b2:${B2_BUCKET_NAME}:"
+        else
+            echo "Error: Backup mode is B2 but no bucket name was provided and the B2_BUCKET_NAME environment variable is not set." >&2
+            usage
+            exit 1
+        fi
+    fi
+fi
+
+KEYCHAIN_ENTRY_NAME="restic_repo_password"
+if security find-generic-password -a "$(whoami)" -s "${KEYCHAIN_ENTRY_NAME}" >/dev/null 2>&1 ; then
+  export RESTIC_PASSWORD_COMMAND="security find-generic-password -a \"$(whoami)\" -s \"${KEYCHAIN_ENTRY_NAME}\" -w"
+# Source file?
+elif [[ -f "${HOME}/.resticpass" ]] ; then
+  export RESTIC_PASSWORD_FILE="${HOME}/.resticpass"
+fi
+
+# If the repository does not exist, initialize it.
+# The user will be prompted for a password, which will be required for all
+# future interactions with the repository.
+if ! restic -r "${REPO}" snapshots &> /dev/null; then
+    echo "Restic repository not found or not accessible. Initializing..."
+    restic init -r "${REPO}"
+fi
+
+
+# --- Run Backup ---
+echo "Starting restic backup..."
+echo "Source: ${SOURCE_DIR}"
+echo "Repository: ${REPO}"
+
+BACKUP_CMD="restic backup \
+    --verbose \
+    --repo \"${REPO}\" \
+    --exclude-file \"${EXCLUDE_FILE}\" \
+    --one-file-system \
+    --tag \"macbook-backup\""
+
+if [[ -n "${UPLOAD_LIMIT}" ]]; then
+    BACKUP_CMD="${BACKUP_CMD} --limit-upload ${UPLOAD_LIMIT}"
+fi
+
+BACKUP_CMD="${BACKUP_CMD} \"${SOURCE_DIR}\""
+
+eval "${BACKUP_CMD}"
+
+echo "Backup complete."
+
+# --- Prune old snapshots (optional, but recommended) ---
+# Keeps the last 7 daily, 4 weekly, and 6 monthly snapshots.
+echo "Pruning old snapshots..."
+restic forget \
+    --repo "${REPO}" \
+    --keep-daily 7 \
+    --keep-weekly 4 \
+    --keep-monthly 6 \
+    --prune
+
+echo "Pruning complete."
+echo "Restic backup script finished."
