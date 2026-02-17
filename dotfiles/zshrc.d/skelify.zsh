@@ -32,9 +32,10 @@ function skelify {
         return 1
       fi
       echo ${target}
-      mkdir -p ${HOME}/.skel/${relhome}
-      mv ${target} ${HOME}/.skel/${relhome}/${fname}
-      ln -s ${fulltarget} ${HOME}/.skel/${relhome}/${fname}
+      local skeldir="${HOME}/.skel/dotfiles/${relhome}"
+      mkdir -p "${skeldir}"
+      mv ${target} "${skeldir}/${fname}"
+      ln -s "${skeldir}/${fname}" "${fulltarget}"
     else
       echo ${target} is not a directory or file. >/dev/stderr
       return 1

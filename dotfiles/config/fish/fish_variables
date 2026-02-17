@@ -2,6 +2,10 @@
 # VERSION: 3.0
 SETUVAR EDITOR:vim
 SETUVAR __fish_initialized:3800
+SETUVAR _fisher_jorgebucaran_2F_fisher_files:\x7e/\x2econfig/fish/functions/fisher\x2efish\x1e\x7e/\x2econfig/fish/completions/fisher\x2efish
+SETUVAR _fisher_plugins:jorgebucaran/fisher\x1ewfxr/forgit
+SETUVAR _fisher_upgraded_to_4_4:\x1d
+SETUVAR _fisher_wfxr_2F_forgit_files:\x7e/\x2econfig/fish/conf\x2ed/bin\x1e\x7e/\x2econfig/fish/conf\x2ed/forgit\x2eplugin\x2efish\x1e\x7e/\x2econfig/fish/completions/_git\x2dforgit\x1e\x7e/\x2econfig/fish/completions/git\x2dforgit\x2ebash\x1e\x7e/\x2econfig/fish/completions/git\x2dforgit\x2efish
 SETUVAR fish_color_autosuggestion:4D5566
 SETUVAR fish_color_cancel:\x2d\x2dreverse
 SETUVAR fish_color_command:39BAE6
