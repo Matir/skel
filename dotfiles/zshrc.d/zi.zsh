@@ -15,6 +15,10 @@ if [[ -d "${HOME}/.zi" ]]; then
     # Enable zi completions
     autoload -Uz _zi
     (( ${+_comps} )) && _comps[zi]=_zi
+
+    # Add zi modules here
+    zi ice ver"53da496"
+    zi load "wfxr/forgit"
   fi
 else
   # Path for the acknowledgment file.
@@ -31,11 +35,11 @@ else
           echo "Error: git is not installed. Please install git to continue." >&2
           return 1
       fi
-      
+
       # Create the directory structure
       echo "Creating installation directory..."
       mkdir -p "${HOME}/.zi/bin"
-      
+
       # Perform a shallow clone of the repository
       echo "Cloning the zi repository..."
       if command git clone --depth 1 https://github.com/z-shell/zi.git "${HOME}/.zi/bin"; then
@@ -57,7 +61,7 @@ else
       touch "${ack_file}"
       echo "To re-enable the warning, remove the file: ${ack_file}"
     }
-    
+
     echo "zi plugin manager is not installed. Run '_install_zi' to install, or '_ack_no_zi' to suppress this warning."
   fi
 fi
