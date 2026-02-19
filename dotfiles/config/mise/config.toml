@@ -1,0 +1,14 @@
+[settings]
+experimental = true
+
+[settings.pipx]
+uvx = true
+
+[settings.python]
+uv_venv_auto = true
+
+[tools]
+uv = "latest"
+
+[hooks]
+postinstall = "mise sync python --uv"

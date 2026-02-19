@@ -1,0 +1,36 @@
+#!/bin/sh
+#
+# smart-copy-paste
+#
+# This script provides context-aware copy and paste operations, mimicking
+# macOS behavior (Alt+C/V) while correctly handling terminals that require
+# the Shift key.
+
+# Exit silently if xdotool is not installed.
+if ! command -v xdotool > /dev/null; then
+  exit 1
+fi
+
+# Get the class name of the currently focused window.
+# We need to get the window on focus, to avoid issues with transparent terminals.
+class=$(xdotool getwindowclassname "$(xdotool getwindowfocus)")
+
+# Semicolon-separated list of terminal class names.
+terminals='Gnome-terminal;Xfce4-terminal;konsole;xterm;URxvt;Terminator;Alacritty;kitty;wezterm'
+
+# Determine the keystroke based on the window type and the argument passed.
+if echo "$terminals" | grep -q "$class"; then
+  # This is a terminal, so use Shift.
+  if [ "$1" = "copy" ]; then
+    xdotool key --clearmodifiers ctrl+shift+c
+  elif [ "$1" = "paste" ]; then
+    xdotool key --clearmodifiers ctrl+shift+v
+  fi
+else
+  # This is a standard GUI app.
+  if [ "$1" = "copy" ]; then
+    xdotool key --clearmodifiers ctrl+c
+  elif [ "$1" = "paste" ]; then
+    xdotool key --clearmodifiers ctrl+v
+  fi
+fi

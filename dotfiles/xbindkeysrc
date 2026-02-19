@@ -1,0 +1,8 @@
+# Custom copy/paste mapping for Alt+C and Alt+V to feel more like macOS.
+# Uses a helper script to send Shift for terminal applications.
+
+"smart-copy-paste copy"
+    alt + c
+
+"smart-copy-paste paste"
+    alt + v

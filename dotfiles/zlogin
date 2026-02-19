@@ -1,8 +1,3 @@
-# Execute code that does not affect the current session in the background.
-{
-  # Compile the completion dump to increase startup speed.
-  zcompdump="${ZDOTDIR:-$HOME}/.zcompdump"
-  if [[ -s "$zcompdump" && (! -s "${zcompdump}.zwc" || "$zcompdump" -nt "${zcompdump}.zwc") ]]; then
-    zcompile "$zcompdump"
-  fi
-} &!
+# This file is sourced only for login shells (e.g., SSH sessions, initial TTY logins).
+# For most interactive shells on macOS (like those in Terminal.app or iTerm2), it is NOT sourced.
+# All active Zsh startup and completion logic has been moved to .zshrc and .zshenv for better consistency and performance.

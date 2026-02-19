@@ -1,22 +1,12 @@
 # General aliases, should only be sourced in interactive shells
 
-# Add an "alert" alias for long running commands.  Use like so:
-#   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+
 
 # Cryptsetup alias
 alias luksFormat='cryptsetup luksFormat --type=luks2 --pbkdf-memory=2560000 --pbkdf=argon2id -i 15000 -s 512 -h sha256 -c aes-xts-plain64'
 
-# Colors
-if ls --version >/dev/null 2>&1 ; then
-  alias ls='ls --color=auto'
-fi
-if [ `uname` != 'Darwin' -a `uname` != 'NetBSD' -a `uname` != 'FreeBSD' -a `uname` != 'OpenBSD' ] ; then
-  # Should have a better way to check for GNU versions
-  alias grep='grep --color=auto'
-  alias egrep='egrep --color=auto'
-  alias fgrep='fgrep --color=auto'
-fi
+
+
 
 # Easy upgrade
 alias dist-upgrade="sudo sh -c 'apt-get update && apt-get -y dist-upgrade'"
@@ -30,8 +20,7 @@ alias mdcode="sed 's/^/    /'"
 # Intel format plz
 alias objdump="command objdump -M intel"
 
-# Useful directory utilities
-alias dircount="for d in * ; do find \$d -type d | wc -l | tr -d '\n' ; echo ' ' \$d ; done | sort -n"
+
 
 # Drop caches for swap issues
 alias drop_caches="echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
@@ -41,7 +30,7 @@ alias gettemp='printf "%02.2f\n" "$(cat /sys/class/thermal/thermal_zone0/temp)e-
 
 # get git working directory
 alias gitroot="git rev-parse --show-toplevel"
-alias cdgr='cd $(git rev-parse --show-toplevel || echo .)'
+
 
 # SSH without host key checking
 alias sshanon="ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"

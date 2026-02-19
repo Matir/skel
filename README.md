@@ -22,6 +22,28 @@ dotfiles.  ;)
 
 ### Options ###
 
+### macOS-like Copy/Paste ###
+
+To address keyboard shortcut conflicts between operating systems, this environment
+now supports using `Alt+C` for copy and `Alt+V` for paste, similar to macOS.
+This functionality is context-aware: it will automatically use `Ctrl+Shift+C/V`
+in terminals and `Ctrl+C/V` in all other applications.
+
+This feature requires the following packages to be installed:
+
+-   `xbindkeys`: To listen for the keyboard shortcuts.
+-   `xdotool`: To send the appropriate keypresses.
+
+On Debian-based systems (like Ubuntu or Kali), you can install them with:
+
+```bash
+sudo apt-get update
+sudo apt-get install xbindkeys xdotool
+```
+
+After installation, the functionality will be enabled automatically on your
+next login.
+
 ```
 BASEDIR: Where the skel framework is installed.  Defaults to $HOME/.skel
 MINIMAL: Don't do things that require git clones or installation of anything

@@ -1,4 +1,8 @@
 # For interactive shells
+[[ -n "$ZSH_PROFILE" ]] && {
+  zshrc_start_time=$(date +%s.%N)
+  zmodload zsh/zprof
+}
 HISTFILE=~/.zhistory
 HISTSIZE=10000
 SAVEHIST=10000
@@ -159,7 +163,7 @@ bindkey '^r' history-incremental-search-backward
 bindkey "^[[3~" delete-char
 
 source_if_existing() {
-  if test -e "${1}" ; then source "${1}" ; else false ; fi
+  [[ -f "${1}" ]] && source "${1}"
 }
 
 source_first_existing() {
@@ -196,7 +200,20 @@ if [[ $- == *i* ]] ; then
   zstyle ':compinstall' filename "${HOME}/.zshrc"
   zstyle ':completion:*' users root ${USER}
   # Modules after fpath
-  autoload -Uz compinit && compinit -i
+  autoload -Uz compinit
+
+  # Regenerate zcompdump if it's older than any file in fpath
+  DUMPFILE="${ZDOTDIR:-$HOME}/.zcompdump"
+  updated_files=(${^fpath}(N.om[1]))
+
+  if [[ ! -f "$DUMPFILE" || ( ${#updated_files} -gt 0 && "$updated_files[1]" -nt "$DUMPFILE" ) ]]; then
+    compinit -i -D "$DUMPFILE"
+    # Asynchronously compile the dump file
+    { zcompile "$DUMPFILE" } &!
+  else
+    compinit -C -i -D "$DUMPFILE"
+  fi
+  unset DUMPFILE updated_files
   autoload -Uz promptinit && promptinit
   # Virtualenvwrapper
   source_first_existing \
@@ -274,3 +291,11 @@ fi
 
 # Cleanup PATH
 typeset -U PATH
+
+if [[ -n "$ZSH_PROFILE" ]]; then
+  zshrc_end_time=$(date +%s.%N)
+  elapsed_seconds=$(echo "$zshrc_end_time - $zshrc_start_time" | bc -l)
+  elapsed_ms=$(printf "%.0f" "$(echo "$elapsed_seconds * 1000" | bc -l)")
+  echo "zshrc done: ${elapsed_ms}ms"
+  zprof
+fi

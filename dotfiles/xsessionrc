@@ -2,4 +2,5 @@ setxkbmap -option ctrl:nocaps -option compose:ralt
 test -x /usr/bin/xsettingsd && /usr/bin/xsettingsd &
 test -f "$HOME/.env" && "$HOME/.env"
 test -f "$HOME/.shenv" && "$HOME/.shenv"
+command -v xbindkeys >/dev/null && xbindkeys &
 test -f "$HOME/.profile" && . "$HOME/.profile"
