@@ -1,0 +1,65 @@
+#!/bin/bash
+
+# Check for the correct number of arguments and display usage if incorrect.
+if [ "$#" -ne 2 ]; then
+    echo "Usage: $(basename "$0") <authoritative_hosts_file> <target_known_hosts_file>"
+    echo "Merges two known_hosts files, with entries from the authoritative file"
+    echo "replacing matching entries (by hostname and key type) in the target file."
+    echo "The final merged result is printed to standard output."
+    exit 1
+fi
+
+AUTHORITATIVE_FILE="$1"
+TARGET_FILE="$2"
+
+awk '
+# Part 1: Process the authoritative source file first (NR==FNR).
+# NR==FNR is an awk pattern that is only true while reading the first file
+# listed on the command line.
+NR==FNR {
+  # The key type is always the 2nd field (e.g., "ssh-ed25519").
+  key_type = $2;
+  # Split all hostnames/IPs from the 1st field (e.g., "host.com,192.0.2.1").
+  split($1, hosts, ",");
+  for (i in hosts) {
+    # Build an associative array using a compound key: (hostname, key_type).
+    # The value stored is the entire line from the authoritative file.
+    auth_map[hosts[i], key_type] = $0;
+  }
+  next; # Skip to the next line in the authoritative file.
+}
+
+# Part 2: Process the main/target known_hosts file.
+# This block only runs for the second file onwards (NR != FNR).
+{
+  is_managed = 0;
+  # The key type is always the 2nd field.
+  key_type = $2;
+  split($1, hosts, ",");
+  for (i in hosts) {
+    # Check if this specific (hostname, key_type) pair is managed
+    # by our authoritative source.
+    if ((hosts[i], key_type) in auth_map) {
+      is_managed = 1; # Mark this key as one that will be replaced.
+      break;
+    }
+  }
+  # If this specific key is NOT managed, keep the original line by printing it.
+  if (!is_managed) {
+    print $0;
+  }
+}
+
+# Part 3: After all files are read, print the authoritative entries.
+END {
+  # Use a "printed" array to ensure we only print each unique line once,
+  # even if it was stored multiple times in auth_map (e.g., for "host,ip").
+  for (entry in auth_map) {
+    line = auth_map[entry];
+    if (!(line in printed)) {
+      print line;
+      printed[line] = 1;
+    }
+  }
+}
+' "$AUTHORITATIVE_FILE" "$TARGET_FILE"

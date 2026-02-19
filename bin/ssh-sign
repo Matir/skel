@@ -1,0 +1,164 @@
+#!/bin/bash
+# A robust wrapper for ssh-keygen to sign and verify files.
+
+# --- Color Codes for Output ---
+COLOR_RED='\033[0;31m'
+COLOR_GREEN='\033[0;32m'
+COLOR_NONE='\033[0m' # No Color
+
+# --- Default values ---
+DEFAULT_SIGNING_KEY="$HOME/.ssh/id_signing"
+DEFAULT_ALLOWED_SIGNERS="$HOME/.ssh/allowed_signers"
+DEFAULT_IDENTITY="david@systemoverlord.com"
+DEFAULT_NAMESPACE="file"
+
+# --- Usage Message ---
+usage() {
+  cat << EOF
+Usage: $(basename "$0") <sign|verify> [OPTIONS] [FILE]
+
+A wrapper for 'ssh-keygen -Y' to simplify file signing and verification.
+
+COMMANDS:
+  sign      Sign a file. The path to the file to be signed is provided as a positional argument.
+  verify    Verify a signature. The original file content is read from stdin.
+
+OPTIONS:
+  -f <file>         For 'sign': Path to the private key for signing.
+                    Defaults to '$DEFAULT_SIGNING_KEY' if it exists.
+                    For 'verify': Path to the allowed_signers file.
+                    Defaults to '$DEFAULT_ALLOWED_SIGNERS'.
+  -n <namespace>    Signature namespace.
+                    Defaults to '$DEFAULT_NAMESPACE'.
+  -I <identity>     For 'verify': The identity to check the signature against.
+                    Defaults to '$DEFAULT_IDENTITY'.
+  -s <sig_file>     For 'verify': Path to the signature file to verify (e.g., file.sig). REQUIRED for verify.
+  -h, --help        Show this help message.
+
+EXAMPLE USAGE:
+  # Sign a file using the default key
+  $(basename "$0") sign release.tar.gz
+
+  # Sign a file with a specific key
+  $(basename "$0") sign -f ~/.ssh/id_ed25519_my_signing_key release.tar.gz
+
+  # Verify a signature using default allowed_signers and identity
+  cat release.tar.gz | $(basename "$0") verify -s release.tar.gz.sig
+
+  # Verify a signature with a specific allowed_signers file and identity
+  cat release.tar.gz | $(basename "$0") verify -f ./my_signers -I other@example.com -s release.tar.gz.sig
+
+EOF
+  exit 1
+}
+
+# --- Helper for error messages ---
+error() {
+  echo -e "${COLOR_RED}Error: $1${COLOR_NONE}" >&2
+  exit 1
+}
+
+# --- Main Script Logic ---
+
+if [[ "$1" != "sign" && "$1" != "verify" ]]; then
+  usage
+fi
+
+SUBCOMMAND=$1
+shift # Consume the subcommand
+
+# --- Argument Parsing and Validation ---
+
+# Separate arguments from the file to be signed
+declare -a remaining_args
+file_to_sign=""
+while [[ "$#" -gt 0 ]]; do
+  # If we see a non-flag argument, assume it's the file to sign.
+  # This works because the file to sign is the only positional argument.
+  if [[ "$1" != -* ]] && [[ -z "$file_to_sign" ]]; then
+    file_to_sign="$1"
+  else
+    remaining_args+=("$1")
+  fi
+  shift
+done
+
+# --- Build command based on subcommand ---
+declare -a CMD_ARGS
+CMD_ARGS=("ssh-keygen" "-Y" "$SUBCOMMAND")
+
+# Append all the flag-based arguments (-f, -n, -I, -s)
+CMD_ARGS+=("${remaining_args[@]}")
+
+# Scan for provided flags to handle defaults correctly
+f_provided=false
+n_provided=false
+I_provided=false
+s_provided=false
+for arg in "${remaining_args[@]}"; do
+  [[ "$arg" == "-f" ]] && f_provided=true
+  [[ "$arg" == "-n" ]] && n_provided=true
+  [[ "$arg" == "-I" ]] && I_provided=true
+  [[ "$arg" == "-s" ]] && s_provided=true
+done
+
+if [[ "$SUBCOMMAND" == "sign" ]]; then
+  if [[ -z "$file_to_sign" ]]; then
+    error "Path to file to be signed is required for 'sign' command."
+  fi
+  
+  # Set default signing key if -f was not provided
+  if ! $f_provided; then
+    if [[ ! -f "$DEFAULT_SIGNING_KEY" ]]; then
+      error "Default signing key not found at '$DEFAULT_SIGNING_KEY'. Specify one with -f."
+    fi
+    CMD_ARGS+=("-f" "$DEFAULT_SIGNING_KEY")
+  fi
+  
+  # Set default namespace if -n was not provided
+  if ! $n_provided; then
+    CMD_ARGS+=("-n" "$DEFAULT_NAMESPACE")
+  fi
+  
+  # The file to sign MUST be the last argument for ssh-keygen
+  CMD_ARGS+=("$file_to_sign")
+
+elif [[ "$SUBCOMMAND" == "verify" ]]; then
+  if [[ -n "$file_to_sign" ]]; then
+    error "The 'verify' command reads from stdin and does not accept a positional file argument. Found '$file_to_sign'."
+  fi
+  if ! $s_provided; then
+    error "Signature file must be provided with -s for 'verify' command."
+  fi
+  
+  # Set default allowed_signers if -f was not provided
+  if ! $f_provided; then
+    if [[ ! -f "$DEFAULT_ALLOWED_SIGNERS" ]]; then
+      error "Default allowed signers file not found at '$DEFAULT_ALLOWED_SIGNERS'. Specify one with -f."
+    fi
+    CMD_ARGS+=("-f" "$DEFAULT_ALLOWED_SIGNERS")
+  fi
+  
+  # Set default identity if -I was not provided
+  if ! $I_provided; then
+    CMD_ARGS+=("-I" "$DEFAULT_IDENTITY")
+  fi
+  
+  # Set default namespace if -n was not provided
+  if ! $n_provided; then
+    CMD_ARGS+=("-n" "$DEFAULT_NAMESPACE")
+  fi
+fi
+
+# --- Execute and Report ---
+
+# We capture the output and stderr to show it to the user
+if output=$("${CMD_ARGS[@]}" 2>&1); then
+  echo -e "${COLOR_GREEN}Success:${COLOR_NONE}"
+  echo "$output"
+  exit 0
+else
+  echo -e "${COLOR_RED}Command Failed:${COLOR_NONE}"
+  echo "$output" >&2
+  exit 1
+fi

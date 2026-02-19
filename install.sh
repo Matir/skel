@@ -88,17 +88,35 @@ install_gpg_keys() {
 
 install_known_hosts() {
   verbose 'Installing known hosts...' >&2
-  if [[ ! -f "${BASEDIR}/keys/known_hosts" ]] ; then
+  local skel_hosts="${BASEDIR}/keys/known_hosts"
+  local user_hosts="${HOME}/.ssh/known_hosts"
+  local merge_script="${BASEDIR}/skeltools/merge_authorized_keys"
+
+  if [[ ! -f "${skel_hosts}" ]]; then
     return 0
   fi
+
   mkdir -p "${HOME}/.ssh"
-  if [[ -f "${HOME}/.ssh/known_hosts" ]] ; then
-    local tmpf="$(mktemp)"
-    cat "${BASEDIR}"/keys/known_hosts "${HOME}"/.ssh/known_hosts \
-      | sort -u > "$tmpf"
-    mv "$tmpf" "${HOME}"/.ssh/known_hosts
+
+  if [[ -f "${user_hosts}" ]]; then
+    # User has an existing known_hosts file, merge is required.
+    local tmpf
+    tmpf="$(mktemp)"
+    if [[ -x "${merge_script}" ]]; then
+      # Use the robust awk script for merging.
+      verbose "Merging known_hosts with authoritative script..."
+      "${merge_script}" "${skel_hosts}" "${user_hosts}" > "$tmpf"
+    else
+      # Fallback to the old, less robust method if the script is missing.
+      verbose "Warning: ${merge_script} not found or not executable. Using simple sort."
+      cat "${skel_hosts}" "${user_hosts}" | sort -u > "$tmpf"
+    fi
+    # Safely replace the original file.
+    cat "$tmpf" >| "${user_hosts}"
+    rm "$tmpf"
   else
-    cp "${BASEDIR}"/keys/known_hosts "${HOME}"/.ssh/known_hosts
+    # User does not have a known_hosts file, just copy the new one.
+    cp "${skel_hosts}" "${user_hosts}"
   fi
 }
 
@@ -153,7 +171,7 @@ save_prefs() {
     echo "INSTALL_KEYS=\"${INSTALL_KEYS}\""
     echo "TRUST_ALL_KEYS=\"${TRUST_ALL_KEYS}\""
     echo "VERBOSE=\"${VERBOSE}\""
-  } > "$pref_file"
+  } >| "$pref_file"
 }
 
 cleanup() {

@@ -1,6 +1,12 @@
 # Universal Settings
 Protocol 2
 
+Host *
+    # Add the post-quantum (PQ) KEX algorithms to the front of the default list.
+    # The client will try them in this order before falling back to standard ones.
+    # The (+) syntax requires OpenSSH 7.8 or newer.
+    KexAlgorithms +mlkem768x25519-sha256,sntrup761x25519-sha512@openssh.com
+
 # Permit Local Overrides
 Include ~/.ssh/config.d/*
 
@@ -33,4 +39,4 @@ Match final
   ServerAliveCountMax         3
   UpdateHostKeys              yes
   User                        david
-  VerifyHostKeyDNS            yes
+  VerifyHostKeyDNS            ask
