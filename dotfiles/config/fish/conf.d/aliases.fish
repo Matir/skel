@@ -1,38 +1,50 @@
-# This script reads a bash-formatted alias file (~/.aliases) and creates
-# equivalent fish aliases. This allows for sharing aliases between bash and fish.
+# Cryptsetup alias
+alias luksFormat 'cryptsetup luksFormat --type=luks2 --pbkdf-memory=2560000 --pbkdf=argon2id -i 15000 -s 512 -h sha256 -c aes-xts-plain64'
 
-# Path to the bash alias file
-set bash_alias_file ~/.aliases
+# Timestamp in a machine-sortable form
+alias tstamp "date '+%Y%m%d-%H%M%S'"
 
-# Check if the alias file exists
-if test -f "$bash_alias_file"
-  # Read the file line by line
-  while read -l line
-    # Skip comments and empty lines
-    if string match -q -r '^\s*#' "$line" || test -z "$line"
-      continue
-    end
+# Prepare code for markdown
+alias mdcode "sed 's/^/    /'"
 
-    # Check if the line defines an alias
-    if string match -q -r '^\s*alias\s+' "$line"
-      # Remove the 'alias ' prefix
-      set -l definition (string replace -r '^\s*alias\s+' '' "$line")
-      
-      # Split the definition into name and value at the first '='
-      set -l parts (string split -m 1 '=' "$definition")
-      set -l alias_name $parts[1]
-      set -l alias_value $parts[2]
-      
-      # Remove leading/trailing quotes from the value
-      set -l alias_value (string trim -c "'"" "$alias_value")
-      
-      # Define the fish alias
-      alias $alias_name "$alias_value"
-    end
-  end < "$bash_alias_file"
-end
+# Intel format plz
+alias objdump "command objdump -M intel"
 
-# Specific aliases that are not in the bash file
+# Drop caches for swap issues
+alias drop_caches "echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
+
+# dump acpi temperature
+alias gettemp 'printf "%02.2f\n" (cat /sys/class/thermal/thermal_zone0/temp)e-3'
+
+# get git working directory
+alias gitroot "git rev-parse --show-toplevel"
+
+# SSH without host key checking
+alias sshanon "ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
+
+# Straight to ipython
+alias ipy "ipython3 --no-banner"
+
+# Skip the header on bc
+alias bc "command bc -q"
+
+# Get a decently readable df
+alias dfh "df -h -x tmpfs -x devtmpfs -x squashfs -x fuse -x efivarfs"
+
+# Clear the GPG agent
+alias clear-gpg-agent "echo RELOADAGENT | gpg-connect-agent"
+
+# Battery details
+alias bat-details 'upower -i (upower -e | grep battery)'
+
+# Nvidia refresh rate
+alias nvidia-refresh-rate 'nvidia-settings --display=:0 -q RefreshRate -t'
+
+# Earthly ssh
+alias earthly 'earthly --ssh-auth-sock ""'
+
+# to clipboard
+alias toclip 'xclip -selection clipboard'
 
 # On some systems, bat is batcat
 if not command -v bat >/dev/null 2>&1

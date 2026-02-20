@@ -1,15 +1,8 @@
 # General aliases, should only be sourced in interactive shells
-
-
+# Try to keep in sync with ~/.config/fish/conf.d/aliases.fish
 
 # Cryptsetup alias
 alias luksFormat='cryptsetup luksFormat --type=luks2 --pbkdf-memory=2560000 --pbkdf=argon2id -i 15000 -s 512 -h sha256 -c aes-xts-plain64'
-
-
-
-
-# Easy upgrade
-alias dist-upgrade="sudo sh -c 'apt-get update && apt-get -y dist-upgrade'"
 
 # Timestamp in a machine-sortable form
 alias tstamp="date '+%Y%m%d-%H%M%S'"
@@ -20,8 +13,6 @@ alias mdcode="sed 's/^/    /'"
 # Intel format plz
 alias objdump="command objdump -M intel"
 
-
-
 # Drop caches for swap issues
 alias drop_caches="echo 3 | sudo /usr/bin/tee /proc/sys/vm/drop_caches"
 
@@ -30,7 +21,6 @@ alias gettemp='printf "%02.2f\n" "$(cat /sys/class/thermal/thermal_zone0/temp)e-
 
 # get git working directory
 alias gitroot="git rev-parse --show-toplevel"
-
 
 # SSH without host key checking
 alias sshanon="ssh -oUserKnownHostsFile=/dev/null -oStrictHostKeyChecking=no"
