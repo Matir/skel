@@ -1,7 +1,6 @@
 [user]
   name = David Tomaschik
-  email = david@systemoverlord.com
-  signingKey = 0x5DEA789B
+  useConfigOnly = true
 
 [core]
   excludesfile = ~/.gitignore
@@ -73,9 +72,6 @@
 [mergetool]
   prompt = false
 
-[include]
-  path = ~/.gitconfig.local
-
 [pull]
   rebase = false
 
@@ -94,3 +90,10 @@
   clean = git-lfs clean -- %f
   smudge = git-lfs smudge -- %f
   process = git-lfs filter-process
+
+[include]
+  path = ~/.gitconfig.d/override
+  path = ~/.gitconfig.d/local
+
+[includeIf "gitdir:~/personal/"]
+  path = ~/.gitconfig.d/personal

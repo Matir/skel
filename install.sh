@@ -126,31 +126,6 @@ install_keys() {
   install_known_hosts
 }
 
-setup_git_email() {
-  local gc_local="${HOME}/.gitconfig.local"
-  local current_email=""
-
-  if [[ -f "${gc_local}" ]]; then
-    current_email=$(git config -f "${gc_local}" user.email || true)
-  fi
-
-  if [[ -n "${GIT_EMAIL:-}" ]]; then
-    # Use environment variable
-    git config -f "${gc_local}" user.email "${GIT_EMAIL}"
-  elif [[ -n "${current_email}" ]]; then
-    # Already has an email set
-    GIT_EMAIL="${current_email}"
-  else
-    # Prompt the user
-    echo -n "Enter git email (leave blank to skip): " >&2
-    read -r GIT_EMAIL || true
-    if [[ -n "${GIT_EMAIL}" ]]; then
-      git config -f "${gc_local}" user.email "${GIT_EMAIL}"
-    fi
-  fi
-  export GIT_EMAIL
-}
-
 read_saved_prefs() {
   # Can't use basedir here as we don't have it yet
   local pref_file="$(dirname "$0")/.installed-prefs"
@@ -252,7 +227,6 @@ install_main() {
   link_directory_contents "${BASEDIR}/bin" "${HOME}/bin" ""
   [[ "$INSTALL_KEYS" = 1 ]] && install_keys
   save_prefs
-  setup_git_email
   cleanup
 }
 
