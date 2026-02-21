@@ -2,5 +2,6 @@
     "editor.accessibilitySupport": "off",
     "telemetry.telemetryLevel": "off",
     "dotfiles.repository": "matir/skel",
-    "dotfiles.targetPath": "~/.skel"
+    "dotfiles.targetPath": "~/.skel",
+    "remote.defaultExtensionsIfInstalledLocally": []
 }

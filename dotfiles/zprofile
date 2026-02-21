@@ -1,0 +1,6 @@
+# this is only run in login shells, both interactive and non-interactive
+if [[ ! -o interactive ]]; then
+  if command -v mise 2>&1 ; then
+    eval "$(mise activate zsh --shims)"
+  fi
+fi

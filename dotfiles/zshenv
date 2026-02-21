@@ -1,4 +1,8 @@
-if [[ -f $HOME/.env ]] ; then source $HOME/.env ; fi
+if [[ -f $HOME/.shenv ]] ; then source $HOME/.shenv ; fi
 
 # ZSH specific environment
 DEBIAN_PREVENT_KEYBOARD_CHANGES=yes
+
+if test -d ${HOME}/.local/bin ; then
+  PATH="${HOME}/.local/bin:${PATH}"
+fi
