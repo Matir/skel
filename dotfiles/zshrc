@@ -181,6 +181,11 @@ have_command() {
   command -v "${1}" &>/dev/null
 }
 
+# Pip packages and other local resources
+if test -d ${HOME}/.local/bin ; then
+  PATH="${PATH}:${HOME}/.local/bin"
+fi
+
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
   source_if_existing $HOME/.aliases
@@ -252,20 +257,15 @@ if [[ $- == *i* ]] ; then
     source "${HOME}/.iterm2_shell_integration.zsh" || true
   # mise, if installed
   command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
+
+  if test -z "${PAGER}" && command -v less >/dev/null 2>&1; then
+    export PAGER="less"
+  fi
 fi  # End interactive-only block
 
 # In case ack is named ack-grep
 if [ -x /usr/bin/ack-grep ] ; then
   alias ack='/usr/bin/ack-grep'
-fi
-
-# Pip packages and other local resources
-if test -d ${HOME}/.local/bin ; then
-  PATH="${PATH}:${HOME}/.local/bin"
-fi
-
-if test -z "${PAGER}" && command -v less >/dev/null 2>&1; then
-  export PAGER="less"
 fi
 
 # I want this first always
