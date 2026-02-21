@@ -8,6 +8,7 @@ uvx = true
 uv_venv_auto = true
 
 [tools]
+age = "latest"
 uv = "latest"
 
 [hooks]

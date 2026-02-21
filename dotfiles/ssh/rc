@@ -8,11 +8,13 @@ REMOTE_LINK="${HOME}/.ssh/ssh_auth_sock"
 if [ -S "${SSH_AUTH_SOCK}" ] ; then
   SSH_REMOTE_AUTH_SOCK="${SSH_AUTH_SOCK}"
   export SSH_REMOTE_AUTH_SOCK
-  if [ "${1:-}" = "force" ] || [ ! -S "${REMOTE_LINK}" ] ; then
-    ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
-    SSH_AUTH_SOCK="${REMOTE_LINK}"
-    export SSH_AUTH_SOCK
-  fi
+  # Always update the symlink to the latest session's socket.
+  # This ensures that tmux (which uses the static path) always points to a 
+  # current agent.
+  mkdir -p "$(dirname "${REMOTE_LINK}")"
+  ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
+  SSH_AUTH_SOCK="${REMOTE_LINK}"
+  export SSH_AUTH_SOCK
 fi
 
 # if stdin is a tty, don't do the cookie step

@@ -27,3 +27,6 @@ id_ed25519
 
 # These files should basically never be committed
 .env
+
+# Mise local
+mise.local.toml

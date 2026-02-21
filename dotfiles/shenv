@@ -87,6 +87,34 @@ export LVM_SUPPRESS_FD_WARNINGS=1
 # Default disable SSH forwarding in EARTHLY
 export EARTHLY_SSH_AUTH_SOCK=""
 
+# Handle SSH_AUTH_SOCK for tmux consistency
+_SSH_AUTH_LINK="${HOME}/.ssh/ssh_auth_sock"
+if [ -z "${SSH_AUTH_SOCK:-}" ] || [ ! -S "${SSH_AUTH_SOCK}" ] ; then
+  # Try to find a working GPG agent SSH socket if no agent is set or current is broken
+  if command -v gpgconf >/dev/null 2>&1; then
+    _GPG_SSH_SOCK=$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)
+  fi
+  # Fallback to common paths if gpgconf fails or isn't present
+  if [ -z "${_GPG_SSH_SOCK}" ] || [ ! -S "${_GPG_SSH_SOCK}" ]; then
+    _GPG_SSH_SOCK="${GNUPGHOME:-$HOME/.gnupg}/S.gpg-agent.ssh"
+    [ -S "$_GPG_SSH_SOCK" ] || _GPG_SSH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh"
+  fi
+
+  if [ -S "${_GPG_SSH_SOCK}" ] ; then
+    export SSH_AUTH_SOCK="$_GPG_SSH_SOCK"
+  fi
+  unset _GPG_SSH_SOCK
+fi
+
+# If we have a valid socket but it's not our stable link, sync the link and use it.
+# This ensures tmux (using the static path) always finds the most recent agent.
+if [ -S "${SSH_AUTH_SOCK:-}" ] && [ "${SSH_AUTH_SOCK}" != "${_SSH_AUTH_LINK}" ] ; then
+  [ -d "$(dirname "${_SSH_AUTH_LINK}")" ] || mkdir -p "$(dirname "${_SSH_AUTH_LINK}")"
+  ln -sf "${SSH_AUTH_SOCK}" "${_SSH_AUTH_LINK}"
+  export SSH_AUTH_SOCK="${_SSH_AUTH_LINK}"
+fi
+unset _SSH_AUTH_LINK
+
 # Setup XDG-like dirs on MacOS
 # Based on https://leebyron.com/til/mac-xdg/
 if [ "$(uname)" = "Darwin" ] ; then

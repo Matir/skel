@@ -29,16 +29,7 @@ if grep -q '^enable-ssh-support' "$_gpg_agent_conf" &> /dev/null; then
   # Load required functions.
   autoload -Uz add-zsh-hook
 
-  if test -z "$SSH_AUTH_SOCK" ; then
-    SSH_AUTH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh"
-    if test -S "$SSH_AUTH_SOCK" ; then
-      export SSH_AUTH_SOCK
-    else
-      unset SSH_AUTH_SOCK
-    fi
-  fi
-
-  # Updates the GPG-Agent TTY before every command since SSH does not set it.
+# Updates the GPG-Agent TTY before every command since SSH does not set it.
   function _gpg-agent-update-tty {
     gpg-connect-agent UPDATESTARTUPTTY /bye >/dev/null
   }
