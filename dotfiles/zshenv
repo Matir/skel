@@ -10,7 +10,7 @@ if test -d ${HOME}/.local/bin ; then
 fi
 
 if [[ ! -o interactive ]]; then
-  if command -v mise 2>&1 ; then
+  if command -v mise 2>/dev/null ; then
     eval "$(mise activate zsh --shims)"
   fi
 fi
