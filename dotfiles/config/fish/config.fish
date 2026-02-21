@@ -10,7 +10,7 @@ if test -x /opt/homebrew/bin/brew
 
   # mise, if installed
   if type -q mise
-    mise hook fish | source
+    mise activate fish | source
   end
 end
 
