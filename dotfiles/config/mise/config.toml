@@ -9,6 +9,7 @@ uv_venv_auto = true
 
 [tools]
 age = "latest"
+usage = "latest"
 uv = "latest"
 
 [hooks]
