@@ -1,4 +1,6 @@
 {
     "editor.accessibilitySupport": "off",
-    "telemetry.telemetryLevel": "off"
+    "telemetry.telemetryLevel": "off",
+    "dotfiles.repository": "matir/skel",
+    "dotfiles.targetPath": "~/.skel"
 }
