@@ -181,11 +181,6 @@ have_command() {
   command -v "${1}" &>/dev/null
 }
 
-# Pip packages and other local resources
-if test -d ${HOME}/.local/bin ; then
-  PATH="${PATH}:${HOME}/.local/bin"
-fi
-
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
   source_if_existing $HOME/.aliases

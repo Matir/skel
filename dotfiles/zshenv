@@ -9,8 +9,8 @@ if test -d ${HOME}/.local/bin ; then
   export PATH="${HOME}/.local/bin:${PATH}"
 fi
 
-if [[ ! -o interactive ]]; then
-  if command -v mise 2>/dev/null ; then
+if [[ ! -o interactive || ! -t 0 ]]; then
+  if command -v mise >/dev/null 2>&1 ; then
     eval "$(mise activate zsh --shims)"
   fi
 fi
