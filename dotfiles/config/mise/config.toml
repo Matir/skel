@@ -1,5 +1,6 @@
 [settings]
 experimental = true
+python_venv_auto_create = true
 
 [settings.pipx]
 uvx = true
@@ -14,3 +15,6 @@ uv = "latest"
 
 [hooks]
 postinstall = "mise sync python --uv"
+
+[env]
+UV_PROJECT_ENVIRONMENT = { value='{% if env.PROJECT_SLUG %}{{ env.HOME}}/.cache/uv-venvs/{{ env.PROJECT_SLUG }}{% endif %}', tools = true }

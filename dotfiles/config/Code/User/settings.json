@@ -3,5 +3,13 @@
     "telemetry.telemetryLevel": "off",
     "dotfiles.repository": "matir/skel",
     "dotfiles.targetPath": "~/.skel",
-    "remote.defaultExtensionsIfInstalledLocally": []
+    "remote.defaultExtensionsIfInstalledLocally": [],
+    "mise.configureExtensionsAutomatically": true,
+    "kilo-code.debug": false,
+    "kilo-code.allowedCommands": [
+        "git log",
+        "git diff",
+        "git show"
+    ],
+    "kilo-code.deniedCommands": []
 }
