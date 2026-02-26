@@ -148,6 +148,15 @@ if filereadable(expand('~/.vim/plugged/YouCompleteMe/python/ycm/ycm_core.so'))
   endif
   unlet! g:tmp_rust_path
 endif
+" Point this to the python executable where YCM is installed
+let g:ycm_server_python_interpreter = '/usr/bin/python3'
+let g:ycm_python_interpreter_path = ''
+let g:ycm_python_sys_path = []
+let g:ycm_extra_conf_vim_data = [
+  \  'g:ycm_python_interpreter_path',
+  \  'g:ycm_python_sys_path'
+  \]
+let g:ycm_global_ycm_extra_conf = '~/.config/ycm_extra_conf.py'
 
 " Include a .vimrc.local if it exists
 if filereadable(glob("~/.vimrc.local"))
