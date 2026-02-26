@@ -30,3 +30,11 @@ id_ed25519
 
 # Mise local
 mise.local.toml
+
+# AI Tool Configs
+.aider/
+.claude/
+.continue/
+.copilot/
+.cursor/
+.gemini/
