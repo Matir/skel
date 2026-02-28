@@ -22,63 +22,69 @@ if [ "$TERM" = "xterm" ] && [ "$COLORTERM" = "gnome-terminal" ] ; then
   export TERM="xterm-256color"
 fi
 
-# Terminal preferences for i3
-if [ -z "${TERMINAL}" ] ; then
-  for t in urxvt gnome-terminal; do
-    if TERMINAL=$(command -v ${t}) ; then
-      export TERMINAL
-    fi
-  done
-fi
-
-# Browser preferences
-if [ -z "${BROWSER}" ] ; then
-  for t in google-chrome-beta google-chrome firefox ; do
-    if BROWSER=$(command -v ${t}); then
-      export BROWSER
-      break
-    fi
-  done
-fi
-
 # For virtualenvwrapper
 export WORKON_HOME="$HOME/.virtualenvs"
 
 # GPG full key id
 export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
 
-# Setup locale
-if test -x /usr/bin/locale ; then
-  for l in en_US.utf8 en_US.UTF-8 C.UTF-8 C.utf8 C ; do
-    if /usr/bin/locale -a | grep -q "${l}" ; then
-      export LC_CTYPE=${l}
-      export LC_NUMERIC=${l}
-      export LC_TIME=${l}
-      export LC_MONETARY=${l}
-      export LC_MESSAGES=${l}
-      export LC_PAPER=${l}
-      export LC_NAME=${l}
-      export LC_ADDRESS=${l}
-      export LC_TELEPHONE=${l}
-      export LC_MEASUREMENT=${l}
-      export LC_IDENTIFICATION=${l}
-      break
+# things we need in all interactive shells
+case "$-" in
+  *i*)
+    # Terminal preferences for i3
+    if [ -z "${TERMINAL}" ] ; then
+      for t in urxvt gnome-terminal; do
+        if TERMINAL=$(command -v ${t}) ; then
+          export TERMINAL
+        fi
+      done
     fi
-  done
-else
-  export LC_CTYPE=C
-  export LC_NUMERIC=C
-  export LC_TIME=C
-  export LC_MONETARY=C
-  export LC_MESSAGES=C
-  export LC_PAPER=C
-  export LC_NAME=C
-  export LC_ADDRESS=C
-  export LC_TELEPHONE=C
-  export LC_MEASUREMENT=C
-  export LC_IDENTIFICATION=C
-fi
-export LC_COLLATE=C
+
+    # Browser preferences
+    if [ -z "${BROWSER}" ] ; then
+      for t in google-chrome-beta google-chrome firefox ; do
+        if BROWSER=$(command -v ${t}); then
+          export BROWSER
+          break
+        fi
+      done
+    fi
+
+    # Setup locale
+    if test -x /usr/bin/locale ; then
+      for l in en_US.utf8 en_US.UTF-8 C.UTF-8 C.utf8 C ; do
+        if /usr/bin/locale -a | grep -q "${l}" ; then
+          export LC_CTYPE=${l}
+          export LC_NUMERIC=${l}
+          export LC_TIME=${l}
+          export LC_MONETARY=${l}
+          export LC_MESSAGES=${l}
+          export LC_PAPER=${l}
+          export LC_NAME=${l}
+          export LC_ADDRESS=${l}
+          export LC_TELEPHONE=${l}
+          export LC_MEASUREMENT=${l}
+          export LC_IDENTIFICATION=${l}
+          break
+        fi
+      done
+    else
+      export LC_CTYPE=C
+      export LC_NUMERIC=C
+      export LC_TIME=C
+      export LC_MONETARY=C
+      export LC_MESSAGES=C
+      export LC_PAPER=C
+      export LC_NAME=C
+      export LC_ADDRESS=C
+      export LC_TELEPHONE=C
+      export LC_MEASUREMENT=C
+      export LC_IDENTIFICATION=C
+    fi
+    export LC_COLLATE=C
+    ;;
+esac
+
 
 # Opt out of .net telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
