@@ -1,5 +1,7 @@
+#!/bin/sh
 # Sourced by zshrc as well as bash.
 # Should only use POSIX shell constructs.
+# shellcheck shell=sh
 
 umask 027
 
@@ -40,7 +42,7 @@ if [ -z "${BROWSER}" ] ; then
 fi
 
 # For virtualenvwrapper
-export WORKON_HOME=$HOME/.virtualenvs
+export WORKON_HOME="$HOME/.virtualenvs"
 
 # GPG full key id
 export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
@@ -118,18 +120,13 @@ unset _SSH_AUTH_LINK
 # Setup XDG-like dirs on MacOS
 # Based on https://leebyron.com/til/mac-xdg/
 if [ "$(uname)" = "Darwin" ] ; then
-  original_options=$(echo "$-")
-  set -a
-  # Anything set here will be exported
-  : "${XDG_BIN_HOME:=$HOME/.local/bin}"
-  : "${XDG_CACHE_HOME:=$HOME/Library/Caches}"
-  : "${XDG_CONFIG_HOME:=$HOME/.config}"
-  : "${XDG_DATA_HOME:=$HOME/.local/share}"
-  : "${XDG_RUNTIME_DIR:=$TMPDIR/runtime-$UID}"
-  : "${XDG_STATE_HOME:=$HOME/.local/state}"
-  set -f # Temporarily disable globbing to handle options with special characters
-  set -- "-$original_options"
-  unset original_options
+  export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
+  export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/Library/Caches}"
+  export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
+  export XDG_DATA_HOME="${XDG_DATA_HOME:-$HOME/.local/share}"
+  # Using id -u for better POSIX compatibility than $UID
+  export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$TMPDIR/runtime-$(id -u)}"
+  export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
 fi
 
 if test -e "$HOME/.localenv"; then
