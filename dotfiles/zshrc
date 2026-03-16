@@ -181,6 +181,10 @@ have_command() {
   command -v "${1}" &>/dev/null
 }
 
+if test -d ${HOME}/.local/bin ; then
+  export PATH="${HOME}/.local/bin:${PATH}"
+fi
+
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
   source_if_existing $HOME/.aliases
