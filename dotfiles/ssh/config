@@ -1,3 +1,8 @@
+# Added by OrbStack: 'orb' SSH host for Linux machines
+# This only works if it's at the top of ssh_config (before any Host blocks).
+# This won't be added again if you remove it.
+Include ~/.orbstack/ssh/config
+
 # Universal Settings
 Protocol 2
 
@@ -14,7 +19,7 @@ Include ~/.ssh/config.d/*
 HashKnownHosts no
 
 # Enable canonicalization, unless overridden
-CanonicalizeHostname        yes
+CanonicalizeHostname        always
 CanonicalizeFallbackLocal   yes
 CanonicalDomains            systemoverlord.com
 CanonicalizeMaxDots         0
