@@ -66,9 +66,7 @@ brew "zlib"
 brew "zsh-syntax-highlighting"
 brew "sass/sass/migrator"
 brew "sass/sass/sass"
-cask "claude-code"
 cask "codeql"
-cask "cryptomator"
 cask "cyberduck"
 cask "font-fira-code-nerd-font"
 cask "font-fira-mono-nerd-font"
@@ -77,7 +75,6 @@ cask "font-hack-nerd-font"
 cask "font-inconsolata-nerd-font"
 cask "font-symbols-only-nerd-font"
 cask "font-terminess-ttf-nerd-font"
-cask "gcloud-cli"
 cask "ghidra"
 cask "gimp"
 cask "github"
@@ -85,7 +82,6 @@ cask "iterm2"
 cask "macfuse"
 cask "meld"
 cask "mitmproxy"
-cask "orbstack"
 cask "raycast"
 cask "rectangle"
 cask "scroll-reverser"
@@ -93,9 +89,18 @@ cask "temurin"
 cask "veracrypt"
 cask "zulu@17"
 
+def is_corp?
+  # Check for MDM enrollment (Enrolled via DEP: Yes)
+  `profiles status -type enrollment 2>/dev/null`.include?("Enrolled via DEP: Yes")
+end
+
 # non-corp
-if ENV['USER'] != "davidtomaschik"
+if !is_corp?
   brew "bazel"
   brew "openssh"
+  cask "claude-code"
+  cask "cryptomator"
+  cask "gcloud-cli"
   cask "google-cloud-sdk"
+  cask "orbstack"
 end

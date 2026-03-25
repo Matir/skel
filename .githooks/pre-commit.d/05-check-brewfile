@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+# Check if Brewfile needs updating
+if [[ "$(uname)" != "Darwin" ]]; then
+    exit 0
+fi
+
+# We use the script we just created
+UPDATE_SCRIPT="bin/macos/update_brewfile"
+
+if [[ -x "$UPDATE_SCRIPT" ]]; then
+    # Run in dry-run mode and see if there's output
+    DIFF_OUTPUT=$("$UPDATE_SCRIPT" --dry-run 2>/dev/null)
+    if [[ "$DIFF_OUTPUT" == *"Changes detected"* ]]; then
+        echo "⚠️  Brewfile is out of sync with your installed packages."
+        echo "   Run '$UPDATE_SCRIPT' to synchronize it."
+        echo ""
+        # We don't fail the commit, just warn.
+    fi
+fi
