@@ -39,3 +39,15 @@ disabled = true
 [kubernetes]
 disabled = false
 detect_folders = ["k8s"]
+
+[custom.gemini_context]
+description = "Displays the current Gemini CLI context"
+when = "test -n \"$GEMINI_CLI_HOME\""
+command = """
+context_dir=\"${XDG_CONFIG_HOME:-$HOME/.config}/gemini\"
+if [[ \"$GEMINI_CLI_HOME\" == $context_dir/* ]]; then
+  basename \"$GEMINI_CLI_HOME\"
+fi
+"""
+style = "bold blue"
+format = "♊[$output](blue) "
