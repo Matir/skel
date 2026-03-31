@@ -229,7 +229,7 @@ install_main() {
   # macOS specific Homebrew bundle installation
   if [[ "$(uname)" == "Darwin" ]] && have_command brew && [[ -f "${BASEDIR}/Brewfile" ]]; then
     verbose "Checking Homebrew bundle..."
-    brew bundle install --file="${BASEDIR}/Brewfile" --no-lock
+    brew bundle install --file="${BASEDIR}/Brewfile"
   fi
 
   [[ "$INSTALL_KEYS" = 1 ]] && install_keys
