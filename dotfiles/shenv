@@ -98,20 +98,39 @@ export EARTHLY_SSH_AUTH_SOCK=""
 # Handle SSH_AUTH_SOCK for tmux consistency
 _SSH_AUTH_LINK="${HOME}/.ssh/ssh_auth_sock"
 if [ -z "${SSH_AUTH_SOCK:-}" ] || [ ! -S "${SSH_AUTH_SOCK}" ] ; then
-  # Try to find a working GPG agent SSH socket if no agent is set or current is broken
-  if command -v gpgconf >/dev/null 2>&1; then
-    _GPG_SSH_SOCK=$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)
+  # Try the stable link first
+  if [ -S "${_SSH_AUTH_LINK}" ] ; then
+    export SSH_AUTH_SOCK="${_SSH_AUTH_LINK}"
   fi
-  # Fallback to common paths if gpgconf fails or isn't present
-  if [ -z "${_GPG_SSH_SOCK}" ] || [ ! -S "${_GPG_SSH_SOCK}" ]; then
-    _GPG_SSH_SOCK="${GNUPGHOME:-$HOME/.gnupg}/S.gpg-agent.ssh"
-    [ -S "$_GPG_SSH_SOCK" ] || _GPG_SSH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh"
-  fi
+fi
 
-  if [ -S "${_GPG_SSH_SOCK}" ] ; then
-    export SSH_AUTH_SOCK="$_GPG_SSH_SOCK"
+# If STILL not valid, try to find an OpenSSH agent
+if [ -z "${SSH_AUTH_SOCK:-}" ] || [ ! -S "${SSH_AUTH_SOCK}" ] ; then
+  if [ "$(uname)" = "Darwin" ] ; then
+    _SSH_SOCK=$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null)
+    [ -S "${_SSH_SOCK}" ] && export SSH_AUTH_SOCK="${_SSH_SOCK}"
+  else
+    # Try systemd or common paths
+    _SSH_SOCK=$(command -v systemctl >/dev/null && systemctl --user show-environment 2>/dev/null | grep "^SSH_AUTH_SOCK=" | cut -d= -f2-)
+    if [ -z "${_SSH_SOCK}" ] || [ ! -S "${_SSH_SOCK}" ] ; then
+      # Check specific known paths first (no globs)
+      if [ -S "/run/user/$(id -u)/keyring/ssh" ] ; then
+        _SSH_SOCK="/run/user/$(id -u)/keyring/ssh"
+      elif [ -S "/run/user/$(id -u)/ssh-agent.socket" ] ; then
+        _SSH_SOCK="/run/user/$(id -u)/ssh-agent.socket"
+      else
+        # Fallback to searching /tmp with find (safe for zsh)
+        # Using a more targeted find to stay efficient
+        _SSH_SOCK=$(find /tmp -maxdepth 2 -type s -name 'agent.*' 2>/dev/null | head -n 1)
+        # Some systems might have an older find without maxdepth
+        if [ -z "${_SSH_SOCK}" ] ; then
+          _SSH_SOCK=$(find /tmp -type s -name 'agent.*' 2>/dev/null | head -n 1)
+        fi
+      fi
+    fi
+    [ -S "${_SSH_SOCK}" ] && export SSH_AUTH_SOCK="${_SSH_SOCK}"
   fi
-  unset _GPG_SSH_SOCK
+  unset _SSH_SOCK
 fi
 
 # If we have a valid socket but it's not our stable link, sync the link and use it.
