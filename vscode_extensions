@@ -1,9 +1,12 @@
+anthropic.claude-code
 bazelbuild.vscode-bazel
 dnut.rewrap-revived
 docker.docker
 formulahendry.code-runner
 github.vscode-codeql
 golang.go
+hverlin.mise-vscode
+kilocode.Kilo-Code
 ms-azuretools.vscode-containers
 ms-azuretools.vscode-docker
 ms-python.black-formatter
