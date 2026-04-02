@@ -1,0 +1,6 @@
+# Add package names here to ignore them in Brewfile updates.
+# One package per line.
+# Example:
+# iterm2
+# wget
+orbstack

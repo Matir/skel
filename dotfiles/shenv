@@ -97,31 +97,87 @@ export EARTHLY_SSH_AUTH_SOCK=""
 
 # Handle SSH_AUTH_SOCK for tmux consistency
 _SSH_AUTH_LINK="${HOME}/.ssh/ssh_auth_sock"
-if [ -z "${SSH_AUTH_SOCK:-}" ] || [ ! -S "${SSH_AUTH_SOCK}" ] ; then
-  # Try to find a working GPG agent SSH socket if no agent is set or current is broken
-  if command -v gpgconf >/dev/null 2>&1; then
-    _GPG_SSH_SOCK=$(gpgconf --list-dirs agent-ssh-socket 2>/dev/null)
-  fi
-  # Fallback to common paths if gpgconf fails or isn't present
-  if [ -z "${_GPG_SSH_SOCK}" ] || [ ! -S "${_GPG_SSH_SOCK}" ]; then
-    _GPG_SSH_SOCK="${GNUPGHOME:-$HOME/.gnupg}/S.gpg-agent.ssh"
-    [ -S "$_GPG_SSH_SOCK" ] || _GPG_SSH_SOCK="/run/user/$(id -u)/gnupg/S.gpg-agent.ssh"
-  fi
 
-  if [ -S "${_GPG_SSH_SOCK}" ] ; then
-    export SSH_AUTH_SOCK="$_GPG_SSH_SOCK"
+# Helper to check if a path is our link or points to it
+_is_link_path() {
+  [ -z "$1" ] && return 1
+  [ "$1" = "${_SSH_AUTH_LINK}" ] && return 0
+  if [ -L "$1" ] && command -v readlink >/dev/null 2>&1; then
+    _T=$(readlink "$1")
+    # Handle relative symlinks
+    case "${_T}" in /*) ;; *) _T="$(dirname "$1")/${_T}" ;; esac
+    [ "${_T}" = "${_SSH_AUTH_LINK}" ] && return 0
   fi
-  unset _GPG_SSH_SOCK
+  return 1
+}
+
+_CANDIDATE=""
+
+# 1. If current environment has a valid socket that is NOT our link, it's a prime candidate (e.g. SSH forwarding).
+if [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
+  _CANDIDATE="${SSH_AUTH_SOCK}"
 fi
 
-# If we have a valid socket but it's not our stable link, sync the link and use it.
-# This ensures tmux (using the static path) always finds the most recent agent.
-if [ -S "${SSH_AUTH_SOCK:-}" ] && [ "${SSH_AUTH_SOCK}" != "${_SSH_AUTH_LINK}" ] ; then
-  [ -d "$(dirname "${_SSH_AUTH_LINK}")" ] || mkdir -p "$(dirname "${_SSH_AUTH_LINK}")"
-  ln -sf "${SSH_AUTH_SOCK}" "${_SSH_AUTH_LINK}"
+# 2. If no candidate yet, or we're currently using the link, try to find the "real" system agent.
+if [ -z "${_CANDIDATE}" ] || _is_link_path "${SSH_AUTH_SOCK:-}"; then
+  _FOUND=""
+  if [ "$(uname)" = "Darwin" ]; then
+    _FOUND=$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null)
+  elif command -v systemctl >/dev/null 2>&1; then
+    # Query systemd socket units directly to avoid environment overrides.
+    for _u in ssh-agent.socket openssh-agent.socket gcr-ssh-agent.socket gpg-agent-ssh.socket; do
+      _P=$(systemctl --user show "${_u}" -p Listen 2>/dev/null | cut -d= -f2- | cut -d' ' -f1)
+      if [ -S "${_P}" ]; then
+        _FOUND="${_P}"
+        break
+      fi
+    done
+    # Fallback to systemd environment
+    if [ -z "${_FOUND}" ] || _is_link_path "${_FOUND}"; then
+      _FOUND=$(systemctl --user show-environment 2>/dev/null | grep "^SSH_AUTH_SOCK=" | cut -d= -f2-)
+    fi
+  fi
+
+  if [ -S "${_FOUND}" ] && ! _is_link_path "${_FOUND}"; then
+    _CANDIDATE="${_FOUND}"
+  fi
+fi
+
+# 3. Last resort: search common paths if we still don't have a valid candidate.
+if [ ! -S "${_CANDIDATE}" ]; then
+  _U=$(id -u)
+  for _p in "/run/user/${_U}/keyring/ssh" "/run/user/${_U}/ssh-agent.socket" "/run/user/${_U}/openssh_agent" "/run/user/${_U}/gnupg/S.gpg-agent.ssh"; do
+    if [ -S "${_p}" ] && ! _is_link_path "${_p}"; then
+      _CANDIDATE="${_p}"
+      break
+    fi
+  done
+  if [ -z "${_CANDIDATE}" ]; then
+    # Build search path list based on what actually exists
+    _SEARCH=""
+    for _d in "/run/user/${_U}" /tmp; do [ -d "${_d}" ] && _SEARCH="${_SEARCH} ${_d}"; done
+    if [ -n "${_SEARCH}" ]; then
+      _CANDIDATE=$(find ${_SEARCH} -maxdepth 2 -type s -name 'agent.*' 2>/dev/null | grep -F -v "${_SSH_AUTH_LINK}" | head -n 1)
+    fi
+  fi
+fi
+
+# 4. Sync the stable link if we found a valid "real" socket.
+if [ -S "${_CANDIDATE}" ] && ! _is_link_path "${_CANDIDATE}"; then
+  mkdir -p "$(dirname "${_SSH_AUTH_LINK}")"
+  ln -sf "${_CANDIDATE}" "${_SSH_AUTH_LINK}"
+  export SSH_AUTH_SOCK="${_SSH_AUTH_LINK}"
+  # Update systemd if present to keep everything in sync
+  if command -v systemctl >/dev/null 2>&1; then
+    systemctl --user set-environment SSH_AUTH_SOCK="${_SSH_AUTH_LINK}" 2>/dev/null
+  fi
+elif [ -S "${_SSH_AUTH_LINK}" ]; then
+  # If we found nothing better but the link is valid, use it.
   export SSH_AUTH_SOCK="${_SSH_AUTH_LINK}"
 fi
-unset _SSH_AUTH_LINK
+
+unset _SSH_AUTH_LINK _CANDIDATE _FOUND _T _P _U _u _SEARCH _d
+unset -f _is_link_path
 
 # Setup XDG-like dirs on MacOS
 # Based on https://leebyron.com/til/mac-xdg/

@@ -10,17 +10,24 @@ locations, but also installs dependencies in various ways.
 I primarily target Debian Linux-based (Debian, Ubuntu, and Kali Linux) systems
 as well as MacOS.  Other platforms are lower priorities.  Shell scripts ending
 in `.sh` should use only POSIX features unless there is a shebang line at the
-beginning suggesting a different shell will be used.
+beginning suggesting a different shell will be used. In particular, those
+in directories with names like bash might use those shells.
 
 `zsh` and `fish` are the key interactive shells to be configured, but `bash`
 may also be used at times.
 
 ## Project Structure
 
-*   `bin/`: Contains executable scripts that should be available in the shell's `PATH`.
-*   `dotfiles/`: Contains configuration files (dotfiles) to be symlinked into the home directory.
-*   `packages/`: Contains lists of packages to be installed by the `install.sh` script. Each file in this directory corresponds to a package set.
-*   `install.sh`: The main installation script that sets up the environment, symlinks dotfiles, and installs packages.
+*   `bin/`: Contains executable scripts symlinked to `~/bin/`. Subdirectories like `macos/`, `restic/`, and `setup/` are included.
+*   `dotfiles/`: Contains configuration files (dotfiles) symlinked to the home directory.
+*   `dotfile_overlays/`: Each directory within is symlinked to the home directory, allowing for modular or git-submodule-based configurations.
+*   `local_dotfiles/`: If present, its contents are symlinked to the home directory (ignored by git).
+*   `packages/`: Contains lists of packages (one per line) for different environments or toolsets.
+*   `keys/`: Contains SSH keys (`ssh/`), GPG keys (`gpg/`), and a `known_hosts` file to be installed/merged.
+*   `skeltools/`: Internal utilities used by the installation scripts.
+*   `sysctl/` and `udev/`: Linux system configuration files.
+*   `Brewfile`: Homebrew package list for macOS environments.
+*   `install.sh`: The primary installation script for symlinking and basic setup.
 
 ## Notes on Security Issues
 
@@ -43,18 +50,20 @@ If making changes that affects how the user installs the tools, update
 ### Adding a new dotfile
 
 1.  Place the new dotfile in the `dotfiles/` directory.
-2.  The `install.sh` script will automatically symlink it to the home directory.
+2.  Alternatively, use `dotfile_overlays/` if the dotfile belongs to a specific group or submodule.
+3.  The `install.sh` script will automatically symlink it to the home directory.
 
 ### Adding a new script to `bin/`
 
-1.  Add the new script to the `bin/` directory.
+1.  Add the new script to the `bin/` directory (or an appropriate subdirectory).
 2.  Ensure the script is executable (`chmod +x`).
 
 ### Adding a new package
 
 1.  Identify the appropriate package list in the `packages/` directory (e.g., `packages/cli`, `packages/kali`).
-2.  Add the new package name to the list.
+2.  Add the new package name to the list (one per line).
 3.  If a new package set is required, create a new file in the `packages/` directory.
+4.  For macOS-specific packages, also consider adding them to the `Brewfile`.
 
 ### Platform-specific changes
 

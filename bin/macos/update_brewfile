@@ -1,0 +1,156 @@
+#!/usr/bin/env python3
+
+import os
+import subprocess
+import re
+import sys
+import argparse
+import difflib
+
+# Regex to match brew/cask/tap/mas lines
+PKG_RE = re.compile(r'^\s*(brew|cask|tap|mas)\s+["\']([^"\']+)["\'](.*)$')
+
+def get_repo_root():
+    try:
+        root = subprocess.check_output(['git', 'rev-parse', '--show-toplevel'], 
+                                       stderr=subprocess.STDOUT).decode().strip()
+        return root
+    except subprocess.CalledProcessError:
+        return os.getcwd()
+
+def get_ignore_list(repo_root):
+    ignore = set()
+    paths = [
+        os.path.join(repo_root, '.Brewfile.ignore'),
+        os.path.expanduser('~/.Brewfile.ignore'),
+        os.path.expanduser('~/.config/homebrew/ignore')
+    ]
+    for path in paths:
+        if os.path.exists(path):
+            with open(path) as f:
+                for line in f:
+                    line = line.split('#')[0].strip()
+                    if line:
+                        ignore.add(line)
+    return ignore
+
+def get_current_packages():
+    """Runs brew bundle dump and returns lines."""
+    try:
+        output = subprocess.check_output(['brew', 'bundle', 'dump', '--file=-'], 
+                                         stderr=subprocess.DEVNULL).decode()
+        return output.splitlines()
+    except subprocess.CalledProcessError:
+        print("Error: 'brew bundle dump' failed. Is homebrew installed?", file=sys.stderr)
+        sys.exit(1)
+
+def parse_brewfile(content):
+    """
+    Parses Brewfile content.
+    Returns:
+    - conditional_pkgs: set of (type, name)
+    - preserved_footer: string (everything from first conditional onwards)
+    """
+    lines = content.splitlines()
+    conditional_pkgs = set()
+    
+    # Find the start of the first conditional block
+    first_conditional_idx = -1
+    in_conditional = 0
+    
+    for i, line in enumerate(lines):
+        stripped = line.strip()
+        if stripped.startswith(('if ', 'unless ', 'case ')) and not stripped.endswith('; end'):
+            if first_conditional_idx == -1:
+                # Look back for comments that might belong to this block
+                j = i - 1
+                while j >= 0 and (lines[j].strip().startswith('#') or not lines[j].strip()):
+                    j -= 1
+                first_conditional_idx = j + 1
+            in_conditional += 1
+        
+        if in_conditional > 0:
+            match = PKG_RE.match(line)
+            if match:
+                conditional_pkgs.add((match.group(1), match.group(2)))
+            
+            if stripped == 'end' or stripped.endswith('; end'):
+                in_conditional -= 1
+
+    if first_conditional_idx == -1:
+        return set(), ""
+    
+    footer = "\n".join(lines[first_conditional_idx:])
+    return conditional_pkgs, footer
+
+def main(args):
+    repo_root = get_repo_root()
+    brewfile_path = os.path.join(repo_root, 'Brewfile')
+    
+    if not os.path.exists(brewfile_path):
+        print(f"Error: Brewfile not found at {brewfile_path}", file=sys.stderr)
+        sys.exit(1)
+        
+    with open(brewfile_path) as f:
+        old_content = f.read()
+        
+    conditional_pkgs, footer = parse_brewfile(old_content)
+    ignore_list = get_ignore_list(repo_root)
+    
+    dumped_lines = get_current_packages()
+    
+    new_unconditional_lines = []
+    
+    for line in dumped_lines:
+        match = PKG_RE.match(line)
+        if match:
+            pkg_type, pkg_name = match.group(1), match.group(2)
+            if pkg_name in ignore_list:
+                continue
+            if (pkg_type, pkg_name) in conditional_pkgs:
+                continue
+        
+        # If it's not a package line (e.g. comment from dump), we can skip or keep
+        if line.strip():
+            new_unconditional_lines.append(line)
+
+    # Sort lines by type (tap, brew, cask, mas) then name
+    def sort_key(line):
+        match = PKG_RE.match(line)
+        if not match: return (4, line)
+        order = {'tap': 0, 'brew': 1, 'cask': 2, 'mas': 3}
+        return (order.get(match.group(1), 4), match.group(2))
+
+    new_unconditional_lines.sort(key=sort_key)
+    
+    # Build new content
+    new_content = "\n".join(new_unconditional_lines)
+    if footer:
+        if new_unconditional_lines:
+            new_content += "\n\n"
+        new_content += footer.strip() + "\n"
+    else:
+        new_content += "\n"
+
+    if new_content == old_content:
+        print("Brewfile is already up to date.")
+    else:
+        if args.dry_run:
+            print("Changes detected (dry run):")
+            diff = difflib.unified_diff(
+                old_content.splitlines(keepends=True),
+                new_content.splitlines(keepends=True),
+                fromfile='Brewfile (original)',
+                tofile='Brewfile (new)'
+            )
+            sys.stdout.writelines(diff)
+        else:
+            with open(brewfile_path, 'w') as f:
+                f.write(new_content)
+            print("Brewfile updated.")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Update Brewfile while preserving conditionals.")
+    parser.add_argument("--dry-run", action="store_true", help="Show changes without applying them.")
+    args = parser.parse_args()
+    main(args)

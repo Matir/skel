@@ -1,0 +1,15 @@
+{
+  "editor": {
+    "mode": "vim"
+  },
+  "context": {
+    "includeFiles": [
+      "/usr/local/google/home/davidtomaschik/.skel/GEMINI.md",
+      "/usr/local/google/home/davidtomaschik/.skel/AGENTS.md"
+    ]
+  },
+  "experimental": {
+    "skills": true,
+    "planMode": true
+  }
+}
