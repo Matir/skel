@@ -1,6 +1,7 @@
 # For interactive shells
 [[ -n "$ZSH_PROFILE" ]] && {
-  zshrc_start_time=$(date +%s.%N)
+  zmodload zsh/datetime
+  zshrc_start_time=$EPOCHREALTIME
   zmodload zsh/zprof
 }
 HISTFILE=~/.zhistory
@@ -208,16 +209,19 @@ if [[ $- == *i* ]] ; then
 
   # Regenerate zcompdump if it's older than any file in fpath
   DUMPFILE="${ZDOTDIR:-$HOME}/.zcompdump"
-  updated_files=(${^fpath}(N.om[1]))
+  # Find the newest file across all fpath directories to detect edits/additions
+  # (N.om[1]) = Null-glob, plain files only, sort by mtime, pick the first (newest)
+  local newest_comp=(${^fpath}/*(N.om[1]))
 
-  if [[ ! -f "$DUMPFILE" || ( ${#updated_files} -gt 0 && "$updated_files[1]" -nt "$DUMPFILE" ) ]]; then
-    compinit -i -D "$DUMPFILE"
-    # Asynchronously compile the dump file
-    { zcompile "$DUMPFILE" } &!
+  # If any completion file was modified, or dump doesn't exist, we might need to update.
+  if [[ ! -f "$DUMPFILE" || ( -n "$newest_comp" && "$newest_comp" -nt "$DUMPFILE" ) ]]; then
+    compinit -i -d "$DUMPFILE"
+    # Asynchronously compile the dump file with an atomic rename
+    { zcompile "$DUMPFILE.zwc.tmp" "$DUMPFILE" && mv -f "$DUMPFILE.zwc.tmp" "$DUMPFILE.zwc" } &!
   else
-    compinit -C -i -D "$DUMPFILE"
+    compinit -C -i -d "$DUMPFILE"
   fi
-  unset DUMPFILE updated_files
+  unset DUMPFILE newest_comp
   autoload -Uz promptinit && promptinit
   # Virtualenvwrapper
   source_first_existing \
@@ -292,9 +296,9 @@ fi
 typeset -U PATH
 
 if [[ -n "$ZSH_PROFILE" ]]; then
-  zshrc_end_time=$(date +%s.%N)
-  elapsed_seconds=$(echo "$zshrc_end_time - $zshrc_start_time" | bc -l)
-  elapsed_ms=$(printf "%.0f" "$(echo "$elapsed_seconds * 1000" | bc -l)")
-  echo "zshrc done: ${elapsed_ms}ms"
+  zshrc_end_time=$EPOCHREALTIME
+  # Calculation in ms using zsh floating point math
+  elapsed_ms=$(( (zshrc_end_time - zshrc_start_time) * 1000 ))
+  printf "zshrc done: %.0fms\n" "$elapsed_ms"
   zprof
 fi
