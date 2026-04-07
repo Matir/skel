@@ -10,7 +10,8 @@ locations, but also installs dependencies in various ways.
 I primarily target Debian Linux-based (Debian, Ubuntu, and Kali Linux) systems
 as well as MacOS.  Other platforms are lower priorities.  Shell scripts ending
 in `.sh` should use only POSIX features unless there is a shebang line at the
-beginning suggesting a different shell will be used.
+beginning suggesting a different shell will be used. In particular, those
+in directories with names like bash might use those shells.
 
 `zsh` and `fish` are the key interactive shells to be configured, but `bash`
 may also be used at times.

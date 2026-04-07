@@ -10,7 +10,7 @@ if test -d ${HOME}/.local/bin ; then
 fi
 
 if [[ ! -o interactive || ! -t 0 ]]; then
-  if command -v mise >/dev/null 2>&1 ; then
+  if [[ "$PWD" != /google* ]] && command -v mise >/dev/null 2>&1 ; then
     eval "$(mise activate zsh --shims)"
   fi
 fi
