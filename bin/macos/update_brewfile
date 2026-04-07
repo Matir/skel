@@ -48,6 +48,7 @@ def parse_brewfile(content):
     """
     Parses Brewfile content.
     Returns:
+    - unconditional_lines: list of strings
     - conditional_pkgs: set of (type, name)
     - preserved_footer: string (everything from first conditional onwards)
     """
@@ -60,7 +61,7 @@ def parse_brewfile(content):
     
     for i, line in enumerate(lines):
         stripped = line.strip()
-        if stripped.startswith(('if ', 'unless ', 'case ')) and not stripped.endswith('; end'):
+        if stripped.startswith(('if ', 'unless ', 'case ', 'def ', 'begin ')) and not stripped.endswith('; end'):
             if first_conditional_idx == -1:
                 # Look back for comments that might belong to this block
                 j = i - 1
@@ -78,10 +79,11 @@ def parse_brewfile(content):
                 in_conditional -= 1
 
     if first_conditional_idx == -1:
-        return set(), ""
+        return lines, set(), ""
     
+    unconditional_lines = lines[:first_conditional_idx]
     footer = "\n".join(lines[first_conditional_idx:])
-    return conditional_pkgs, footer
+    return unconditional_lines, conditional_pkgs, footer
 
 def main(args):
     repo_root = get_repo_root()
@@ -94,25 +96,52 @@ def main(args):
     with open(brewfile_path) as f:
         old_content = f.read()
         
-    conditional_pkgs, footer = parse_brewfile(old_content)
+    unconditional_lines, conditional_pkgs, footer = parse_brewfile(old_content)
     ignore_list = get_ignore_list(repo_root)
     
     dumped_lines = get_current_packages()
     
     new_unconditional_lines = []
-    
-    for line in dumped_lines:
-        match = PKG_RE.match(line)
-        if match:
-            pkg_type, pkg_name = match.group(1), match.group(2)
-            if pkg_name in ignore_list:
-                continue
-            if (pkg_type, pkg_name) in conditional_pkgs:
-                continue
+    seen_pkgs = set()
+
+    if args.add_only:
+        # First, keep existing unconditional packages
+        for line in unconditional_lines:
+            match = PKG_RE.match(line)
+            if match:
+                pkg_type, pkg_name = match.group(1), match.group(2)
+                if pkg_name in ignore_list or (pkg_type, pkg_name) in conditional_pkgs:
+                    continue
+                new_unconditional_lines.append(line)
+                seen_pkgs.add((pkg_type, pkg_name))
+            elif line.strip() and not line.strip().startswith('#'):
+                # Keep other non-comment lines
+                new_unconditional_lines.append(line)
         
-        # If it's not a package line (e.g. comment from dump), we can skip or keep
-        if line.strip():
-            new_unconditional_lines.append(line)
+        # Then, add new packages from dump
+        for line in dumped_lines:
+            match = PKG_RE.match(line)
+            if match:
+                pkg_type, pkg_name = match.group(1), match.group(2)
+                if (pkg_type, pkg_name) not in seen_pkgs and pkg_name not in ignore_list and (pkg_type, pkg_name) not in conditional_pkgs:
+                    new_unconditional_lines.append(line)
+                    seen_pkgs.add((pkg_type, pkg_name))
+    else:
+        for line in dumped_lines:
+            match = PKG_RE.match(line)
+            if match:
+                pkg_type, pkg_name = match.group(1), match.group(2)
+                if pkg_name in ignore_list:
+                    continue
+                if (pkg_type, pkg_name) in conditional_pkgs:
+                    continue
+                if (pkg_type, pkg_name) in seen_pkgs:
+                    continue
+                seen_pkgs.add((pkg_type, pkg_name))
+            
+            # If it's not a package line (e.g. comment from dump), we can skip or keep
+            if line.strip():
+                new_unconditional_lines.append(line)
 
     # Sort lines by type (tap, brew, cask, mas) then name
     def sort_key(line):
@@ -152,5 +181,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Update Brewfile while preserving conditionals.")
     parser.add_argument("--dry-run", action="store_true", help="Show changes without applying them.")
+    parser.add_argument("--add-only", action="store_true", help="Only add missing entries, do not remove existing ones.")
     args = parser.parse_args()
     main(args)
