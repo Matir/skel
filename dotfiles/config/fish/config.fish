@@ -30,5 +30,8 @@ if status --is-interactive
   install_fisher
 end
 
-# Want this at the bottom to put this path first
+# Want these at the bottom to put them first in PATH
 fish_add_path --move --path {$HOME}/bin
+if test (uname) = "Darwin"
+    fish_add_path --move --path {$HOME}/bin/macos
+end

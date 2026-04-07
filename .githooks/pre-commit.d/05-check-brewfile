@@ -9,8 +9,9 @@ fi
 UPDATE_SCRIPT="bin/macos/update_brewfile"
 
 if [[ -x "$UPDATE_SCRIPT" ]]; then
-    # Run in dry-run mode and see if there's output
-    DIFF_OUTPUT=$("$UPDATE_SCRIPT" --dry-run 2>/dev/null)
+    echo "🔍 Checking Brewfile synchronization..."
+    # Run in dry-run mode with --add-only and see if there's output
+    DIFF_OUTPUT=$("$UPDATE_SCRIPT" --dry-run --add-only 2>/dev/null)
     if [[ "$DIFF_OUTPUT" == *"Changes detected"* ]]; then
         echo "⚠️  Brewfile is out of sync with your installed packages."
         echo "   Run '$UPDATE_SCRIPT' to synchronize it."

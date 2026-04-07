@@ -271,8 +271,11 @@ if [ -x /usr/bin/ack-grep ] ; then
   alias ack='/usr/bin/ack-grep'
 fi
 
-# I want this first always
+# I want these first always
 PATH="${HOME}/bin:${PATH}"
+if [[ "$(uname)" == "Darwin" ]]; then
+  PATH="${HOME}/bin/macos:${PATH}"
+fi
 
 # Load any local settings
 source_if_existing $HOME/.zshrc.local

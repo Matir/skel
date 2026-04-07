@@ -189,6 +189,7 @@ if [ "$(uname)" = "Darwin" ] ; then
   # Using id -u for better POSIX compatibility than $UID
   export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$TMPDIR/runtime-$(id -u)}"
   export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
+  export PATH="${HOME}/bin/macos:${PATH}"
 fi
 
 if test -e "$HOME/.localenv"; then
