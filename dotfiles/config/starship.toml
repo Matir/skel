@@ -51,3 +51,4 @@ fi
 """
 style = "bold blue"
 format = "♊[$output](blue) "
+shell = ["/bin/sh", "-c"]
