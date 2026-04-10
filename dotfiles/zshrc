@@ -192,6 +192,15 @@ if [[ $- == *i* ]] ; then
   source_if_existing $HOME/.aliases.local
   # zsh-only-ism to avoid error if glob doesn't expand
   # specifically sets NULLGLOB for this one glob
+  typeset -gA _deferred_comps
+  compdef() {
+    # Store the arguments: first arg is the function, the rest are the commands
+    local func=$1
+    shift
+    for cmd in "$@"; do
+      _deferred_comps[$cmd]=$func
+    done
+  }
   for file in $HOME/.zshrc.d/[a-zA-Z0-9]*.zsh(N) ; do
     source "$file"
   done
@@ -206,6 +215,11 @@ if [[ $- == *i* ]] ; then
   zstyle ':completion:*' users root ${USER}
   # Modules after fpath
   autoload -Uz compinit
+  for cmd func in "${(@kv)_deferred_comps}"; do
+    compdef "$func" "$cmd"
+  done
+
+  unset _deferred_comps
 
   # Regenerate zcompdump if it's older than any file in fpath
   DUMPFILE="${ZDOTDIR:-$HOME}/.zcompdump"
