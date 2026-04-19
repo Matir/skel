@@ -113,17 +113,17 @@ _is_link_path() {
 
 _CANDIDATE=""
 
-# 1. Highest priority: ssh/rc sets SSH_REMOTE_AUTH_SOCK to the raw forwarded socket before
-# rewriting SSH_AUTH_SOCK to the stable symlink, so it survives the rewrite.
-if [ -S "${SSH_REMOTE_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_REMOTE_AUTH_SOCK}"; then
-  _CANDIDATE="${SSH_REMOTE_AUTH_SOCK}"
-# If current environment has a valid socket that is NOT our link, it's a prime candidate (e.g. SSH forwarding).
-elif [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
+# 1. If current environment has a valid socket that is NOT our link, it's a prime candidate
+# (e.g. fresh SSH login: sshd sets SSH_AUTH_SOCK to the raw forwarded socket before ssh/rc
+# rewrites it to the stable symlink; the shell inherits the original raw path).
+if [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
   _CANDIDATE="${SSH_AUTH_SOCK}"
 fi
 
-# 2. If no candidate yet, or we're currently using the link, try to find the "real" system agent.
-if [ -z "${_CANDIDATE}" ] || _is_link_path "${SSH_AUTH_SOCK:-}"; then
+# 2. Only look for a system agent if the stable link is already broken.  If the link is
+# valid (e.g. a tmux pane where SSH_AUTH_SOCK points to our symlink which ssh/rc just
+# updated to the forwarded socket), leave it alone — don't clobber it with a local agent.
+if [ -z "${_CANDIDATE}" ] && [ ! -S "${_SSH_AUTH_LINK}" ]; then
   _FOUND=""
   if [ "$(uname)" = "Darwin" ]; then
     _FOUND=$(launchctl getenv SSH_AUTH_SOCK 2>/dev/null)
@@ -147,8 +147,8 @@ if [ -z "${_CANDIDATE}" ] || _is_link_path "${SSH_AUTH_SOCK:-}"; then
   fi
 fi
 
-# 3. Last resort: search common paths if we still don't have a valid candidate.
-if [ ! -S "${_CANDIDATE}" ]; then
+# 3. Last resort: search common paths if we still don't have a candidate and the link is broken.
+if [ ! -S "${_CANDIDATE}" ] && [ ! -S "${_SSH_AUTH_LINK}" ]; then
   _U=$(id -u)
   for _p in "/run/user/${_U}/keyring/ssh" "/run/user/${_U}/ssh-agent.socket" "/run/user/${_U}/openssh_agent" "/run/user/${_U}/gnupg/S.gpg-agent.ssh"; do
     if [ -S "${_p}" ] && ! _is_link_path "${_p}"; then
