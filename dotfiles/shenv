@@ -113,8 +113,12 @@ _is_link_path() {
 
 _CANDIDATE=""
 
-# 1. If current environment has a valid socket that is NOT our link, it's a prime candidate (e.g. SSH forwarding).
-if [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
+# 1. Highest priority: ssh/rc sets SSH_REMOTE_AUTH_SOCK to the raw forwarded socket before
+# rewriting SSH_AUTH_SOCK to the stable symlink, so it survives the rewrite.
+if [ -S "${SSH_REMOTE_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_REMOTE_AUTH_SOCK}"; then
+  _CANDIDATE="${SSH_REMOTE_AUTH_SOCK}"
+# If current environment has a valid socket that is NOT our link, it's a prime candidate (e.g. SSH forwarding).
+elif [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
   _CANDIDATE="${SSH_AUTH_SOCK}"
 fi
 
