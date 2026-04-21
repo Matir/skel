@@ -18,8 +18,15 @@ alert() {
     icon="error"
   fi
   
-  # Send the notification with the executed command
-  notify-send --urgency=low -i "$icon" "Finished: '$@'"
+  if [ "$(uname)" = "Darwin" ]; then
+    # macOS notification
+    local title="Finished: '$*'"
+    local msg="Exit code: $ret"
+    osascript -e "display notification \"$msg\" with title \"$title\""
+  else
+    # Send the notification with the executed command
+    notify-send --urgency=low -i "$icon" "Finished: '$@'"
+  fi
   
   # Return the original exit code
   return $ret

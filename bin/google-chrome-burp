@@ -1,6 +1,10 @@
 #!/bin/bash
 
 CHROME_BINS="google-chrome-beta google-chrome"
+if [ "$(uname)" = "Darwin" ]; then
+  CHROME_BINS="${CHROME_BINS} /Applications/Google\ Chrome\ Beta.app/Contents/MacOS/Google\ Chrome\ Beta /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
+fi
+
 for bin in ${CHROME_BINS} ; do
   if command -v ${bin} >/dev/null 2>&1 ; then
     CHROME=$(command -v ${bin})
@@ -18,4 +22,4 @@ export HOME=${HOME}/.chrome-pentest
 mkdir -p ${HOME}
 
 # Launch chrome for burp
-exec ${CHROME} --user-data-dir=${HOME}/chrome-pentest --proxy-server=127.0.0.1:8080
+exec "${CHROME}" --user-data-dir=${HOME}/chrome-pentest --proxy-server=127.0.0.1:8080

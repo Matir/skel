@@ -6,7 +6,11 @@ if have_command nasm && have_command objdump ; then
     local TMPF=`mktemp`
     local bytes
     local byte
-    $NASM -f elf -o $TMPF $1
+    local format="elf"
+    if [[ "$OSTYPE" == darwin* ]]; then
+      format="macho64"
+    fi
+    $NASM -f $format -o $TMPF $1
     $OBJDUMP -M intel -d $TMPF | grep '^ ' | cut -f2 | while read -A bytes ; do
       for byte in $bytes ; do
         echo -n "\\\\x$byte"
