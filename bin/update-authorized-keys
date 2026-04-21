@@ -1,0 +1,310 @@
+#!/usr/bin/env bash
+
+# update-authorized-keys - Manage ~/.ssh/authorized_keys from multiple sources
+#
+# BEHAVIOR:
+# 1. Collects SSH public keys from one or more source directories (default: ~/.ssh/authorized_keys.d).
+# 2. Skips empty files and files symlinked to /dev/null (masking).
+# 3. Deterministically concatenates keys into a "managed block" wrapped in markers:
+#    # BEGIN UPDATE-AUTHORIZED-KEYS
+#    # END UPDATE-AUTHORIZED-KEYS
+# 4. Deduplicates managed keys: if the same key (including options) is found in multiple files,
+#    it is included once with a comment listing all source filenames.
+# 5. Preserves "manual" keys found in the target file outside the markers.
+# 6. Removes manual keys that exactly match a managed key (options + key data).
+# 7. Validates every proposed key individually using 'ssh-keygen -l -f'.
+# 8. Optionally validates the whole file with 'authorized-keys-test' if available.
+# 9. Displays a unified diff and prompts for confirmation before atomic replacement.
+# 10. Supports a --dry-run mode and a --self-test mode for verifying logic.
+
+set -o nounset
+set -o errexit
+set -o pipefail
+
+CLEANUP_FILES=()
+cleanup() {
+    rm -rf "${CLEANUP_FILES[@]}"
+}
+trap cleanup EXIT
+
+# Configuration
+DEFAULT_DIR="${HOME}/.ssh/authorized_keys.d"
+DEFAULT_TARGET="${HOME}/.ssh/authorized_keys"
+BEGIN_MARKER="# BEGIN UPDATE-AUTHORIZED-KEYS"
+END_MARKER="# END UPDATE-AUTHORIZED-KEYS"
+
+# State
+SOURCE_DIRS=()
+TARGET_FILE="${DEFAULT_TARGET}"
+DRY_RUN=0
+
+usage() {
+    cat <<EOF
+Usage: $(basename "$0") [options]
+
+Options:
+  --dir DIR         Primary directory for managed keys (default: ${DEFAULT_DIR})
+  --extra-dir DIR   Additional directory to scan for keys (can be repeated)
+  --target FILE     Target authorized_keys file (default: ${DEFAULT_TARGET})
+  --dry-run         Show changes and validate without modifying the target
+  --self-test       Run internal suite of tests to verify script logic
+  --help            Show this help message
+EOF
+}
+
+run_self_test() {
+    echo "Running self-test..."
+    local test_root=$(mktemp -d)
+    CLEANUP_FILES+=("${test_root}")
+    
+    local d1="${test_root}/d1"
+    local d2="${test_root}/d2"
+    local target="${test_root}/target"
+    mkdir -p "${d1}" "${d2}"
+    
+    local key1="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJ8XoR7N7X5XoR7N7X5XoR7N7X5XoR7N7X5XoR7N7X5X key1"
+    local key2="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIL9YpS8O8Y6YpS8O8Y6YpS8O8Y6YpS8O8Y6YpS8O8Y6Y key2"
+    local key_man="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM0ZqT9P9Z7ZqT9P9Z7ZqT9P9Z7ZqT9P9Z7ZqT9P9Z7Z manual"
+    local long_opt="environment=\"VAR=VERY_LONG_VALUE_THAT_EXCEEDS_TWENTY_CHARS\""
+    
+    echo "${key1}" > "${d1}/k1"
+    echo "${key1}" > "${d2}/k1_dup"
+    echo "${key2}" > "${d2}/k2"
+    echo "${long_opt} ${key1}" > "${d1}/k1_long"
+    echo "${long_opt} ${key2}" > "${d1}/k2_long"
+    ln -s /dev/null "${d1}/masked"
+    
+    cat <<EOF > "${target}"
+${key_man}
+${key1} # This should be removed as it's now managed
+EOF
+
+    echo "Executing script in test mode..."
+    # Pipe "y" to handle the TTY check if we are not in a TTY during test
+    echo "y" | "$0" --dir "${d1}" --extra-dir "${d2}" --target "${target}" > /dev/null
+    
+    local content=$(cat "${target}")
+    
+    echo -n "Check markers... "
+    if [[ "${content}" == *"${BEGIN_MARKER}"* && "${content}" == *"${END_MARKER}"* ]]; then echo "OK"; else echo "FAIL"; exit 1; fi
+    
+    echo -n "Check managed deduplication... "
+    if grep -q "Source: k1, k1_dup" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
+    
+    echo -n "Check long option deduplication (should NOT deduplicate different keys)... "
+    if grep -q "k1_long" "${target}" && grep -q "k2_long" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
+
+    echo -n "Check manual key preservation... "
+    if grep -q "manual" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
+    
+    echo -n "Check manual key filtering... "
+    local manual_count=$(grep -c "${key1}" "${target}")
+    # key1 appears twice in managed block (once plain, once with long opt) 
+    # and it was in manual block. The manual one should be removed.
+    # So we expect 2 occurrences in the final file (both in managed block).
+    if [[ ${manual_count} -eq 2 ]]; then echo "OK"; else echo "FAIL (Found ${manual_count} occurrences, expected 2)"; exit 1; fi
+    
+    echo -n "Check masking... "
+    if ! grep -q "masked" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
+
+    echo "Self-test passed successfully!"
+    exit 0
+}
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --dir) 
+            [[ -z "${2:-}" ]] && { echo "Error: --dir requires an argument" >&2; exit 1; }
+            SOURCE_DIRS+=("$2"); shift 2 ;;
+        --extra-dir) 
+            [[ -z "${2:-}" ]] && { echo "Error: --extra-dir requires an argument" >&2; exit 1; }
+            SOURCE_DIRS+=("$2"); shift 2 ;;
+        --target) 
+            [[ -z "${2:-}" ]] && { echo "Error: --target requires an argument" >&2; exit 1; }
+            TARGET_FILE="$2"; shift 2 ;;
+        --dry-run) DRY_RUN=1; shift ;;
+        --self-test) run_self_test ;;
+        --help) usage; exit 0 ;;
+        *) echo "Unknown option: $1" >&2; usage; exit 1 ;;
+    esac
+done
+
+if [[ ${#SOURCE_DIRS[@]} -eq 0 ]]; then
+    SOURCE_DIRS+=("${DEFAULT_DIR}")
+fi
+
+mkdir -p "$(dirname "${TARGET_FILE}")"
+TMP_FILE=$(mktemp)
+CLEANUP_FILES+=("${TMP_FILE}")
+
+collect_keys() {
+    local dirs=("${@}")
+    for dir in "${dirs[@]}"; do
+        if [[ ! -d "${dir}" ]]; then continue; fi
+        # Use a glob to avoid parsing ls
+        for file in "${dir}"/*; do
+            [[ ! -e "${file}" ]] && continue
+            [[ ! -f "${file}" || ! -s "${file}" ]] && continue
+            if [[ -L "${file}" && "$(readlink "${file}")" == "/dev/null" ]]; then continue; fi
+            while read -r line; do
+                [[ -z "${line}" || "${line}" =~ ^[[:space:]]*# ]] && continue
+                # Use a specific delimiter that is unlikely to be in the key or filename
+                # If using tabs, ensure we only split on the first one in AWK
+                printf "%s\t%s\n" "$(basename "${file}")" "${line}"
+            done < "${file}"
+        done
+    done
+}
+
+# Use a HEREDOC for the complex AWK script to avoid shell interpolation issues
+MANAGED_BLOCK=$(collect_keys "${SOURCE_DIRS[@]}" | awk -F'\t' '
+{
+    # Splitting on the first tab manually to be robust
+    tab_idx = index($0, "\t")
+    source = substr($0, 1, tab_idx - 1)
+    full_line = substr($0, tab_idx + 1)
+    
+    # Signature detection: all options + key type + key data
+    # (Excludes the comment at the end)
+    n = split(full_line, parts, " ")
+    sig = ""
+    for (i=1; i<=n; i++) {
+        sig = (sig == "" ? parts[i] : sig " " parts[i])
+        # A key line is [options] <type> <base64> [comment]
+        # We stop after the base64 part. Key types start with known prefixes.
+        if (parts[i] ~ /^(ssh-|ecdsa-|sk-)/ && i < n) {
+            sig = sig " " parts[i+1]
+            break
+        }
+    }
+    # Fallback if no key type found (should not happen with valid keys)
+    if (sig == "") sig = full_line
+
+    if (!(sig in keys)) {
+        keys[sig] = full_line
+        order[++count] = sig
+    }
+    sources[sig] = (sources[sig] ? sources[sig] ", " : "") source
+}
+END {
+    for (i=1; i<=count; i++) {
+        sig = order[i]
+        print "# Source: " sources[sig]
+        print keys[sig]
+    }
+}')
+
+MANUAL_KEYS=""
+if [[ -f "${TARGET_FILE}" ]]; then
+    MANUAL_KEYS=$(awk -v begin="${BEGIN_MARKER}" -v end="${END_MARKER}" '
+    BEGIN { inside=0 }
+    $0 == begin { inside=1; next }
+    $0 == end { inside=0; next }
+    !inside { print $0 }
+    ' "${TARGET_FILE}")
+fi
+
+MANAGED_SIGS_TMP=$(mktemp)
+echo "${MANAGED_BLOCK}" | awk '/^[^#]/ {
+    n = split($0, parts, " ")
+    sig = ""
+    for (i=1; i<=n; i++) {
+        sig = (sig == "" ? parts[i] : sig " " parts[i])
+        if (parts[i] ~ /^(ssh-|ecdsa-|sk-)/ && i < n) {
+            sig = sig " " parts[i+1]
+            break
+        }
+    }
+    if (sig != "") print sig
+}' > "${MANAGED_SIGS_TMP}"
+
+FINAL_MANUAL_KEYS=$(echo "${MANUAL_KEYS}" | awk -v sigs_file="${MANAGED_SIGS_TMP}" '
+BEGIN {
+    while ((getline line < sigs_file) > 0) {
+        managed[line] = 1
+    }
+    close(sigs_file)
+}
+{
+    if ($0 ~ /^[[:space:]]*$/ || $0 ~ /^[[:space:]]*#/) {
+        print $0
+        next
+    }
+    n = split($0, parts, " ")
+    sig = ""
+    for (i=1; i<=n; i++) {
+        sig = (sig == "" ? parts[i] : sig " " parts[i])
+        if (parts[i] ~ /^(ssh-|ecdsa-|sk-)/ && i < n) {
+            sig = sig " " parts[i+1]
+            break
+        }
+    }
+    if (!(sig in managed)) {
+        print $0
+    }
+}')
+rm -f "${MANAGED_SIGS_TMP}"
+
+{
+    if [[ -n "${MANAGED_BLOCK}" ]]; then
+        echo "${BEGIN_MARKER}"
+        echo "${MANAGED_BLOCK}"
+        echo "${END_MARKER}"
+    fi
+    echo "${FINAL_MANUAL_KEYS}"
+} > "${TMP_FILE}"
+
+echo "Validating proposed changes..."
+VALID=1
+while read -r line; do
+    [[ -z "${line}" || "${line}" =~ ^[[:space:]]*# ]] && continue
+    if ! echo "${line}" | ssh-keygen -l -f - >/dev/null 2>&1; then
+        echo "ERROR: Invalid SSH key detected: ${line}" >&2
+        VALID=0
+    fi
+done < "${TMP_FILE}"
+
+if command -v authorized-keys-test >/dev/null 2>&1; then
+    if ! authorized-keys-test "${TMP_FILE}"; then
+        echo "ERROR: Proposed file failed authorized-keys-test." >&2
+        VALID=0
+    fi
+fi
+
+if [[ ${VALID} -eq 0 ]]; then
+    echo "Validation failed. Aborting." >&2
+    exit 1
+fi
+
+if [[ -f "${TARGET_FILE}" ]]; then
+    diff -u "${TARGET_FILE}" "${TMP_FILE}" || true
+else
+    echo "Target file does not exist. Proposed content:"
+    cat "${TMP_FILE}"
+fi
+
+if [[ ${DRY_RUN} -eq 1 ]]; then
+    echo "Dry run complete. No changes made."
+    exit 0
+fi
+
+if [[ -t 0 ]]; then
+    echo -n "Apply these changes to ${TARGET_FILE}? [y/N] "
+    read -r response
+elif [[ ! -t 0 ]]; then
+    # Read from pipe or file if provided
+    if ! read -r response; then
+        echo "Non-interactive shell detected and no input provided. Aborting."
+        exit 1
+    fi
+fi
+
+if [[ "${response}" =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    chmod 0600 "${TMP_FILE}"
+    mv "${TMP_FILE}" "${TARGET_FILE}"
+    echo "Changes applied successfully."
+else
+    echo "Aborted."
+    exit 1
+fi
