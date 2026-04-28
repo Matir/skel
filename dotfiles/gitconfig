@@ -24,9 +24,9 @@
   last = log -1 HEAD
   # Thanks to
   # http://durdn.com/blog/2012/11/22/must-have-git-aliases-advanced-examples/
-  logs = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate
+  logs = log --pretty=format:"%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]" --decorate
   lg = log -p
-  ll = log --pretty=format:"%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]" --decorate --numstat
+  ll = log --pretty=format:"%C(yellow)%h%Cred%d %Creset%s%Cblue [%cn]" --decorate --numstat
   files = ls-files
   ls = ls-files
   lol = log --graph --pretty=format:'%C(yellow)%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cblue(%cr)%Creset' --abbrev-commit --date=relative
@@ -92,8 +92,12 @@
   process = git-lfs filter-process
 
 [include]
+  path = ~/.gitconfig.d/aliases
   path = ~/.gitconfig.d/override
   path = ~/.gitconfig.d/local
 
-[includeIf "gitdir:~/personal/"]
+[includeIf "gitdir/i:~/personal/"]
   path = ~/.gitconfig.d/personal
+
+[rerere]
+  enabled = true
