@@ -1,5 +1,7 @@
 tap "dart-lang/dart"
+tap "holtwick/tap"
 tap "sass/sass"
+
 
 brew "ack"
 brew "acme.sh"
@@ -8,11 +10,11 @@ brew "autoconf"
 brew "automake"
 brew "b2-tools"
 brew "bat"
-brew "bazelisk"
 brew "binwalk"
 brew "cask"
 brew "ccache"
 brew "certbot"
+brew "cloudflared"
 brew "cmake"
 brew "colima"
 brew "devcontainer"
@@ -22,6 +24,7 @@ brew "direnv"
 brew "duck"
 brew "earthly"
 brew "esptool"
+brew "fish"
 brew "gh"
 brew "ghidra", link: false
 brew "git"
@@ -31,14 +34,18 @@ brew "gnupg"
 brew "go"
 brew "gradle"
 brew "hf"
+brew "holtwick/tap/bx"
 brew "htop"
 brew "httpie"
-brew "huggingface-cli"
 brew "hugo"
 brew "imagemagick"
 brew "john-jumbo"
 brew "jq"
+brew "kubeconform"
+brew "kubectx"
+brew "librsvg"
 brew "lima"
+brew "minikube"
 brew "mise"
 brew "mosh"
 brew "neovim"
@@ -71,6 +78,7 @@ brew "yt-dlp"
 brew "zlib"
 brew "zsh-syntax-highlighting"
 
+
 cask "codeql"
 cask "cyberduck"
 cask "font-fira-code-nerd-font"
@@ -81,9 +89,9 @@ cask "font-inconsolata-nerd-font"
 cask "font-symbols-only-nerd-font"
 cask "font-terminess-ttf-nerd-font"
 cask "ghidra"
-cask "gimp"
 cask "github"
 cask "iterm2"
+cask "keybase"
 cask "macfuse"
 cask "meld"
 cask "mitmproxy"
@@ -93,6 +101,7 @@ cask "rectangle"
 cask "scroll-reverser"
 cask "temurin"
 cask "veracrypt"
+cask "wezterm"
 cask "zulu@17"
 
 def is_corp?
@@ -100,9 +109,13 @@ def is_corp?
   `profiles status -type enrollment 2>/dev/null`.include?("Enrolled via DEP: Yes")
 end
 
+if is_corp?
+  brew "bazelisk", link: false
+end
+
 # non-corp
 if !is_corp?
-  brew "bazel"
+  brew "bazelisk"
   brew "openssh"
   cask "claude-code"
   cask "cryptomator"
