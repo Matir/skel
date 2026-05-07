@@ -91,7 +91,6 @@ cask "font-terminess-ttf-nerd-font"
 cask "ghidra"
 cask "github"
 cask "iterm2"
-cask "keybase"
 cask "macfuse"
 cask "meld"
 cask "mitmproxy"
@@ -117,9 +116,11 @@ end
 if !is_corp?
   brew "bazelisk"
   brew "openssh"
+
   cask "claude-code"
   cask "cryptomator"
   cask "gcloud-cli"
   cask "google-cloud-sdk"
+  cask "keybase"
   cask "orbstack"
 end
