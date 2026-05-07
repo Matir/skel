@@ -2,7 +2,6 @@ tap "dart-lang/dart"
 tap "holtwick/tap"
 tap "sass/sass"
 
-
 brew "ack"
 brew "acme.sh"
 brew "age"
@@ -78,7 +77,6 @@ brew "yt-dlp"
 brew "zlib"
 brew "zsh-syntax-highlighting"
 
-
 cask "codeql"
 cask "cyberduck"
 cask "font-fira-code-nerd-font"
@@ -89,6 +87,7 @@ cask "font-inconsolata-nerd-font"
 cask "font-symbols-only-nerd-font"
 cask "font-terminess-ttf-nerd-font"
 cask "ghidra"
+cask "gimp"
 cask "github"
 cask "iterm2"
 cask "macfuse"
