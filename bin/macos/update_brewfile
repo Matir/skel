@@ -251,7 +251,13 @@ def main(args):
             if last_type and e.pkg_type != last_type:
                 output_lines.append("")
             last_type = e.pkg_type
-        output_lines.extend(e.to_lines())
+
+        lines = e.to_lines()
+        # If we just added a blank line, and the new lines start with one, skip the first new line
+        if output_lines and output_lines[-1] == "" and lines and lines[0] == "":
+            output_lines.extend(lines[1:])
+        else:
+            output_lines.extend(lines)
 
     new_content = "\n".join(output_lines)
     if footer:
