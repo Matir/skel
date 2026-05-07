@@ -12,8 +12,17 @@ fi
 
 trap "test -f ${FILENAME} && rm -f ${FILENAME}" EXIT
 
+IOENGINE="libaio"
+DIRECT=1
+if [ "$(uname)" = "Darwin" ]; then
+  IOENGINE="posixaio"
+  # macOS doesn't support O_DIRECT in the same way, but fio's direct=1 
+  # handles it via F_NOCACHE if supported.
+  DIRECT=1
+fi
+
 fio --loops=5 --size=${BENCHMARK_SIZE} --filename=${FILENAME} \
-  --stonewall --ioengine=libaio --direct=1 \
+  --stonewall --ioengine=${IOENGINE} --direct=${DIRECT} \
   --name=Seqread --bs=1m --rw=read \
   --name=Seqwrite --bs=1m --rw=write \
   --name=512Kread --bs=512k --rw=randread \

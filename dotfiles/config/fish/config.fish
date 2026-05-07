@@ -34,4 +34,6 @@ end
 fish_add_path --move --path {$HOME}/bin
 if test (uname) = "Darwin"
     fish_add_path --move --path {$HOME}/bin/macos
+else if test (uname) = "Linux"
+    fish_add_path --move --path {$HOME}/bin/linux
 end

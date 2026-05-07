@@ -1,5 +1,11 @@
 function dumpenv {
-  tr '\0' '\n' < /proc/${1}/environ
+  if [ "$(uname)" = "Linux" ]; then
+    tr '\0' '\n' < /proc/${1}/environ
+  elif [ "$(uname)" = "Darwin" ]; then
+    # macOS doesn't have /proc, use ps instead. 
+    # Note: this may truncate if environment is very large.
+    ps -p ${1} -wwwe -o command= | tr ' ' '\n' | grep '='
+  fi
 }
 
 if test -x "/sbin/starship" ; then

@@ -5,8 +5,14 @@
 set -ue
 
 TOOLS="flameshot scrot"
+if [ "$(uname)" = "Darwin" ]; then
+  TOOLS="screencapture ${TOOLS}"
+fi
+
 SCREENDIR=${SCREENDIR:-${HOME}/Pictures/Screenshots}
 SCROT_FORMAT="%F-%T.png"
+# Filename for screencapture
+FILE_NAME=$(date "+%Y-%m-%d-%H%M%S.png")
 
 function default_screenshot_command {
   for tool in ${TOOLS} ; do
@@ -41,10 +47,29 @@ function scrot_full_capture {
   scrot "${SCREENDIR}/${SCROT_FORMAT}"
 }
 
+function mac_capture {
+  local mode="${1}"
+  local target="${SCREENDIR}/${FILE_NAME}"
+  case "${mode}" in
+    region)
+      screencapture -i "${target}"
+      ;;
+    window)
+      screencapture -i -w "${target}"
+      ;;
+    full)
+      screencapture "${target}"
+      ;;
+  esac
+}
+
 case "${CMD}" in
   region|window|full)
     mkdir -p "${SCREENDIR}"
     case "${TOOL}" in
+      screencapture)
+        mac_capture "${CMD}"
+        ;;
       flameshot)
         case "${CMD}" in
           region|window)

@@ -2,19 +2,19 @@
 
 # Roughly based on this article:
 # https://werat.github.io/2017/02/04/tmux-ssh-agent-forwarding.html
+#
+# NOTE: this file is executed by sshd as a child process, NOT sourced by the
+# user's shell.  Any variable assignments or exports here have no effect on the
+# shell environment the user will land in.
 
 REMOTE_LINK="${HOME}/.ssh/ssh_auth_sock"
 
 if [ -S "${SSH_AUTH_SOCK}" ] ; then
-  SSH_REMOTE_AUTH_SOCK="${SSH_AUTH_SOCK}"
-  export SSH_REMOTE_AUTH_SOCK
   # Always update the symlink to the latest session's socket.
-  # This ensures that tmux (which uses the static path) always points to a 
+  # This ensures that tmux (which uses the static path) always points to a
   # current agent.
   mkdir -p "$(dirname "${REMOTE_LINK}")"
   ln -sf "${SSH_AUTH_SOCK}" "${REMOTE_LINK}"
-  SSH_AUTH_SOCK="${REMOTE_LINK}"
-  export SSH_AUTH_SOCK
 fi
 
 # if stdin is a tty, don't do the cookie step
