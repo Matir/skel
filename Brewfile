@@ -118,6 +118,7 @@ if !is_corp?
 
   cask "claude-code"
   cask "cryptomator"
+  cask "keepassxc"
   cask "gcloud-cli"
   cask "google-cloud-sdk"
   cask "keybase"
