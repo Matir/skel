@@ -15,6 +15,7 @@ export DEBEMAIL="david@systemoverlord.com"
 export DEBFULLNAME="David Tomaschik"
 export LESS="-MR"
 export QUOTING_STYLE="literal"  # Coreutils quotes
+export HOMEBREW_NO_ENV_HINTS=1
 
 # Fix gnome-terminal
 if [ "$TERM" = "xterm" ] && [ "$COLORTERM" = "gnome-terminal" ] ; then
