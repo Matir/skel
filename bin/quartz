@@ -1,0 +1,63 @@
+#!/bin/bash
+
+set -euo pipefail
+
+# QUARTZ_DIR search logic
+if [ -z "${QUARTZ_DIR:-}" ]; then
+    if [ -f "quartz.config.ts" ]; then
+        QUARTZ_DIR="$PWD"
+    elif [ -d "$HOME/Personal/notes-quartz" ]; then
+        QUARTZ_DIR="$HOME/Personal/notes-quartz"
+    elif [ -d "$HOME/Projects/notes-quartz" ]; then
+        QUARTZ_DIR="$HOME/Projects/notes-quartz"
+    else
+        echo "Error: QUARTZ_DIR could not be found." >&2
+        exit 1
+    fi
+fi
+
+if [ ! -d "$QUARTZ_DIR" ]; then
+    echo "Error: QUARTZ_DIR '$QUARTZ_DIR' is not a directory." >&2
+    exit 1
+fi
+
+# NOTES_DIR search logic
+PARSE_NOTES_DIR=""
+# Use a copy of args to find -d/--directory
+ARGS=("$@")
+for ((i=0; i<${#ARGS[@]}; i++)); do
+    if [[ "${ARGS[i]}" == "-d" || "${ARGS[i]}" == "--directory" ]]; then
+        if [[ $((i+1)) -lt ${#ARGS[@]} ]]; then
+            PARSE_NOTES_DIR="${ARGS[i+1]}"
+        fi
+        break
+    fi
+done
+
+if [ -n "$PARSE_NOTES_DIR" ]; then
+    NOTES_DIR="$PARSE_NOTES_DIR"
+elif [ -z "${NOTES_DIR:-}" ]; then
+    if [ -d "$HOME/Notes" ]; then
+        NOTES_DIR="$HOME/Notes"
+    elif [ -d "$HOME/Personal/notes" ]; then
+        NOTES_DIR="$HOME/Personal/notes"
+    elif [ -d "$HOME/Projects/notes" ]; then
+        NOTES_DIR="$HOME/Projects/notes"
+    else
+        echo "Error: NOTES_DIR could not be found." >&2
+        exit 1
+    fi
+fi
+
+if [ ! -d "$NOTES_DIR" ]; then
+    echo "Error: NOTES_DIR '$NOTES_DIR' is not a directory." >&2
+    exit 1
+fi
+
+cd "$QUARTZ_DIR"
+
+# Run npx quartz
+# Following the prompt's structure but using NOTES_DIR for the flag
+# npx quartz ${argv[1]} --directory ${NOTES_DIR} "$@"
+# We use ${1:-} for argv[1] to handle cases with no arguments.
+npx quartz "${1:-}" --directory "$NOTES_DIR" "$@"

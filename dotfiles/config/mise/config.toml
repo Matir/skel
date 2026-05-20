@@ -9,9 +9,8 @@ uv_venv_auto = true
 
 [tools]
 age = "latest"
-age-plugin-yubikey = "latest"
 usage = "latest"
-uv = "latest"
+uv = "0.11.8"
 
 [hooks]
 postinstall = "mise sync python --uv"

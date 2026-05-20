@@ -185,6 +185,9 @@ have_command() {
 if test -d ${HOME}/.local/bin ; then
   export PATH="${HOME}/.local/bin:${PATH}"
 fi
+if test -d ${HOME}/.npm-packages/bin ; then
+  export PATH="${HOME}/.npm-packages/bin:${PATH}"
+fi
 
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
