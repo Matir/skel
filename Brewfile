@@ -1,4 +1,5 @@
 tap "dart-lang/dart"
+tap "holtwick/tap"
 tap "sass/sass"
 
 brew "ack"
@@ -8,11 +9,11 @@ brew "autoconf"
 brew "automake"
 brew "b2-tools"
 brew "bat"
-brew "bazelisk"
 brew "binwalk"
 brew "cask"
 brew "ccache"
 brew "certbot"
+brew "cloudflared"
 brew "cmake"
 brew "colima"
 brew "devcontainer"
@@ -22,6 +23,7 @@ brew "direnv"
 brew "duck"
 brew "earthly"
 brew "esptool"
+brew "fish"
 brew "gh"
 brew "ghidra", link: false
 brew "git"
@@ -31,14 +33,18 @@ brew "gnupg"
 brew "go"
 brew "gradle"
 brew "hf"
+brew "holtwick/tap/bx"
 brew "htop"
 brew "httpie"
-brew "huggingface-cli"
 brew "hugo"
 brew "imagemagick"
 brew "john-jumbo"
 brew "jq"
+brew "kubeconform"
+brew "kubectx"
+brew "librsvg"
 brew "lima"
+brew "minikube"
 brew "mise"
 brew "mosh"
 brew "neovim"
@@ -93,6 +99,7 @@ cask "rectangle"
 cask "scroll-reverser"
 cask "temurin"
 cask "veracrypt"
+cask "wezterm"
 cask "zulu@17"
 
 def is_corp?
@@ -100,13 +107,20 @@ def is_corp?
   `profiles status -type enrollment 2>/dev/null`.include?("Enrolled via DEP: Yes")
 end
 
+if is_corp?
+  brew "bazelisk", link: false
+end
+
 # non-corp
 if !is_corp?
-  brew "bazel"
+  brew "bazelisk"
   brew "openssh"
+
   cask "claude-code"
   cask "cryptomator"
+  cask "keepassxc"
   cask "gcloud-cli"
   cask "google-cloud-sdk"
+  cask "keybase"
   cask "orbstack"
 end

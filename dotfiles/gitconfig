@@ -19,6 +19,9 @@
 [difftool]
   prompt = false
 
+[difftool "difftastic"]
+  cmd = difft "$LOCAL" "$REMOTE"
+
 [alias]
   st = status
   last = log -1 HEAD
