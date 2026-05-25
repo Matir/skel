@@ -118,6 +118,7 @@ end
 if !is_corp?
   brew "bazelisk"
   brew "openssh"
+  brew "virt-manager"
 
   cask "claude-code"
   cask "cryptomator"
@@ -126,4 +127,5 @@ if !is_corp?
   cask "google-cloud-sdk"
   cask "keybase"
   cask "orbstack"
+  cask "jordanbaird-ice"
 end
