@@ -10,6 +10,20 @@ HOME=${HOME:-$(cd ~ && pwd)}
 LOCAL_BIN="${HOME}/.local/bin"
 STARSHIP_INSTALL_HASH="52c64f14a558034ebeb1907ea9364e802b32474576fd3e68265f73bc33cc8fbb"
 
+# 1. Get the raw script path (handles Bash vs Zsh)
+TARGET="${BASH_SOURCE[0]}"
+
+# 2. Loop to resolve symlinks completely
+while [ -L "$TARGET" ]; do
+  DIR=$(cd -P "$(dirname -- "$TARGET")" &>/dev/null && pwd)
+  TARGET=$(readlink "$TARGET")
+  # If $TARGET is a relative symlink, resolve it relative to the symlink's directory
+  [[ $TARGET != /* ]] && TARGET="$DIR/$TARGET"
+done
+
+# 3. Get the final absolute directory
+SCRIPT_DIR="$(cd -P "$(dirname -- "$TARGET")" &>/dev/null && pwd)"
+
 have_command() {
   command -v "${1}" >/dev/null 2>&1
 }
@@ -296,7 +310,7 @@ read_saved_prefs
 
 # Defaults if not passed in or saved.
 # TODO: use flags instead of environment variables.
-: ${BASEDIR:=$HOME/.skel}
+: ${BASEDIR:=${SCRIPT_DIR}}
 : ${MINIMAL:=0}
 : ${INSTALL_KEYS:=1}
 : ${TRUST_ALL_KEYS:=0}
