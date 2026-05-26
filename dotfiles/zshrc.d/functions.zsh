@@ -2,31 +2,18 @@ function dumpenv {
   if [ "$(uname)" = "Linux" ]; then
     tr '\0' '\n' < /proc/${1}/environ
   elif [ "$(uname)" = "Darwin" ]; then
-    # macOS doesn't have /proc, use ps instead. 
+    # macOS doesn't have /proc, use ps instead.
     # Note: this may truncate if environment is very large.
     ps -p ${1} -wwwe -o command= | tr ' ' '\n' | grep '='
   fi
 }
 
-if test -x "/sbin/starship" ; then
-  _STARSHIP_PATH="/sbin/starship"
+_STARSHIP_PATH="$(find_first "$(command -v starship)" /sbin/starship "${HOME}/tools/starship/starship" "${HOME}/.local/bin/starship" /usr/local/bin/starship)"
+if test -n "$_STARSHIP_PATH" ; then
   function starship_prompt {
-    eval "$(/sbin/starship init zsh)"
-  }
-elif test -x "${HOME}/tools/starship/starship" ; then
-  _STARSHIP_PATH="${HOME}/tools/starship/starship"
-  function starship_prompt {
-    eval "$($HOME/tools/starship/starship init zsh)"
+    eval "$($_STARSHIP_PATH init zsh)"
   }
 fi
-if test -f ${HOME}/.zprompt ; then
-  if test "$(cat ${HOME}/.zprompt)" = "starship" ; then
-    if test -n "${_STARSHIP_PATH:-}" ; then
-      eval "$(${_STARSHIP_PATH} init zsh)"
-    fi
-  fi
-fi
-unset _STARSHIP_PATH
 
 function hashall {
   tee >(md5sum) | tee >(sha1sum) | sha256sum

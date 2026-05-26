@@ -7,14 +7,30 @@ set -o errexit
 set -o shwordsplit 2>/dev/null || true  # Make zsh behave like bash
 
 HOME=${HOME:-$(cd ~ && pwd)}
-
-
+LOCAL_BIN="${HOME}/.local/bin"
+STARSHIP_INSTALL_HASH="52c64f14a558034ebeb1907ea9364e802b32474576fd3e68265f73bc33cc8fbb"
 
 have_command() {
   command -v "${1}" >/dev/null 2>&1
 }
 
+sudo_group() {
+  if [[ "$(id -u)" -eq 0 ]] ; then
+    return 0
+  fi
+  have_command sudo && ( id -Gn | grep -q '\bsudo\b' )
+}
 
+maybe_sudo() {
+  if [[ "$(id -u)" -eq 0 ]] ; then
+    "$@"
+    return
+  fi
+  if ! have_command sudo ; then
+    return 1
+  fi
+  sudo "$@"
+}
 
 link_directory_contents() {
   local SRCDIR="${1}"
@@ -176,6 +192,41 @@ install_dotfiles() {
   fi
 }
 
+install_starship() {
+  if have_command starship ; then return 0 ; fi
+  if have_command apt-get && sudo_group ; then
+    if maybe_sudo apt-get install -qy starship ; then
+      return 0
+    fi
+    echo "apt-get install starship failed, installing locally" >&2
+  fi
+  local tmpd
+  tmpd="$(mktemp -d tmp.starship.XXXXXX)"
+  local install_path="${tmpd}/install.sh"
+  if have_command curl ; then
+    curl -sSL --show-error -o "${install_path}" https://starship.rs/install.sh
+  elif have_command wget ; then
+    wget -q -O "${install_path}" --https-only https://starship.rs/install.sh
+  else
+    echo "No curl or wget available!!" >&2
+    return 1
+  fi
+  local dl_hash
+  dl_hash="$(sha256sum "${install_path}" | awk '{print $1}')"
+  if [[ "$dl_hash" != "${STARSHIP_INSTALL_HASH}" ]] ; then
+    echo "Hash check failed!!" >&2
+    echo "Expected: ${STARSHIP_INSTALL_HASH}, got ${dl_hash} on ${install_path}" >&2
+    return 1
+  fi
+  if sudo_group ; then
+    if maybe_sudo sh "${install_path}" ; then
+      return 0
+    fi
+    echo "root installation failed, falling back to user-local" >&2
+  fi
+  sh "${install_path}" -b "${LOCAL_BIN}"
+}
+
 install_main() {
   if [[ -d "${BASEDIR}/.git" ]] && have_command git ; then
     if [[ -z "$(git -C "${BASEDIR}" status --porcelain)" ]]; then
@@ -185,6 +236,8 @@ install_main() {
     fi
   fi
   [[ "$MINIMAL" = 1 ]] || {
+    mkdir -p "${LOCAL_BIN}"
+    install_starship
 
     # Install vim-plug if not already present
     local VIM_PLUG_URL="https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
@@ -199,22 +252,22 @@ install_main() {
       else
         echo "Error: curl not found. Cannot install vim-plug." >&2
       fi
-        fi
+    fi
 
-        # Install TPM (Tmux Plugin Manager) if not already present
-        local TPM_DIR="${HOME}/.tmux/plugins/tpm"
-        local TPM_REPO="https://github.com/tmux-plugins/tpm"
+    # Install TPM (Tmux Plugin Manager) if not already present
+    local TPM_DIR="${HOME}/.tmux/plugins/tpm"
+    local TPM_REPO="https://github.com/tmux-plugins/tpm"
 
-        if [[ ! -d "${TPM_DIR}" ]]; then
-          verbose "Installing TPM (Tmux Plugin Manager)..."
-          if have_command git; then
-            git clone --depth 1 "${TPM_REPO}" "${TPM_DIR}"
-          else
-            echo "Error: git not found. Cannot install TPM." >&2
-          fi
-        fi
+    if [[ ! -d "${TPM_DIR}" ]]; then
+      verbose "Installing TPM (Tmux Plugin Manager)..."
+      if have_command git; then
+        git clone --depth 1 "${TPM_REPO}" "${TPM_DIR}"
+      else
+        echo "Error: git not found. Cannot install TPM." >&2
+      fi
+    fi
 
-        # try to update dotfile overlays
+    # try to update dotfile overlays
     if [[ -d "${BASEDIR}/dotfile_overlays" ]] ; then
       for dotfiledir in "${BASEDIR}/dotfile_overlays/"* ; do
         if [[ -d "${dotfiledir}/.git" ]] ; then

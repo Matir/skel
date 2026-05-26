@@ -59,6 +59,8 @@ DIRSTACKSIZE=16
 
 export OS="$(uname 2>/dev/null || echo "Unknown")"
 
+source ~/.commonrc.sh
+
 # Set terminal title
 case $TERM in
   # Only set the title for terminals that are likely to support it
@@ -162,25 +164,6 @@ bindkey '^w' backward-kill-word
 bindkey '^r' history-incremental-search-backward
 # delete really deletes
 bindkey "^[[3~" delete-char
-
-source_if_existing() {
-  [[ -f "${1}" ]] && source "${1}"
-}
-
-source_first_existing() {
-  while (($#)); do
-    if test -e "${1}" ; then
-      source "${1}"
-      return
-    fi
-    shift
-  done
-  return 1
-}
-
-have_command() {
-  command -v "${1}" &>/dev/null
-}
 
 if test -d ${HOME}/.local/bin ; then
   export PATH="${HOME}/.local/bin:${PATH}"
