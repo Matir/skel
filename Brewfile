@@ -21,9 +21,11 @@ brew "dfu-util"
 brew "difftastic"
 brew "direnv"
 brew "duck"
+brew "dust"
 brew "earthly"
 brew "esptool"
 brew "fish"
+brew "fq"
 brew "gh"
 brew "ghidra", link: false
 brew "git"
@@ -58,6 +60,7 @@ brew "pkgconf"
 brew "protobuf"
 brew "pwgen"
 brew "pwntools"
+brew "python@3.13"
 brew "qemu"
 brew "restic"
 brew "ripgrep"
@@ -115,6 +118,7 @@ end
 if !is_corp?
   brew "bazelisk"
   brew "openssh"
+  brew "virt-manager"
 
   cask "claude-code"
   cask "cryptomator"
@@ -123,4 +127,5 @@ if !is_corp?
   cask "google-cloud-sdk"
   cask "keybase"
   cask "orbstack"
+  cask "jordanbaird-ice"
 end
