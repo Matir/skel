@@ -165,12 +165,9 @@ bindkey '^r' history-incremental-search-backward
 # delete really deletes
 bindkey "^[[3~" delete-char
 
-if test -d ${HOME}/.local/bin ; then
-  export PATH="${HOME}/.local/bin:${PATH}"
-fi
-if test -d ${HOME}/.npm-packages/bin ; then
-  export PATH="${HOME}/.npm-packages/bin:${PATH}"
-fi
+
+path_prepend "${HOME}/.npm-packages/bin"
+path_prepend "${HOME}/.local/bin"
 
 # Source extras and aliases if interactive
 if [[ $- == *i* ]] ; then
@@ -256,8 +253,7 @@ if [[ $- == *i* ]] ; then
   if command -v direnv >/dev/null 2>&1 ; then
     eval "$(direnv hook zsh)"
   fi
-  test -e "${HOME}/.iterm2_shell_integration.zsh" && \
-    source "${HOME}/.iterm2_shell_integration.zsh" || true
+  source_if_existing "${HOME}/.iterm2_shell_integration.zsh"
   # mise, if installed
   command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
 
@@ -272,11 +268,11 @@ if [ -x /usr/bin/ack-grep ] ; then
 fi
 
 # I want these first always
-PATH="${HOME}/bin:${PATH}"
+path_prepend "${HOME}/bin"
 if [[ "$(uname)" == "Darwin" ]]; then
-  PATH="${HOME}/bin/macos:${PATH}"
+  path_prepend "${HOME}/bin/macos"
 elif [[ "$(uname)" == "Linux" ]]; then
-  PATH="${HOME}/bin/linux:${PATH}"
+  path_prepend "${HOME}/bin/linux"
 fi
 
 # Load any local settings
