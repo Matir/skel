@@ -28,6 +28,27 @@ have_command() {
   command -v "${1}" >/dev/null 2>&1
 }
 
+raw_sha256sum() {
+  local file="${1}"
+  if [[ -z "${file}" ]]; then
+    echo "Error: No file specified" >&2
+    return 1
+  fi
+  if [[ ! -f "${file}" ]]; then
+    echo "Error: File not found: ${file}" >&2
+    return 1
+  fi
+
+  if have_command sha256sum ; then
+    sha256sum "${file}" | awk '{print $1}'
+  elif have_command shasum ; then
+    shasum -a 256 "${file}" | awk '{print $1}'
+  else
+    echo "Error: Neither sha256sum nor shasum is available" >&2
+    return 1
+  fi
+}
+
 sudo_group() {
   if [[ "$(id -u)" -eq 0 ]] ; then
     return 0
@@ -73,7 +94,7 @@ ssh_key_already_installed() {
   fi
   # Extract the key data (field 2) from the key file, ignoring comments
   local key_data
-  key_data=$(awk '/^ssh-/ {print $2}' "$1")
+  key_data=$(awk '/^(ssh|ecdsa|sk)-/ {print $2}' "$1")
   if [[ -z "${key_data}" ]]; then
     # Not a valid key file
     return 1
@@ -120,7 +141,7 @@ install_known_hosts() {
   verbose 'Installing known hosts...' >&2
   local skel_hosts="${BASEDIR}/keys/known_hosts"
   local user_hosts="${HOME}/.ssh/known_hosts"
-  local merge_script="${BASEDIR}/skeltools/merge_authorized_keys"
+  local merge_script="${BASEDIR}/skeltools/merge_known_hosts"
 
   if [[ ! -f "${skel_hosts}" ]]; then
     return 0
@@ -208,6 +229,15 @@ install_dotfiles() {
 
 install_starship() {
   if have_command starship ; then return 0 ; fi
+
+  if have_command brew ; then
+    verbose "Attempting to install Starship via Homebrew..."
+    if brew install starship ; then
+      return 0
+    fi
+    echo "brew install starship failed, trying other methods..." >&2
+  fi
+
   if have_command apt-get && sudo_group ; then
     if maybe_sudo apt-get install -qy starship ; then
       return 0
@@ -215,7 +245,9 @@ install_starship() {
     echo "apt-get install starship failed, installing locally" >&2
   fi
   local tmpd
-  tmpd="$(mktemp -d tmp.starship.XXXXXX)"
+  tmpd="$(mktemp -d tmp.starship.XXXXXX)" || return 1
+  trap '[[ -n "${tmpd}" && -d "${tmpd}" ]] && rm -rf "${tmpd}"' EXIT
+
   local install_path="${tmpd}/install.sh"
   if have_command curl ; then
     curl -sSL --show-error -o "${install_path}" https://starship.rs/install.sh
@@ -223,22 +255,30 @@ install_starship() {
     wget -q -O "${install_path}" --https-only https://starship.rs/install.sh
   else
     echo "No curl or wget available!!" >&2
+    rm -rf "${tmpd}"
+    trap - EXIT
     return 1
   fi
   local dl_hash
-  dl_hash="$(sha256sum "${install_path}" | awk '{print $1}')"
+  dl_hash="$(raw_sha256sum "${install_path}")"
   if [[ "$dl_hash" != "${STARSHIP_INSTALL_HASH}" ]] ; then
     echo "Hash check failed!!" >&2
     echo "Expected: ${STARSHIP_INSTALL_HASH}, got ${dl_hash} on ${install_path}" >&2
+    rm -rf "${tmpd}"
+    trap - EXIT
     return 1
   fi
   if sudo_group ; then
     if maybe_sudo sh "${install_path}" ; then
+      rm -rf "${tmpd}"
+      trap - EXIT
       return 0
     fi
     echo "root installation failed, falling back to user-local" >&2
   fi
   sh "${install_path}" -b "${LOCAL_BIN}"
+  rm -rf "${tmpd}"
+  trap - EXIT
 }
 
 install_main() {
