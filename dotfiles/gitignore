@@ -38,3 +38,4 @@ mise.local.toml
 .copilot/
 .cursor/
 .gemini/
+.jetskicli/
