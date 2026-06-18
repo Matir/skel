@@ -122,9 +122,13 @@ else
     # Fallback paths in order: ~/Notes, ~/Obsidian/Notes, ~/Personal/Notes, ~/Projects/Notes.
     FALLBACKS=(
       "$HOME/Notes"
+      "$HOME/notes"
       "$HOME/Obsidian/Notes"
+      "$HOME/Obsidian/notes"
       "$HOME/Personal/Notes"
+      "$HOME/Personal/notes"
       "$HOME/Projects/Notes"
+      "$HOME/Projects/notes"
     )
     for path in "${FALLBACKS[@]}"; do
       if [[ -d "$path" && -d "$path/.obsidian" ]]; then
