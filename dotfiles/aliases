@@ -28,6 +28,9 @@ alias clear-gpg-agent="echo RELOADAGENT | gpg-connect-agent"
 # Earthly ssh
 alias earthly='earthly --ssh-auth-sock ""'
 
+# ESP-IDF
+alias activate_idf="source ~/.espressif/tools/activate_idf_v*.sh"
+
 if [ "$(uname)" = "Linux" ]; then
   # Cryptsetup alias
   alias luksFormat='cryptsetup luksFormat --type=luks2 --pbkdf-memory=2560000 --pbkdf=argon2id -i 15000 -s 512 -h sha256 -c aes-xts-plain64'
