@@ -1,6 +1,6 @@
 tap "dart-lang/dart", trusted: true
 tap "espressif/eim"
-tap "holtwick/tap"
+tap "holtwick/tap", trusted: true
 tap "sass/sass", trusted: true
 
 brew "ack"
@@ -34,6 +34,7 @@ brew "ghidra", link: false
 brew "git"
 brew "git-delta"
 brew "git-lfs"
+brew "git-xet"
 brew "glib"
 brew "gnupg"
 brew "go"
@@ -78,7 +79,7 @@ brew "ruby@3.3"
 brew "rustup"
 brew "sass/sass/migrator"
 brew "sass/sass/sass"
-brew "sdl2"
+brew "sdl2-compat"
 brew "shellcheck"
 brew "smartmontools"
 brew "starship"
