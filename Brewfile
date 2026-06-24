@@ -92,7 +92,6 @@ brew "zlib"
 brew "zsh-syntax-highlighting"
 
 cask "codeql"
-cask "codex"
 cask "cyberduck"
 cask "font-fira-code-nerd-font"
 cask "font-fira-mono-nerd-font"
@@ -132,6 +131,7 @@ if !is_corp?
   brew "virt-manager"
 
   cask "claude-code"
+  cask "codex"
   cask "cryptomator"
   cask "keepassxc"
   cask "gcloud-cli"
