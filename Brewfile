@@ -113,7 +113,6 @@ cask "raycast"
 cask "rectangle"
 cask "scroll-reverser"
 cask "temurin"
-cask "veracrypt"
 cask "wezterm"
 cask "zulu@17"
 
@@ -139,4 +138,5 @@ if !is_corp?
   cask "keybase"
   cask "orbstack"
   cask "jordanbaird-ice@beta"
+  cask "veracrypt"
 end
