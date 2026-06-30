@@ -14,4 +14,8 @@
   have_command docker && \
     missing_comp _docker && \
     docker completion zsh > $COMPDIR/_docker || true
+
+  have_command resticprofile && \
+    missing_comp _resticprofile && \
+    resticprofile generate --zsh-completion > $COMPDIR/_resticprofile || true
 } &>/dev/null &!

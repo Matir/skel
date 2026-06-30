@@ -104,3 +104,9 @@
 
 [rerere]
   enabled = true
+[lfs]
+	concurrenttransfers = 3
+[lfs "customtransfer.xet"]
+	path = git-xet
+	args = transfer
+	concurrent = true
