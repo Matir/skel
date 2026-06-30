@@ -1,6 +1,6 @@
 tap "dart-lang/dart", trusted: true
 tap "espressif/eim"
-tap "holtwick/tap"
+tap "holtwick/tap", trusted: true
 tap "sass/sass", trusted: true
 
 brew "ack"
@@ -34,6 +34,7 @@ brew "ghidra", link: false
 brew "git"
 brew "git-delta"
 brew "git-lfs"
+brew "git-xet"
 brew "glib"
 brew "gnupg"
 brew "go"
@@ -78,7 +79,7 @@ brew "ruby@3.3"
 brew "rustup"
 brew "sass/sass/migrator"
 brew "sass/sass/sass"
-brew "sdl2"
+brew "sdl2-compat"
 brew "shellcheck"
 brew "smartmontools"
 brew "starship"
@@ -92,7 +93,6 @@ brew "zlib"
 brew "zsh-syntax-highlighting"
 
 cask "codeql"
-cask "codex"
 cask "cyberduck"
 cask "font-fira-code-nerd-font"
 cask "font-fira-mono-nerd-font"
@@ -113,7 +113,6 @@ cask "raycast"
 cask "rectangle"
 cask "scroll-reverser"
 cask "temurin"
-cask "veracrypt"
 cask "wezterm"
 cask "zulu@17"
 
@@ -133,10 +132,12 @@ if !is_corp?
   brew "virt-manager"
 
   cask "claude-code"
+  cask "codex"
   cask "cryptomator"
   cask "keepassxc"
   cask "gcloud-cli"
   cask "keybase"
   cask "orbstack"
   cask "jordanbaird-ice@beta"
+  cask "veracrypt"
 end
