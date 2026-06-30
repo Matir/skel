@@ -45,3 +45,6 @@
 hibernationfile
 sleepimage
 swapfile
+
+# Android and other big tools
+/Users/*/.android

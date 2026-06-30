@@ -86,48 +86,6 @@ link_directory_contents() {
     done
 }
 
-ssh_key_already_installed() {
-  # Return 1 if the key isn't already installed, 0 if it is
-  local AK="${HOME}/.ssh/authorized_keys"
-  if [[ ! -f "$AK" ]] ; then
-    return 1
-  fi
-  # Extract the key data (field 2) from the key file, ignoring comments
-  local key_data
-  key_data=$(awk '/^(ssh|ecdsa|sk)-/ {print $2}' "$1")
-  if [[ -z "${key_data}" ]]; then
-    # Not a valid key file
-    return 1
-  fi
-  # Use grep with fixed-string matching to see if the key is present.
-  # The exit code of grep is 0 on match, 1 on no match, which is perfect.
-  grep -F -q -- "${key_data}" "${AK}"
-}
-
-install_ssh_keys() {
-  # Install SSH keys
-  verbose 'Installing SSH keys...'
-  local AK="${HOME}/.ssh/authorized_keys"
-  local key
-  local keydir
-  if [[ "${TRUST_ALL_KEYS}" = 1 ]] ; then
-    keydir="${BASEDIR}/keys/ssh"
-  else
-    keydir="${BASEDIR}/keys/ssh/trusted"
-  fi
-  for key in "${keydir}"/* ; do
-    if [[ ! -f "${key}" ]] ; then
-      continue
-    fi
-    if ssh_key_already_installed "${key}" ; then
-      verbose "Key $(basename "${key}") already installed..."
-      continue
-    fi
-    echo "# $(basename "${key}") added from skel on $(date +%Y-%m-%d)" >> "${AK}"
-    cat "${key}" >> "${AK}"
-  done
-}
-
 install_gpg_keys() {
   have_command gpg || \
     return 0
@@ -172,7 +130,10 @@ install_known_hosts() {
 }
 
 install_keys() {
-  install_ssh_keys
+  if [[ -x "${BASEDIR}/bin/update-authorized-keys" ]]; then
+    verbose 'Installing SSH keys via update-authorized-keys...'
+    printf 'y\n' | "${BASEDIR}/bin/update-authorized-keys"
+  fi
   install_gpg_keys
   install_known_hosts
 }
@@ -195,7 +156,6 @@ save_prefs() {
     echo "BASEDIR=\"${BASEDIR}\""
     echo "MINIMAL=\"${MINIMAL}\""
     echo "INSTALL_KEYS=\"${INSTALL_KEYS}\""
-    echo "TRUST_ALL_KEYS=\"${TRUST_ALL_KEYS}\""
     echo "VERBOSE=\"${VERBOSE}\""
   } >| "$pref_file"
 }
@@ -353,7 +313,6 @@ read_saved_prefs
 : ${BASEDIR:=${SCRIPT_DIR}}
 : ${MINIMAL:=0}
 : ${INSTALL_KEYS:=1}
-: ${TRUST_ALL_KEYS:=0}
 : ${VERBOSE:=0}
 : ${SAVE:=1}
 
