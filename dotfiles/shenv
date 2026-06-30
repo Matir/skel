@@ -119,6 +119,8 @@ _CANDIDATE=""
 # rewrites it to the stable symlink; the shell inherits the original raw path).
 if [ -S "${SSH_AUTH_SOCK:-}" ] && ! _is_link_path "${SSH_AUTH_SOCK}"; then
   _CANDIDATE="${SSH_AUTH_SOCK}"
+  export ORIG_SSH_AUTH_SOCK
+  ORIG_SSH_AUTH_SOCK="${SSH_AUTH_SOCK}"
 fi
 
 # 2. Only look for a system agent if the stable link is already broken.  If the link is
@@ -162,7 +164,7 @@ if [ ! -S "${_CANDIDATE}" ] && [ ! -S "${_SSH_AUTH_LINK}" ]; then
     _SEARCH=""
     for _d in "/run/user/${_U}" /tmp; do [ -d "${_d}" ] && _SEARCH="${_SEARCH} ${_d}"; done
     if [ -n "${_SEARCH}" ]; then
-      _CANDIDATE=$(find ${_SEARCH} -maxdepth 2 -type s -name 'agent.*' 2>/dev/null | grep -F -v "${_SSH_AUTH_LINK}" | head -n 1)
+      _CANDIDATE=$(find "${_SEARCH}" -maxdepth 2 -type s -name 'agent.*' 2>/dev/null | grep -F -v "${_SSH_AUTH_LINK}" | head -n 1)
     fi
   fi
 fi
