@@ -72,3 +72,27 @@ function generate_secure_key {
   local BYTES=$((BITS/8))
   head -c "${BYTES}" /dev/urandom | ${(s: :)ENCODE}
 }
+
+function reset-ssh-socket {
+  reset_ssh_socket "$@"
+}
+
+function with-local-ssh-agent {
+  local sock
+  sock=$(get_local_ssh_agent_sock)
+  if [[ -z "${sock}" ]] ; then
+    echo "with-local-ssh-agent: no valid local ssh-agent socket found." >&2
+    return 1
+  fi
+  if [ "$#" -eq 0 ] ; then
+    (
+      export SSH_AUTH_SOCK="${sock}"
+      "${SHELL:-zsh}"
+    )
+  else
+    (
+      export SSH_AUTH_SOCK="${sock}"
+      eval "$@"
+    )
+  fi
+}
