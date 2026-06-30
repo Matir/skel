@@ -76,7 +76,8 @@ run_self_test() {
     
     cat <<EOF > "${target}"
 ${key_man}
-${key1} # This should be removed as it's now managed
+# This is a manual annotation for key1
+${key1}
 EOF
 
     echo "Executing script in test mode..."
@@ -106,6 +107,9 @@ EOF
     
     echo -n "Check masking... "
     if ! grep -q "masked" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
+
+    echo -n "Check user comment preservation... "
+    if grep -q "This is a manual annotation for key1" "${target}"; then echo "OK"; else echo "FAIL"; exit 1; fi
 
     echo "Self-test passed successfully!"
     exit 0
@@ -138,6 +142,40 @@ mkdir -p "$(dirname "${TARGET_FILE}")"
 TMP_FILE=$(mktemp)
 CLEANUP_FILES+=("${TMP_FILE}")
 
+# Build a map of key-signature -> user comments from the existing target file.
+# Comments above keys are preserved into the managed block (# Source: lines are excluded).
+# Multiple comment lines are joined with SUBSEP (\034) for safe transport through AWK.
+USER_COMMENTS_FILE=$(mktemp)
+CLEANUP_FILES+=("${USER_COMMENTS_FILE}")
+if [[ -f "${TARGET_FILE}" ]]; then
+    awk -v begin="${BEGIN_MARKER}" -v end="${END_MARKER}" '
+    BEGIN { pending="" }
+    $0 == begin { pending=""; next }
+    $0 == end   { pending=""; next }
+    /^# Source:/ { next }
+    /^[[:space:]]*#/ {
+        pending = (pending == "" ? $0 : pending SUBSEP $0)
+        next
+    }
+    /^[[:space:]]*$/ { pending=""; next }
+    {
+        n = split($0, parts, " ")
+        sig = ""
+        for (i=1; i<=n; i++) {
+            sig = (sig == "" ? parts[i] : sig " " parts[i])
+            if (parts[i] ~ /^(ssh-|ecdsa-|sk-)/ && i < n) {
+                sig = sig " " parts[i+1]
+                break
+            }
+        }
+        if (sig != "" && pending != "") {
+            print sig "\t" pending
+        }
+        pending = ""
+    }
+    ' "${TARGET_FILE}" > "${USER_COMMENTS_FILE}"
+fi
+
 collect_keys() {
     local dirs=("${@}")
     for dir in "${dirs[@]}"; do
@@ -158,13 +196,23 @@ collect_keys() {
 }
 
 # Use a HEREDOC for the complex AWK script to avoid shell interpolation issues
-MANAGED_BLOCK=$(collect_keys "${SOURCE_DIRS[@]}" | awk -F'\t' '
+MANAGED_BLOCK=$(collect_keys "${SOURCE_DIRS[@]}" | awk -F'\t' -v user_comments_file="${USER_COMMENTS_FILE}" '
+BEGIN {
+    while ((getline line < user_comments_file) > 0) {
+        tab = index(line, "\t")
+        if (tab > 0) {
+            sig = substr(line, 1, tab - 1)
+            user_comments[sig] = substr(line, tab + 1)
+        }
+    }
+    close(user_comments_file)
+}
 {
     # Splitting on the first tab manually to be robust
     tab_idx = index($0, "\t")
     source = substr($0, 1, tab_idx - 1)
     full_line = substr($0, tab_idx + 1)
-    
+
     # Signature detection: all options + key type + key data
     # (Excludes the comment at the end)
     n = split(full_line, parts, " ")
@@ -191,6 +239,12 @@ END {
     for (i=1; i<=count; i++) {
         sig = order[i]
         print "# Source: " sources[sig]
+        if (sig in user_comments) {
+            n = split(user_comments[sig], comment_lines, SUBSEP)
+            for (j=1; j<=n; j++) {
+                print comment_lines[j]
+            }
+        }
         print keys[sig]
     }
 }')
