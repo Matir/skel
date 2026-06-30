@@ -214,7 +214,7 @@ if [[ $- == *i* ]] ; then
   if [[ ! -f "$DUMPFILE" || ( -n "$newest_comp" && "$newest_comp" -nt "$DUMPFILE" ) ]]; then
     compinit -i -d "$DUMPFILE"
     # Asynchronously compile the dump file with an atomic rename
-    { zcompile "$DUMPFILE.zwc.tmp" "$DUMPFILE" && mv -f "$DUMPFILE.zwc.tmp" "$DUMPFILE.zwc" } &!
+    { zcompile "$DUMPFILE.zwc.$$.tmp" "$DUMPFILE" && mv -f "$DUMPFILE.zwc.$$.tmp" "$DUMPFILE.zwc" } &!
   else
     compinit -C -i -d "$DUMPFILE"
   fi

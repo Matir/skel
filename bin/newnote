@@ -1,0 +1,212 @@
+#!/usr/bin/env bash
+
+# Exit on error, undefined variables, and pipe failures
+set -euo pipefail
+
+show_help() {
+  cat << EOF
+Usage: $(basename "$0") [options] <note_name_or_path>
+
+Create a new note in your Obsidian vault.
+
+Options:
+  -v, --vault <dir>      Specify the Obsidian vault directory.
+  --overwrite            Overwrite the file if it already exists.
+  -h, --help             Show this help message.
+EOF
+}
+
+VAULT_DIR=""
+OVERWRITE="false"
+NOTE_PATH=""
+
+# Parse arguments
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    -v|--vault)
+      if [[ -z "${2:-}" ]]; then
+        echo "Error: --vault requires a directory path." >&2
+        exit 1
+      fi
+      VAULT_DIR="$2"
+      shift 2
+      ;;
+    --overwrite)
+      OVERWRITE="true"
+      shift
+      ;;
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    -*)
+      echo "Error: Unknown option: $1" >&2
+      show_help
+      exit 1
+      ;;
+    *)
+      if [[ -n "$NOTE_PATH" ]]; then
+        echo "Error: Multiple note paths provided: $NOTE_PATH and $1" >&2
+        exit 1
+      fi
+      NOTE_PATH="$1"
+      shift
+      ;;
+  esac
+done
+
+if [[ -z "$NOTE_PATH" ]]; then
+  echo "Error: Missing note path/name." >&2
+  show_help
+  exit 1
+fi
+
+# 1. Find the Obsidian vault.
+if [[ -n "$VAULT_DIR" ]]; then
+  # -v/--vault was passed. Check that the directory exists and contains a .obsidian directory.
+  if [[ ! -d "$VAULT_DIR" ]]; then
+    echo "Error: Specified vault directory does not exist: $VAULT_DIR" >&2
+    exit 1
+  fi
+  if [[ ! -d "$VAULT_DIR/.obsidian" ]]; then
+    echo "Error: Specified directory is not an Obsidian vault (missing .obsidian): $VAULT_DIR" >&2
+    exit 1
+  fi
+  VAULT_DIR="$(cd "$VAULT_DIR" && pwd)"
+else
+  # Search directories upward for a parent (or current) directory containing a .obsidian subdirectory.
+  # Stop at the user's home directory or a filesystem boundary.
+  CURRENT_DIR="$PWD"
+  FOUND_VAULT=""
+
+  get_device_id() {
+    local dir="$1"
+    if [[ "$(uname)" == "Darwin" ]]; then
+      stat -f '%d' "$dir" 2>/dev/null || echo ""
+    else
+      stat -c '%d' "$dir" 2>/dev/null || echo ""
+    fi
+  }
+
+  CURRENT_DEV="$(get_device_id "$CURRENT_DIR")"
+
+  while [[ "$CURRENT_DIR" != "/" && "$CURRENT_DIR" != "$HOME" ]]; do
+    if [[ -d "$CURRENT_DIR/.obsidian" ]]; then
+      FOUND_VAULT="$CURRENT_DIR"
+      break
+    fi
+
+    PARENT_DIR="$(dirname "$CURRENT_DIR")"
+    if [[ "$PARENT_DIR" == "$CURRENT_DIR" ]]; then
+      break
+    fi
+
+    # Check filesystem boundary
+    PARENT_DEV="$(get_device_id "$PARENT_DIR")"
+    if [[ -n "$CURRENT_DEV" && -n "$PARENT_DEV" && "$CURRENT_DEV" != "$PARENT_DEV" ]]; then
+      break
+    fi
+
+    CURRENT_DIR="$PARENT_DIR"
+    CURRENT_DEV="$PARENT_DEV"
+  done
+
+  # Check the last checked directory (could be HOME or /)
+  if [[ -z "$FOUND_VAULT" && -d "$CURRENT_DIR/.obsidian" ]]; then
+    FOUND_VAULT="$CURRENT_DIR"
+  fi
+
+  if [[ -n "$FOUND_VAULT" ]]; then
+    VAULT_DIR="$FOUND_VAULT"
+  else
+    # Fallback paths in order: ~/Notes, ~/Obsidian/Notes, ~/Personal/Notes, ~/Projects/Notes.
+    FALLBACKS=(
+      "$HOME/Notes"
+      "$HOME/notes"
+      "$HOME/Obsidian/Notes"
+      "$HOME/Obsidian/notes"
+      "$HOME/Personal/Notes"
+      "$HOME/Personal/notes"
+      "$HOME/Projects/Notes"
+      "$HOME/Projects/notes"
+    )
+    for path in "${FALLBACKS[@]}"; do
+      if [[ -d "$path" && -d "$path/.obsidian" ]]; then
+        VAULT_DIR="$(cd "$path" && pwd)"
+        break
+      fi
+    done
+  fi
+fi
+
+if [[ -z "$VAULT_DIR" ]]; then
+  echo "Error: Could not find an Obsidian vault. Please specify one with -v/--vault." >&2
+  exit 1
+fi
+
+# Strip leading slash from NOTE_PATH to handle relative paths properly
+NOTE_PATH="${NOTE_PATH#/}"
+
+# 2. Determine if current working directory is within the vault.
+# Resolve physical paths to handle symlinks cleanly.
+RESOLVED_PWD="$(pwd -P)"
+RESOLVED_VAULT="$(cd "$VAULT_DIR" && pwd -P)"
+
+if [[ "$RESOLVED_PWD" == "$RESOLVED_VAULT" || "$RESOLVED_PWD" == "$RESOLVED_VAULT"/* ]]; then
+  # Within the vault, treat relative to CWD
+  TARGET_FILE="$PWD/$NOTE_PATH"
+else
+  # Not within the vault, treat relative to vault root
+  TARGET_FILE="$VAULT_DIR/$NOTE_PATH"
+fi
+
+TARGET_DIR="$(dirname "$TARGET_FILE")"
+TARGET_BASE="$(basename "$TARGET_FILE")"
+
+# If there's no file extension on the argument, add .md.
+if [[ "$TARGET_BASE" != *.* ]]; then
+  TARGET_BASE="$TARGET_BASE.md"
+fi
+
+TARGET_FILE="$TARGET_DIR/$TARGET_BASE"
+
+# If the necessary directory components don't exist, create them.
+if [[ ! -d "$TARGET_DIR" ]]; then
+  mkdir -p "$TARGET_DIR"
+fi
+
+# 3. If the file exists and there's no --overwrite argument, throw an error.
+if [[ -f "$TARGET_FILE" && "$OVERWRITE" != "true" ]]; then
+  echo "Error: File already exists: $TARGET_FILE (use --overwrite to replace it)" >&2
+  exit 1
+fi
+
+# 4. If the path ends in .md (case-insensitive), generate appropriate YAML front matter and write it to the new file.
+if [[ "${TARGET_BASE,,}" == *.md ]]; then
+  NOTE_TITLE="${TARGET_BASE%.*}"
+  CURRENT_DATE="$(date +"%Y-%m-%d %H:%M")"
+
+  cat << EOF > "$TARGET_FILE"
+---
+title: "$NOTE_TITLE"
+date: $CURRENT_DATE
+tags: []
+---
+
+EOF
+else
+  # Just touch the file to ensure it exists
+  touch "$TARGET_FILE"
+fi
+
+# 5. Open the user's $EDITOR (falling back to vim/vi if unset) pointing to the new file.
+EDITOR="${EDITOR:-}"
+if [[ -z "$EDITOR" ]]; then
+  if command -v vim >/dev/null 2>&1; then
+    EDITOR="vim"
+  else
+    EDITOR="vi"
+  fi
+fi
+
+exec "$EDITOR" "$TARGET_FILE"
