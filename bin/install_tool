@@ -127,8 +127,10 @@ function get_latest_github_release_url {
     jq -r ".assets[] | select(.name|test(\"${glob}\")) | .browser_download_url"
 }
 
-function require_pipx {
-  command -v pipx >/dev/null 2>&1 || die "Requires pipx"
+function require {
+  local cmd="${1}"
+  local msg="${2:-Requires ${cmd}}"
+  command -v "${cmd}" >/dev/null 2>&1 || die "${msg}"
 }
 
 # Begin main tool selection
@@ -288,10 +290,7 @@ case ${TOOL} in
     git clone "${src}" "${DESTDIR}"
     ;;
   pwndbg)
-    if ! command -v gdb > /dev/null 2>&1 ; then
-      echo 'No gdb available!' >/dev/stderr
-      exit 1
-    fi
+    require gdb "No gdb available!"
     git clone --depth 1 -b stable https://github.com/pwndbg/pwndbg.git "${DESTDIR}"
     PY_PACKAGES=${DESTDIR}/vendor
     mkdir -p "${PY_PACKAGES}"
@@ -311,10 +310,7 @@ case ${TOOL} in
     ;;
   gef)
     makedest_or_die
-    if ! command -v gdb > /dev/null 2>&1 ; then
-      echo 'No gdb available!' >/dev/stderr
-      exit 1
-    fi
+    require gdb "No gdb available!"
     download \
       https://github.com/hugsy/gef/raw/master/gef.py \
       "${DESTDIR}/gef.py"
@@ -441,25 +437,19 @@ EOF
     add_bin_symlink docker-compose
     ;;
   tldr)
-    require_pipx
+    require pipx
     pipx install tldr
     ;;
   blint)
-    require_pipx
+    require pipx
     pipx install blint
     ;;
   dust)
-    if ! command -v cargo >/dev/null 2>&1 ; then
-      echo "This needs cargo (for rust)!" >/dev/stderr
-      exit 1
-    fi
+    require cargo "This needs cargo (for rust)!"
     cargo install du-dust
     ;;
   bottom)
-    if ! command -v cargo >/dev/null 2>&1 ; then
-      echo "This needs cargo (for rust)!" >/dev/stderr
-      exit 1
-    fi
+    require cargo "This needs cargo (for rust)!"
     cargo install bottom
     ;;
   delta)
@@ -527,14 +517,11 @@ EOF
     sh "${rustup_init}" --no-modify-path -y
     ;;
   igrep)
-    if ! command -v cargo >/dev/null 2>&1 ; then
-      echo "This needs cargo (for rust)!" >/dev/stderr
-      exit 1
-    fi
+    require cargo "This needs cargo (for rust)!"
     cargo install igrep
     ;;
   unblob)
-    require_pipx
+    require pipx
     pipx install unblob
     ;;
   fq)
@@ -554,6 +541,14 @@ EOF
         die "gpg verification or decryption failed for mise installer"
       fi
     fi
+    ;;
+  speckit)
+    require uv
+    latest_version=$(curl -s "https://api.github.com/repos/github/spec-kit/releases/latest" | jq -r '.tag_name')
+    if [ -z "${latest_version}" ] || [ "${latest_version}" = "null" ]; then
+      die "Failed to determine latest release version for speckit."
+    fi
+    uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${latest_version}"
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
