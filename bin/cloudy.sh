@@ -4,7 +4,12 @@ set -ueo pipefail
 shopt -s extglob
 
 # get libraries
-. ${HOME}/.local/lib/bash/tui.sh
+if [[ -f "${HOME}/.local/lib/bash/tui.sh" ]]; then
+  . "${HOME}/.local/lib/bash/tui.sh"
+else
+  echo "Error: ${HOME}/.local/lib/bash/tui.sh not found!" >&2
+  exit 1
+fi
 
 COMMANDS=(
   gctx
@@ -43,7 +48,7 @@ _gctx_choose() {
     --format='value(is_active, name, format("{} (as {})", properties.core.project, properties.core.account))')
   local choice
   if choice=$(printf "%-${maxnamelen}s %s\n" "${lines[@]}" | select_entry "gcloud config" "$default") ; then
-    _gctx_set "${choice}"
+    _gctx_set "$(echo "${choice}" | awk '{print $1}')"
   else
     echo "No option selected, leaving unchanged."
   fi
@@ -68,7 +73,7 @@ _gctx_clone() {
   local oldconfig=()
   local line
   while IFS= read -r line ; do
-    old_config+=("$line")
+    oldconfig+=("$line")
   done < <(gcloud config configurations describe "$(_gctx_name)" --format='multi(properties:format="flattened[separator=\" \"]")')
 
   # create new

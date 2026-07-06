@@ -260,6 +260,7 @@ if [[ -f "${TARGET_FILE}" ]]; then
 fi
 
 MANAGED_SIGS_TMP=$(mktemp)
+CLEANUP_FILES+=("${MANAGED_SIGS_TMP}")
 echo "${MANAGED_BLOCK}" | awk '/^[^#]/ {
     n = split($0, parts, " ")
     sig = ""

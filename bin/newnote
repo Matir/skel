@@ -182,13 +182,14 @@ if [[ -f "$TARGET_FILE" && "$OVERWRITE" != "true" ]]; then
 fi
 
 # 4. If the path ends in .md (case-insensitive), generate appropriate YAML front matter and write it to the new file.
-if [[ "${TARGET_BASE,,}" == *.md ]]; then
+if [[ "$TARGET_BASE" =~ \.[mM][dD]$ ]]; then
   NOTE_TITLE="${TARGET_BASE%.*}"
+  NOTE_TITLE_ESCAPED="${NOTE_TITLE//\"/\\\"}"
   CURRENT_DATE="$(date +"%Y-%m-%d %H:%M")"
 
   cat << EOF > "$TARGET_FILE"
 ---
-title: "$NOTE_TITLE"
+title: "$NOTE_TITLE_ESCAPED"
 date: $CURRENT_DATE
 tags: []
 ---

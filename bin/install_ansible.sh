@@ -3,7 +3,7 @@
 # Installs Ansible, trying user-space methods first before falling back to sudo.
 # This script is designed to be idempotent and safe to run multiple times.
 
-set -e # Exit immediately if a command exits with a non-zero status.
+set -euo pipefail # Exit immediately if a command exits with a non-zero status, undefined variable, or pipe failure.
 
 # --- Helper Functions ---
 info() { echo "[INFO] $1"; }
@@ -44,8 +44,8 @@ fi
 
 # Try Python's venv module if pipx failed or wasn't present
 VENV_PATH="${HOME}/.local/share/ansible_venv"
-# Create a temp path to avoid clobbering a failed install
-VENV_TEST_PATH="/tmp/ansible_venv_test_$$"
+# Create a temp path securely to avoid clobbering a failed install
+VENV_TEST_PATH="$(mktemp -d "${TMPDIR:-/tmp}/ansible_venv_test.XXXXXX")"
 if python3 -m venv "${VENV_TEST_PATH}" >/dev/null 2>&1; then
     rm -rf "${VENV_TEST_PATH}" # Clean up test
     info "Python's venv module is available. Creating a virtual environment at ${VENV_PATH}..."
@@ -55,7 +55,7 @@ if python3 -m venv "${VENV_TEST_PATH}" >/dev/null 2>&1; then
         info "Ansible installed successfully into a virtual environment."
         info "To use it, run: '${VENV_PATH}/bin/ansible'"
         info "To make it available everywhere, add its bin directory to your PATH:"
-        info "  echo 'export PATH="${VENV_PATH}/bin:$PATH"' >> ~/.profile"
+        info "  echo 'export PATH=\"${VENV_PATH}/bin:\$PATH\"' >> ~/.profile"
         info "(You may need to source ~/.profile or restart your shell)."
         exit 0
     else
@@ -63,6 +63,7 @@ if python3 -m venv "${VENV_TEST_PATH}" >/dev/null 2>&1; then
         rm -rf "${VENV_PATH}" # Clean up failed attempt
     fi
 else
+    rm -rf "${VENV_TEST_PATH}" # Clean up test after failure
     info "Python's venv module not available or failed to create a test environment."
 fi
 

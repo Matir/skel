@@ -1,7 +1,49 @@
 #!/bin/sh
-set -e
-SKEL_DIR=$(dirname -- "$(readlink -f -- "$HOME/.profile")")
-cd -- "$SKEL_DIR"
-cd -- "$(git rev-parse --show-toplevel)"
+set -eu
+
+resolve_symlink() {
+  _target="$1"
+  if command -v readlink >/dev/null 2>&1 && readlink -f -- "$_target" >/dev/null 2>&1; then
+    readlink -f -- "$_target"
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$_target"
+  else
+    while [ -L "$_target" ]; do
+      _dir=$(cd -P "$(dirname -- "$_target")" >/dev/null 2>&1 && pwd)
+      _target=$(readlink "$_target")
+      case "$_target" in
+        /*) ;;
+        *) _target="$_dir/$_target" ;;
+      esac
+    done
+    echo "$_target"
+  fi
+}
+
+if [ -e "$HOME/.profile" ]; then
+  TARGET=$(resolve_symlink "$HOME/.profile")
+  SKEL_DIR=$(dirname -- "$TARGET")
+else
+  SKEL_DIR=""
+fi
+
+REPO_ROOT=""
+if [ -n "$SKEL_DIR" ] && cd -- "$SKEL_DIR" 2>/dev/null; then
+  REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+fi
+
+if [ -z "$REPO_ROOT" ] || [ ! -f "$REPO_ROOT/install.sh" ]; then
+  SCRIPT_DIR=$(dirname -- "$(resolve_symlink "$0")")
+  if cd -- "$SCRIPT_DIR" 2>/dev/null; then
+    REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || true)
+  fi
+  if [ -z "$REPO_ROOT" ] || [ ! -f "$REPO_ROOT/install.sh" ]; then
+    echo "Error: Could not determine skel repository root." >&2
+    exit 1
+  fi
+fi
+
+cd -- "$REPO_ROOT"
 git pull
-./install.sh
+./install.sh "$@"
+

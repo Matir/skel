@@ -47,7 +47,7 @@ shift $((OPTIND - 1)) # Remove the parsed options
 
 # --- Set target directory ---
 # Use the first remaining argument as the target directory.
-if [ -n "$1" ]; then
+if [ "$#" -gt 0 ]; then
   TARGET_DIR="$1"
 fi
 
@@ -75,7 +75,7 @@ find "${TARGET_DIR}" -type l ! -exec test -e {} \; -print0 | while IFS= read -r 
         continue
     fi
     # Ask the user for confirmation.
-    read -p "Remove broken symlink '${link}'? [y/N] " -n 1 -r
+    read -p "Remove broken symlink '${link}'? [y/N] " -n 1 -r < /dev/tty
     echo # Move to a new line after input.
 
     if [[ $REPLY =~ ^[Yy]$ ]]; then

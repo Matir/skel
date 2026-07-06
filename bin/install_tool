@@ -1,9 +1,11 @@
 #!/bin/bash
 
-set -ue
+set -ueo pipefail
 
-TMPDIR=$(mktemp -d)
+SYS_TMPDIR="${TMPDIR:-/tmp}"
+TMPDIR="$(mktemp -d "${SYS_TMPDIR%/}/install_tool.XXXXXX")"
 trap 'rm -rf -- "${TMPDIR}"' EXIT
+export -n TMPDIR 2>/dev/null || true
 
 REINSTALL=0
 PACKAGES=1
@@ -124,7 +126,7 @@ function get_latest_github_release_url {
   local repo="$1"
   local glob="$2"
   curl -s "https://api.github.com/repos/${repo}/releases/latest" | \
-    jq -r ".assets[] | select(.name|test(\"${glob}\")) | .browser_download_url"
+    jq -r --arg rx "${glob}" '.assets[] | select(.name | test($rx)) | .browser_download_url'
 }
 
 function require {
@@ -466,7 +468,8 @@ EOF
   ropper)
     deb_only
     install_pkgs python3-z3
-    pip3 install --user pyvex ropper
+    require pipx
+    pipx install ropper
     ;;
   kubeconform)
     go install github.com/yannh/kubeconform/cmd/kubeconform@latest

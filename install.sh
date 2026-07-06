@@ -151,12 +151,12 @@ read_saved_prefs() {
 
 save_prefs() {
   [[ "$SAVE" = 1 ]] || return 0
-  local pref_file=${BASEDIR}/.installed-prefs
+  local pref_file="${BASEDIR}/.installed-prefs"
   {
-    echo "BASEDIR=\"${BASEDIR}\""
-    echo "MINIMAL=\"${MINIMAL}\""
-    echo "INSTALL_KEYS=\"${INSTALL_KEYS}\""
-    echo "VERBOSE=\"${VERBOSE}\""
+    printf 'BASEDIR=%q\n' "${BASEDIR}"
+    printf 'MINIMAL=%q\n' "${MINIMAL}"
+    printf 'INSTALL_KEYS=%q\n' "${INSTALL_KEYS}"
+    printf 'VERBOSE=%q\n' "${VERBOSE}"
   } >| "$pref_file"
 }
 
@@ -205,8 +205,7 @@ install_starship() {
     echo "apt-get install starship failed, installing locally" >&2
   fi
   local tmpd
-  tmpd="$(mktemp -d tmp.starship.XXXXXX)" || return 1
-  trap '[[ -n "${tmpd}" && -d "${tmpd}" ]] && rm -rf "${tmpd}"' EXIT
+  tmpd="$(mktemp -d "${TMPDIR:-/tmp}/starship.XXXXXX")" || return 1
 
   local install_path="${tmpd}/install.sh"
   if have_command curl ; then
@@ -216,7 +215,6 @@ install_starship() {
   else
     echo "No curl or wget available!!" >&2
     rm -rf "${tmpd}"
-    trap - EXIT
     return 1
   fi
   local dl_hash
@@ -225,20 +223,17 @@ install_starship() {
     echo "Hash check failed!!" >&2
     echo "Expected: ${STARSHIP_INSTALL_HASH}, got ${dl_hash} on ${install_path}" >&2
     rm -rf "${tmpd}"
-    trap - EXIT
     return 1
   fi
   if sudo_group ; then
     if maybe_sudo sh "${install_path}" ; then
       rm -rf "${tmpd}"
-      trap - EXIT
       return 0
     fi
     echo "root installation failed, falling back to user-local" >&2
   fi
   sh "${install_path}" -b "${LOCAL_BIN}"
   rm -rf "${tmpd}"
-  trap - EXIT
 }
 
 install_main() {

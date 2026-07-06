@@ -72,15 +72,51 @@ shift # Consume the subcommand
 # Separate arguments from the file to be signed
 declare -a remaining_args
 file_to_sign=""
+f_provided=false
+n_provided=false
+I_provided=false
+s_provided=false
+
 while [[ "$#" -gt 0 ]]; do
-  # If we see a non-flag argument, assume it's the file to sign.
-  # This works because the file to sign is the only positional argument.
-  if [[ "$1" != -* ]] && [[ -z "$file_to_sign" ]]; then
-    file_to_sign="$1"
-  else
-    remaining_args+=("$1")
-  fi
-  shift
+  case "$1" in
+    -f)
+      [[ -z "${2:-}" ]] && error "Option -f requires an argument."
+      remaining_args+=("-f" "$2")
+      f_provided=true
+      shift 2
+      ;;
+    -n)
+      [[ -z "${2:-}" ]] && error "Option -n requires an argument."
+      remaining_args+=("-n" "$2")
+      n_provided=true
+      shift 2
+      ;;
+    -I)
+      [[ -z "${2:-}" ]] && error "Option -I requires an argument."
+      remaining_args+=("-I" "$2")
+      I_provided=true
+      shift 2
+      ;;
+    -s)
+      [[ -z "${2:-}" ]] && error "Option -s requires an argument."
+      remaining_args+=("-s" "$2")
+      s_provided=true
+      shift 2
+      ;;
+    -h|--help)
+      usage
+      ;;
+    -*)
+      error "Unknown option: $1"
+      ;;
+    *)
+      if [[ -n "$file_to_sign" ]]; then
+        error "Unexpected positional argument '$1' (already specified '$file_to_sign')."
+      fi
+      file_to_sign="$1"
+      shift
+      ;;
+  esac
 done
 
 # --- Build command based on subcommand ---
@@ -89,18 +125,6 @@ CMD_ARGS=("ssh-keygen" "-Y" "$SUBCOMMAND")
 
 # Append all the flag-based arguments (-f, -n, -I, -s)
 CMD_ARGS+=("${remaining_args[@]}")
-
-# Scan for provided flags to handle defaults correctly
-f_provided=false
-n_provided=false
-I_provided=false
-s_provided=false
-for arg in "${remaining_args[@]}"; do
-  [[ "$arg" == "-f" ]] && f_provided=true
-  [[ "$arg" == "-n" ]] && n_provided=true
-  [[ "$arg" == "-I" ]] && I_provided=true
-  [[ "$arg" == "-s" ]] && s_provided=true
-done
 
 if [[ "$SUBCOMMAND" == "sign" ]]; then
   if [[ -z "$file_to_sign" ]]; then
