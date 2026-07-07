@@ -1,8 +1,11 @@
 # For interactive shells
 [[ -n "$ZSH_PROFILE" ]] && {
   zmodload zsh/datetime
-  zshrc_start_time=$EPOCHREALTIME
   zmodload zsh/zprof
+  export PS4='+[%D{%f} / %D{%s.%N}] %N:%i> '
+  exec 3>&2 2>/tmp/zsh_startup.log
+  set -x
+  zshrc_start_time=$EPOCHREALTIME
 }
 HISTFILE=~/.zhistory
 HISTSIZE=10000
@@ -298,6 +301,8 @@ typeset -U PATH
 
 if [[ -n "$ZSH_PROFILE" ]]; then
   zshrc_end_time=$EPOCHREALTIME
+  set +x
+  exec 2>&3 3>&-
   # Calculation in ms using zsh floating point math
   elapsed_ms=$(( (zshrc_end_time - zshrc_start_time) * 1000 ))
   printf "zshrc done: %.0fms\n" "$elapsed_ms"

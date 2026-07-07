@@ -29,6 +29,9 @@ export WORKON_HOME="$HOME/.virtualenvs"
 # GPG full key id
 export GPG_ID=7FD58D9A196DCEEEAD671F94F4D7A7915DEA789B
 
+# Capture uname early
+_UNAME="$(uname)"
+
 # things we need in all interactive shells
 case "$-" in
   *i*)
@@ -85,7 +88,6 @@ case "$-" in
     export LC_COLLATE=C
     ;;
 esac
-
 
 # Opt out of .net telemetry
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -254,7 +256,7 @@ esac
 
 # Setup XDG-like dirs on MacOS
 # Based on https://leebyron.com/til/mac-xdg/
-if [ "$(uname)" = "Darwin" ] ; then
+if [ "${_UNAME}" = "Darwin" ] ; then
   export XDG_BIN_HOME="${XDG_BIN_HOME:-$HOME/.local/bin}"
   export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$HOME/Library/Caches}"
   export XDG_CONFIG_HOME="${XDG_CONFIG_HOME:-$HOME/.config}"
@@ -263,9 +265,11 @@ if [ "$(uname)" = "Darwin" ] ; then
   export XDG_RUNTIME_DIR="${XDG_RUNTIME_DIR:-$TMPDIR/runtime-$(id -u)}"
   export XDG_STATE_HOME="${XDG_STATE_HOME:-$HOME/.local/state}"
   export PATH="${HOME}/bin/macos:${PATH}"
-elif [ "$(uname)" = "Linux" ] ; then
+elif [ "${_UNAME}" = "Linux" ] ; then
   export PATH="${HOME}/bin/linux:${PATH}"
 fi
+
+unset _UNAME
 
 if test -e "$HOME/.localenv"; then
   # shellcheck source=/dev/null
