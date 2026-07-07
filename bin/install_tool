@@ -40,7 +40,7 @@ shift $((OPTIND-1))
 
 function list_tools {
   echo "Options:" >/dev/stderr
-  awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+\w+)$/{if(s==1){print $1}}' "$0" | sort | while read -r opt; do
+  awk 'BEGIN {s=0;FS=")"};/main tool selection/{s=1};/^\s+[a-zA-Z0-9_.-]+)$/{if(s==1){print $1}}' "$0" | sort | while read -r opt; do
     echo -e "\\t${opt}" >/dev/stderr
   done
 }
@@ -552,6 +552,29 @@ EOF
       die "Failed to determine latest release version for speckit."
     fi
     uv tool install specify-cli --from "git+https://github.com/github/spec-kit.git@${latest_version}"
+    ;;
+  ssh-agent-mux)
+    makedest_or_die
+    os=$(uname -s | tr '[:upper:]' '[:lower:]')
+    case "$(uname -m)" in
+      x86_64|amd64)
+        arch="amd64"
+        ;;
+      aarch64|arm64)
+        arch="arm64"
+        ;;
+      *)
+        die "Unsupported architecture: $(uname -m)"
+        ;;
+    esac
+    tar_url=$(get_latest_github_release_url "overhacked/ssh-agent-mux" ".*${os}-${arch}\\.tar\\.gz$")
+    if [ -z "${tar_url}" ]; then
+      die "Could not find ssh-agent-mux release for ${os}-${arch}"
+    fi
+    download "${tar_url}" "${TMPDIR}/ssh-agent-mux.tar.gz"
+    tar zxf "${TMPDIR}/ssh-agent-mux.tar.gz" --strip-components=1 -C "${DESTDIR}"
+    chmod +x "${DESTDIR}/ssh-agent-mux"
+    add_bin_symlink ssh-agent-mux
     ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
