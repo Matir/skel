@@ -132,7 +132,12 @@ case $TERM in
       else
         # this will also work in tmux but is not what we want
         # Set the terminal title to include the command being run
-        print -Pn "\e]0;%n@%m: %~ ($cmd)\a"
+        # Skip adding (cmd) in iTerm2 — shell integration already injects the job name
+        if [[ -z "$ITERM_SESSION_ID" ]]; then
+          print -Pn "\e]0;%n@%m: %~ ($cmd)\a"
+        else
+          print -Pn "\e]0;%n@%m: %~\a"
+        fi
       fi
     }
     # Add the hooks to zsh
