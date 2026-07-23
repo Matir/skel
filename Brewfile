@@ -24,7 +24,6 @@ brew "direnv"
 brew "dua-cli"
 brew "duck"
 brew "dust"
-brew "earthly"
 brew "espressif/eim/eim", trusted: true
 brew "esptool"
 brew "fish"
