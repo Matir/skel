@@ -1,2 +1,8 @@
 [user]
   email = david@systemoverlord.com
+
+[commit]
+  gpgSign = false
+
+[tag]
+  gpgSign = false
