@@ -576,6 +576,20 @@ EOF
     chmod +x "${DESTDIR}/ssh-agent-mux"
     add_bin_symlink ssh-agent-mux
     ;;
+  grpcurl)
+    if command -v brew >/dev/null 2>&1; then
+      brew install grpcurl
+    else
+      go install github.com/fullstorydev/grpcurl/cmd/grpcurl@latest
+    fi
+    ;;
+  grpcui)
+    if command -v brew >/dev/null 2>&1; then
+      brew install grpcui
+    else
+      go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
+    fi
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
