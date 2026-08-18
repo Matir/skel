@@ -96,6 +96,7 @@
 
 [include]
   path = ~/.gitconfig.d/aliases
+  path = ~/.gitconfig.d/google
   path = ~/.gitconfig.d/override
   path = ~/.gitconfig.d/local
 
