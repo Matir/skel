@@ -8,13 +8,18 @@ if [ "$(uname)" != "Linux" ]; then
   exit 1
 fi
 
-DEFAULT=`echo /media/${USER}/[bB]ackup/${USER}/`
+shopt -s nullglob
+matches=( /media/"${USER}"/[bB]ackup/"${USER}"/ )
+shopt -u nullglob
+if [ ${#matches[@]} -gt 0 ]; then
+  DEFAULT="${matches[0]}"
+else
+  DEFAULT="/media/${USER}/Backup/${USER}/"
+fi
 DEST="${1:-${DEFAULT}}"
 
 function verify_dest {
-  arr=($1)
-  items=${#arr[@]}
-  if [ $items -ne 1 ] ; then
+  if [ -z "$1" ] ; then
     echo "Bad count of backup destinations." > /dev/stderr
     exit 1
   fi
@@ -25,7 +30,7 @@ function verify_dest {
     echo -n "Destination $dir does not end in a /, " > /dev/stderr
     echo "this is probably not what you want!" > /dev/stderr
     echo "Press a key to continue, or CTRL-C to cancel." > /dev/stderr
-    read
+    read -r
   fi
 }
 

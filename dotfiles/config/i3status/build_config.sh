@@ -13,13 +13,15 @@ function disks {
 	local DISKS=(/ /home)
 	local d
 	local used
-	for d in ${DISKS[@]} ; do
-		local dev=`df $d | tail -1 | awk '{print $1}'`
-		if [[ $used == *$dev* ]] ; then
+	for d in "${DISKS[@]}" ; do
+		local dev
+		dev=$(df "$d" | tail -1 | awk '{print $1}')
+		if [[ " $used " == *" $dev "* ]] ; then
 			continue
 		fi
-		local size=`df $d | tail -1 | awk '{print $2}'`
-		if [ $size -eq 0 ] ; then
+		local size
+		size=$(df "$d" | tail -1 | awk '{print $2}')
+		if [ "$size" -eq 0 ] ; then
 			continue
 		fi
 		used="${used} ${dev}"
@@ -99,7 +101,9 @@ function battery {
 				status_chr = "↑ CHR"
 				status_bat = "↓ BAT"
 		EOF
-		if [ $(bc <<< "$(i3status --version | awk '{print $2}') < 2.11") -eq 0 ] ;
+		local i3ver
+		i3ver=$(i3status --version 2>/dev/null | awk '{print $2}')
+		if [ -z "$i3ver" ] || [ "$(bc <<< "$i3ver < 2.11" 2>/dev/null)" -eq 0 ] ;
 		then
 			cat <<-EOF
 				status_unk = "? UNK"
