@@ -1,11 +1,13 @@
 #!/bin/bash
 
+set -e
+
 if [ $# -lt 1 ] ; then
   echo "Usage: $0 <kvm|vbox>" >&2
   exit 1
 fi
 
-if [ `whoami` != "root" ] ; then
+if [ "$(id -u)" -ne 0 ] ; then
   if which sudo >/dev/null 2>&1 ; then
     sudo "$0" "$@"
     exit

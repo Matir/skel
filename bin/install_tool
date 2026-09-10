@@ -125,8 +125,17 @@ function deb_only {
 function get_latest_github_release_url {
   local repo="$1"
   local glob="$2"
-  curl -s "https://api.github.com/repos/${repo}/releases/latest" | \
-    jq -r --arg rx "${glob}" '.assets[] | select(.name | test($rx)) | .browser_download_url'
+  require jq "jq is required to parse GitHub releases."
+  local response
+  response=$(curl -s "https://api.github.com/repos/${repo}/releases/latest")
+  
+  if ! echo "${response}" | jq -e '.assets' >/dev/null 2>&1; then
+    local msg
+    msg=$(echo "${response}" | jq -r '.message // "Unknown error fetching latest release."')
+    die "GitHub API error for ${repo}: ${msg}"
+  fi
+  
+  echo "${response}" | jq -r --arg rx "${glob}" '.assets[] | select(.name | test($rx)) | .browser_download_url'
 }
 
 function require {

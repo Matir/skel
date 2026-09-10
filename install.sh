@@ -114,15 +114,17 @@ install_known_hosts() {
     if [[ -x "${merge_script}" ]]; then
       # Use the robust awk script for merging.
       verbose "Merging known_hosts with authoritative script..."
-      "${merge_script}" "${skel_hosts}" "${user_hosts}" > "$tmpf"
+      if "${merge_script}" "${skel_hosts}" "${user_hosts}" > "$tmpf"; then
+        cat "$tmpf" >| "${user_hosts}"
+      fi
     else
       # Fallback to the old, less robust method if the script is missing.
       verbose "Warning: ${merge_script} not found or not executable. Using simple sort."
-      cat "${skel_hosts}" "${user_hosts}" | sort -u > "$tmpf"
+      if cat "${skel_hosts}" "${user_hosts}" | sort -u > "$tmpf"; then
+        cat "$tmpf" >| "${user_hosts}"
+      fi
     fi
-    # Safely replace the original file.
-    cat "$tmpf" >| "${user_hosts}"
-    rm "$tmpf"
+    rm -f "$tmpf"
   else
     # User does not have a known_hosts file, just copy the new one.
     cp "${skel_hosts}" "${user_hosts}"
@@ -139,8 +141,7 @@ install_keys() {
 }
 
 read_saved_prefs() {
-  # Can't use basedir here as we don't have it yet
-  local pref_file="$(dirname "$0")/.installed-prefs"
+  local pref_file="${SCRIPT_DIR}/.installed-prefs"
   if [[ -f "${pref_file}" ]] ; then
     verbose "Loading saved skel preferences from ${pref_file}"
     # source is a bashism
@@ -209,9 +210,17 @@ install_starship() {
 
   local install_path="${tmpd}/install.sh"
   if have_command curl ; then
-    curl -sSL --show-error -o "${install_path}" https://starship.rs/install.sh
+    if ! curl -fsSL --show-error -o "${install_path}" https://starship.rs/install.sh; then
+      echo "Failed to download starship installer!" >&2
+      rm -rf "${tmpd}"
+      return 1
+    fi
   elif have_command wget ; then
-    wget -q -O "${install_path}" --https-only https://starship.rs/install.sh
+    if ! wget -q -O "${install_path}" --https-only https://starship.rs/install.sh; then
+      echo "Failed to download starship installer!" >&2
+      rm -rf "${tmpd}"
+      return 1
+    fi
   else
     echo "No curl or wget available!!" >&2
     rm -rf "${tmpd}"

@@ -57,9 +57,9 @@ SUB_HOOK_DIR="${HOOKS_DIR}/${CALLED_AS}.d"
 
 if [ -d "$SUB_HOOK_DIR" ]; then
     # Sort files naturally so 01- runs before 02-
-    for script in $(ls "$SUB_HOOK_DIR" | sort); do
-        FULL_PATH="$SUB_HOOK_DIR/$script"
+    for FULL_PATH in "$SUB_HOOK_DIR"/*; do
         [ -x "$FULL_PATH" ] || continue
+        script=$(basename "$FULL_PATH")
 
         # Replay stdin if we captured it, otherwise execute normally
         if [ -n "$STDIN_DATA" ]; then
