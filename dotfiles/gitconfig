@@ -38,6 +38,7 @@
 
 [push]
   default = current
+  autoSetupRemote = true
 
 [web]
   browser = chrome
@@ -105,9 +106,14 @@
 
 [rerere]
   enabled = true
+
 [lfs]
 	concurrenttransfers = 3
+
 [lfs "customtransfer.xet"]
 	path = git-xet
 	args = transfer
 	concurrent = true
+
+[branch]
+	autoSetupMerge = simple
