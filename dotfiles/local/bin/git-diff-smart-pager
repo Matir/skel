@@ -1,0 +1,49 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Detect installed binaries
+HAS_DELTA=$(command -v delta 2>/dev/null || true)
+HAS_DIFFT=$(command -v difft 2>/dev/null || true)
+
+# ==============================================================================
+# MODE 1: GIT_EXTERNAL_DIFF / diff.external
+# Git passes exactly 7 arguments:
+# $1: path $2: old-file $3: old-hex $4: old-mode $5: new-file $6: new-hex $7: new-mode
+# ==============================================================================
+if [ "$#" -eq 7 ]; then
+    DISPLAY_PATH="$1"
+    OLD_FILE="$2"
+    NEW_FILE="$5"
+
+    # 1. Difftastic installed -> Native AST structural file comparison
+    if [ -n "$HAS_DIFFT" ]; then
+        # Pass file metadata and display path to difft
+        exec difft --display=side-by-side-show-both "$OLD_FILE" "$NEW_FILE"
+
+    # 2. Delta installed (Difftastic missing) -> Standard diff piped into delta
+    elif [ -n "$HAS_DELTA" ]; then
+        diff -u -p --label "a/$DISPLAY_PATH" "$OLD_FILE" --label "b/$DISPLAY_PATH" "$NEW_FILE" | delta
+
+    # 3. Neither installed -> Standard unified diff
+    else
+        diff -u -p --label "a/$DISPLAY_PATH" "$OLD_FILE" --label "b/$DISPLAY_PATH" "$NEW_FILE" || true
+    fi
+
+# ==============================================================================
+# MODE 2: GIT_PAGER / core.pager
+# Invoked as a downstream filter/pager for stdout (stdin contains diff/log output)
+# ==============================================================================
+else
+    # 1. Delta installed -> Rich pager for git log, git show, git diff, etc.
+    if [ -n "$HAS_DELTA" ]; then
+        exec delta "$@"
+
+    # 2. Difftastic installed (Delta missing) -> Read unified diff from stdin
+    elif [ -n "$HAS_DIFFT" ]; then
+        exec difft "$@"
+
+    # 3. Neither installed -> Fall back to system pager
+    else
+        exec "${PAGER:-less}" ${LESS:--FRX} "$@"
+    fi
+fi
