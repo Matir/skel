@@ -599,6 +599,43 @@ EOF
       go install github.com/fullstorydev/grpcui/cmd/grpcui@latest
     fi
     ;;
+  difftastic)
+    if command -v brew >/dev/null 2>&1; then
+      brew install difftastic
+    else
+      makedest_or_die
+      case "$(uname -s)" in
+        Linux)
+          target_os="unknown-linux-gnu"
+          ;;
+        Darwin)
+          target_os="apple-darwin"
+          ;;
+        *)
+          die "Unsupported OS: $(uname -s)"
+          ;;
+      esac
+      case "$(uname -m)" in
+        x86_64|amd64)
+          arch="x86_64"
+          ;;
+        aarch64|arm64)
+          arch="aarch64"
+          ;;
+        *)
+          die "Unsupported architecture: $(uname -m)"
+          ;;
+      esac
+      tar_url=$(get_latest_github_release_url "Wilfred/difftastic" "^difft-${arch}-${target_os}\\.tar\\.gz$")
+      if [ -z "${tar_url}" ]; then
+        die "Could not find difftastic release for ${arch}-${target_os}"
+      fi
+      download "${tar_url}" "${TMPDIR}/difftastic.tar.gz"
+      tar zxf "${TMPDIR}/difftastic.tar.gz" -C "${DESTDIR}"
+      chmod +x "${DESTDIR}/difft"
+      add_bin_symlink difft
+    fi
+    ;;
   *)
     echo "Unknown tool: ${TOOL}" >/dev/stderr
     list_tools
