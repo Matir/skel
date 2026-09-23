@@ -9,4 +9,10 @@ pager: !!null less -R
 # Aliases allow you to create nicknames for gh commands
 aliases:
     co: pr checkout
+    my-prs: pr list --author "@me" --state all
+    pv: pr view $1 -w
+    check: pr checks
+    prs: pr list
+    issues: issue list
+    copr: '!gh pr list --limit 100 | fzf | awk "{print \$1}" | xargs gh pr checkout'
 version: "1"
