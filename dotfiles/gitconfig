@@ -35,6 +35,7 @@
   lol = log --graph --pretty=format:'%C(yellow)%h%Creset %an: %s - %Creset %C(yellow)%d%Creset %Cblue(%cr)%Creset' --abbrev-commit --date=relative
   f = "!git ls-files | grep -i"
   logtree = log --graph --oneline --decorate --all
+	list-squashed = "!f() { target=${1:-main}; current=$(git branch --show-current); git fetch --prune &>/dev/null; git for-each-ref refs/heads/ --format=\"%(refname:short)\" | while read b; do if [ \"$b\" != \"$target\" ] && [ \"$b\" != \"$current\" ]; then mb=$(git merge-base \"$target\" \"$b\" 2>/dev/null); if [ -n \"$mb\" ] && [[ $(git cherry \"$target\" $(git commit-tree \"$b^{tree}\" -p \"$mb\" -m temp 2>/dev/null) 2>/dev/null) == \"-\"* ]]; then echo \"💡 [Squash-Merged] $b\"; fi; fi; done; }; f"
 
 [push]
   default = current
