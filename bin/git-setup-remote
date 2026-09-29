@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+
+# Exit immediately if a command exits with a non-zero status,
+# or if an uninitialized variable is used.
+set -euo pipefail
+
+# Print usage instructions
+usage() {
+  echo "Usage: $0 <user@host> <remote-path> <remote-name>"
+  echo "Example: $0 user@server.com /var/www/my-project production"
+  exit 1
+}
+
+# 1. Check arguments
+if [ "$#" -ne 3 ]; then
+  echo "❌ Error: Invalid number of arguments." >&2
+  usage
+fi
+
+REMOTE_HOST="$1"
+REMOTE_PATH="$2"
+REMOTE_NAME="$3"
+
+# 2. Verify we are running inside a local Git repository
+if ! git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  echo "❌ Error: This script must be run from within a local Git repository." >&2
+  exit 1
+fi
+
+# Get current branch name (usually 'main' or 'master')
+CURRENT_BRANCH=$(git branch --show-current)
+if [ -z "$CURRENT_BRANCH" ]; then
+  echo "❌ Error: Could not determine current branch. Is your repository empty?" >&2
+  exit 1
+fi
+
+# 3. Check SSH connection
+echo "🔍 Checking SSH connection to ${REMOTE_HOST}..."
+if ! ssh -q -o BatchMode=yes -o ConnectTimeout=5 "$REMOTE_HOST" exit; then
+  echo "❌ Error: Cannot establish SSH connection to ${REMOTE_HOST}." >&2
+  echo "Please check your SSH credentials, host address, or ssh-agent configuration." >&2
+  exit 1
+fi
+
+# 4. Initialize and configure the remote repository over SSH
+echo "🚀 Creating remote directory and initializing Git on ${REMOTE_HOST}..."
+ssh "$REMOTE_HOST" bash -s <<EOF
+  set -euo pipefail
+  # Create the directory path if it doesn't exist
+  mkdir -p "${REMOTE_PATH}"
+
+  # Initialize a standard (non-bare) repository
+  git init "${REMOTE_PATH}"
+
+  # Set the configuration to safely allow pushing to the checked-out branch
+  git -C "${REMOTE_PATH}" config receive.denyCurrentBranch updateInstead
+
+  echo "✅ Remote repository successfully initialized at ${REMOTE_PATH}"
+EOF
+
+# 5. Configure the local repository's remote tracking
+echo "🔗 Configuring local remote '${REMOTE_NAME}'..."
+
+# Check if the remote name already exists locally
+if git remote | grep -q "^${REMOTE_NAME}$"; then
+  echo "⚠️  Warning: Remote '${REMOTE_NAME}' already exists. Overwriting its URL..."
+  git remote set-url "$REMOTE_NAME" "${REMOTE_HOST}:${REMOTE_PATH}"
+else
+  git remote add "$REMOTE_NAME" "${REMOTE_HOST}:${REMOTE_PATH}"
+fi
+
+echo "---"
+echo "🎉 Setup complete!"
+echo "📍 Remote Host: ${REMOTE_HOST}"
+echo "📍 Remote Path: ${REMOTE_PATH}"
+echo "📍 Git Remote Name: ${REMOTE_NAME}"
+echo ""
+echo "👉 You can now push your code to the server using:"
+echo "   git push -u ${REMOTE_NAME} ${CURRENT_BRANCH}"
