@@ -19,3 +19,6 @@
     missing_comp _resticprofile && \
     resticprofile generate --zsh-completion > $COMPDIR/_resticprofile || true
 } &>/dev/null &!
+
+# Bazelisk uses bazel
+compdef _bazel bazelisk
